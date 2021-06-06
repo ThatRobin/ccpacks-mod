@@ -1,0 +1,42 @@
+package io.github.connor3001.ccpacks.customTypes;
+
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.function.Consumer;
+
+public class CustomBlockBlock extends Block {
+
+    private Consumer<Entity> entityAction;
+    private ConditionFactory<LivingEntity>.Instance condition;
+
+    public CustomBlockBlock(Settings settings, Consumer<Entity> entityAction, ConditionFactory<LivingEntity>.Instance condition) {
+        super(settings);
+        this.entityAction = entityAction;
+        this.condition = condition;
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if(condition != null) {
+            if (this.condition.test(player)) {
+                this.entityAction.accept(player);
+                return ActionResult.SUCCESS;
+            }
+        } else {
+            this.entityAction.accept(player);
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.CONSUME;
+    }
+}

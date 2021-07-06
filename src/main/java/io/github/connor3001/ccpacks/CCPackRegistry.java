@@ -1,4 +1,4 @@
-package io.github.connor3001.ccpacks.fileTraversers;
+package io.github.connor3001.ccpacks;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

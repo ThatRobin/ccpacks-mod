@@ -80,23 +80,6 @@ public class SerializableObjects {
             .add("condition", ApoliDataTypes.ENTITY_CONDITION, null)
             .add("loot_table", SerializableDataTypes.IDENTIFIER);
 
-    public static SerializableData shapeBlockData = new SerializableData()
-            .add("type", SerializableDataTypes.STRING)
-            .add("shape", CCPackDataTypes.SHAPE_BLOCK)
-            .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("material", SerializableDataTypes.STRING)
-            .add("effective_tool", SerializableDataTypes.STRING)
-            .add("sound", SerializableDataTypes.STRING)
-            .add("collidable", SerializableDataTypes.BOOLEAN, true)
-            .add("hardness", SerializableDataTypes.INT, 3)
-            .add("slipperiness", SerializableDataTypes.FLOAT, 0.6f)
-            .add("resistance", SerializableDataTypes.INT, 3)
-            .add("luminance", SerializableDataTypes.INT, 0)
-            .add("mining_level", SerializableDataTypes.INT, 1)
-            .add("action", ApoliDataTypes.ENTITY_ACTION, null)
-            .add("condition", ApoliDataTypes.ENTITY_CONDITION, null)
-            .add("loot_table", SerializableDataTypes.IDENTIFIER);
-
     public static SerializableData stairsData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)

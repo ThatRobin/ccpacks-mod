@@ -6,9 +6,7 @@
   "mixins": [
     "AccessorMixin",
     "PlayerManagerMixin",
-    "MinecraftServerMixin",
-    "EffectCommandMixin",
-    "MilkBucketMixin"
+    "MinecraftServerMixin"
   ],
   "client": [
 

@@ -52,7 +52,6 @@ public class CCPackFactory {
                 (data, stack) -> {
                     int durability = 0;
                     durability = stack.getMaxDamage() - stack.getDamage();
-                    CCPacksMain.LOGGER.info(durability);
                     return ((Comparison)data.get("comparison")).compare(durability, data.getInt("compare_to"));
                 }));
         registerItemCondition(new ConditionFactory<>(CCPacksMain.identifier("compare_amount"), new SerializableData()

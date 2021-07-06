@@ -24,20 +24,6 @@ public class DDUniversalPowers extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        if (this.power != null && this.power.size() > 0) {
-            for (int i = 0; i < this.power.size(); i++) {
-                PowerType<?> type = PowerTypeRegistry.get(this.power.get(i).getIdentifier());
-                PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
-                if (component.hasPower(type, this.source)) {
-                    component.removePower(type, this.source);
-                }
-                component.sync();
-            }
-        }
-    }
-
-    @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         if (this.power != null && this.power.size() > 0) {
             for (int i = 0; i < this.power.size(); i++) {

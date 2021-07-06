@@ -20,7 +20,7 @@ public abstract class PlayerManagerMixin {
     private void createPlayer(CallbackInfo ci) {
         for(int i = 0; i < this.getServerWorld().getPlayers().size(); i++){
             if(!this.getServerWorld().getPlayers().get(i).hasStatusEffect(Registry.STATUS_EFFECT.get(new Identifier("ccpacks","universal_powers")))) {
-                this.getServerWorld().getPlayers().get(i).addStatusEffect(new StatusEffectInstance(Registry.STATUS_EFFECT.get(new Identifier("ccpacks","universal_powers")), 99999, 0, true, false, false));
+                this.getServerWorld().getPlayers().get(i).addStatusEffect(new StatusEffectInstance(Registry.STATUS_EFFECT.get(new Identifier("ccpacks","universal_powers")), 20, 0, true, false, false));
             }
         }
     }

@@ -1,7 +1,6 @@
 package io.github.connor3001.ccpacks;
 
 import io.github.connor3001.ccpacks.SerializableData.CCPackFactory;
-import io.github.connor3001.ccpacks.fileTraversers.CCPackRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackSource;

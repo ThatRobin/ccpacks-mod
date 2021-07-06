@@ -1,13 +1,22 @@
 package io.github.connor3001.ccpacks.customContent;
 
-import com.google.common.base.Splitter;
 import com.google.gson.*;
+import io.github.apace100.apoli.power.PowerTypeReference;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.calio.data.SerializableData;
 import io.github.connor3001.ccpacks.CCPacksMain;
-import io.github.connor3001.ccpacks.CustomObjects.*;
+import io.github.connor3001.ccpacks.middleManTypes.*;
+import io.github.connor3001.ccpacks.SerializableData.SerializableObjects;
+import io.github.connor3001.ccpacks.middleManTypes.MMDurableItem;
+import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
+import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.util.registry.Registry;
 
 import java.io.*;
 import java.util.*;
@@ -15,19 +24,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZipCCPackRegistry {
-
-    private static final Identifier ITEM = CCPacksMain.identifier("item");
-    private static final Identifier AXE = CCPacksMain.identifier("item_axe");
-    private static final Identifier PICKAXE = CCPacksMain.identifier("item_pickaxe");
-    private static final Identifier SWORD = CCPacksMain.identifier("item_sword");
-    private static final Identifier SHOVEL = CCPacksMain.identifier("item_shovel");
-    private static final Identifier HOE = CCPacksMain.identifier("item_hoe");
-    private static final Identifier LEGGINGS = CCPacksMain.identifier("item_leggings");
-    private static final Identifier BOOTS = CCPacksMain.identifier("item_boots");
-    private static final Identifier CHESTPLATE = CCPacksMain.identifier("item_chestplate");
-    private static final Identifier HELMET = CCPacksMain.identifier("item_helmet");
-    private static final Identifier FOOD = CCPacksMain.identifier("item_food");
-    private static final Identifier BLOCK = CCPacksMain.identifier("block");
 
     private ZipFile file;
     private final File base;
@@ -52,9 +48,7 @@ public class ZipCCPackRegistry {
 
         Enumeration<? extends ZipEntry> enumeration = zipFile2.entries();
 
-        String var10000 = "ccdata/";
-        String string = var10000;
-        String string2 = string;
+        String string2 = "ccdata/";
 
         while(enumeration.hasMoreElements()) {
             ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
@@ -62,56 +56,84 @@ public class ZipCCPackRegistry {
                 String string3 = zipEntry.getName();
                 if (string3.endsWith(".json") && string3.startsWith(string2)) {
                     InputStream stream = zipFile2.getInputStream(zipEntry);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonObject jsonObject = (JsonObject)jsonParser.parse(new InputStreamReader(stream, "UTF-8"));
-                    Identifier factoryId = Identifier.tryParse(JsonHelper.getString(jsonObject, "type"));
-                    CCPacksMain.LOGGER.info(ITEM +"/"+ factoryId);
-                    CCPacksMain.LOGGER.info(AXE +"/"+ factoryId);
-                    CCPacksMain.LOGGER.info(PICKAXE +"/"+ factoryId);
-                    CCPacksMain.LOGGER.info(SHOVEL +"/"+ factoryId);
-                    CCPacksMain.LOGGER.info(SWORD +"/"+ factoryId);
-                    CCPacksMain.LOGGER.info(HELMET +"/"+ factoryId);
 
-                    if(ITEM.equals(factoryId)) {
-                        try {
-                            String command = JsonHelper.getString(jsonObject, "command");
-                            //CustomItem item = new CustomItem(JsonHelper.getString(jsonObject, "namespace"), JsonHelper.getString(jsonObject, "id"), JsonHelper.getInt(jsonObject, "max_count"), JsonHelper.getBoolean(jsonObject, "useable"), JsonHelper.getString(jsonObject, "command"));
-                        } catch(Exception e) {
-                            //CustomItem item = new CustomItem(JsonHelper.getString(jsonObject, "namespace"), JsonHelper.getString(jsonObject, "id"), JsonHelper.getInt(jsonObject, "max_count"), JsonHelper.getBoolean(jsonObject, "useable"), "tellraw @s \"you shouldnt see this\"");
-                        }
+                    JsonParser jsonParser = new JsonParser();
+                    JsonObject jsonObject = null;
+                    try {
+                        jsonObject = (JsonObject)jsonParser.parse(new InputStreamReader(stream, "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
-                    if(AXE.equals(factoryId)) {
-                        CustomAxe item = new CustomAxe(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"),JsonHelper.getFloat(jsonObject, "mining_speed_multiplier"),JsonHelper.getInt(jsonObject, "attack_speed"),JsonHelper.getInt(jsonObject, "mining_level"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "attack_damage"));
-                    }
-                    if(BLOCK.equals(factoryId)) {
-                        //CustomBlock item = new CustomBlock(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "hardness"), JsonHelper.getInt(jsonObject, "resistance"),JsonHelper.getFloat(jsonObject, "slipperiness"));
-                    }
-                    if(BOOTS.equals(factoryId)) {
-                        CustomBoots item = new CustomBoots(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"), JsonHelper.getString(jsonObject, "name"),JsonHelper.getInt(jsonObject, "protection"),JsonHelper.getInt(jsonObject, "toughness"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "knockback_resistance"));
-                    }
-                    if(CHESTPLATE.equals(factoryId)) {
-                        CustomChestplate item = new CustomChestplate(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"), JsonHelper.getString(jsonObject, "name"),JsonHelper.getInt(jsonObject, "protection"),JsonHelper.getInt(jsonObject, "toughness"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "knockback_resistance"));
-                    }
-                    if(FOOD.equals(factoryId)) {
-                        CustomFood item = new CustomFood(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "max_count"),JsonHelper.getInt(jsonObject, "hunger"),JsonHelper.getFloat(jsonObject, "saturation"),JsonHelper.getBoolean(jsonObject, "meat"),JsonHelper.getBoolean(jsonObject, "snack"),JsonHelper.getBoolean(jsonObject, "always_edible"));
-                    }
-                    if(HELMET.equals(factoryId)) {
-                        CustomHelmet item = new CustomHelmet(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"), JsonHelper.getString(jsonObject, "name"),JsonHelper.getInt(jsonObject, "protection"),JsonHelper.getInt(jsonObject, "toughness"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "knockback_resistance"));
-                    }
-                    if(HOE.equals(factoryId)) {
-                        CustomHoe item = new CustomHoe(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"),JsonHelper.getFloat(jsonObject, "mining_speed_multiplier"),JsonHelper.getInt(jsonObject, "attack_speed"),JsonHelper.getInt(jsonObject, "mining_level"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "attack_damage"));
-                    }
-                    if(LEGGINGS.equals(factoryId)) {
-                        CustomLegging item = new CustomLegging(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"), JsonHelper.getString(jsonObject, "name"),JsonHelper.getInt(jsonObject, "protection"),JsonHelper.getInt(jsonObject, "toughness"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "knockback_resistance"));
-                    }
-                    if(PICKAXE.equals(factoryId)) {
-                        CustomPickaxe item = new CustomPickaxe(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"),JsonHelper.getFloat(jsonObject, "mining_speed_multiplier"),JsonHelper.getInt(jsonObject, "attack_speed"),JsonHelper.getInt(jsonObject, "mining_level"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "attack_damage"));
-                    }
-                    if(SHOVEL.equals(factoryId)) {
-                        CustomShovel item = new CustomShovel(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"),JsonHelper.getFloat(jsonObject, "mining_speed_multiplier"),JsonHelper.getInt(jsonObject, "attack_speed"),JsonHelper.getInt(jsonObject, "mining_level"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "attack_damage"));
-                    }
-                    if(SWORD.equals(factoryId)) {
-                        CustomSword item = new CustomSword(JsonHelper.getString(jsonObject, "namespace"),JsonHelper.getString(jsonObject, "id"),JsonHelper.getInt(jsonObject, "durability"),JsonHelper.getFloat(jsonObject, "mining_speed_multiplier"),JsonHelper.getInt(jsonObject, "attack_speed"),JsonHelper.getInt(jsonObject, "mining_level"),JsonHelper.getInt(jsonObject, "enchantability"),JsonHelper.getInt(jsonObject, "attack_damage"));
+
+                    SerializableData.Instance instance = SerializableObjects.getItemType.read(jsonObject);
+                    SerializableData.Instance instance2;
+                    CCPacksMain.LOGGER.info(instance.get("type"));
+                    if(instance.getString("type").equals("ccpacks:item")) {
+                        instance2 = SerializableObjects.itemData.read(jsonObject);
+                        new MMItem((Identifier) instance2.get("identifier"), (List<String>)instance2.get("lore"), instance2.getInt("max_count"), (List<PowerTypeReference>) instance2.get("powers"));
+                    } else if (instance.getString("type").equals("ccpacks:trinket")) {
+                        instance2 = SerializableObjects.itemData.read(jsonObject);
+                        new MMTrinket((Identifier) instance2.get("identifier"), (List<String>)instance2.get("lore"), instance2.getInt("durability"), (List<PowerTypeReference>) instance2.get("powers"));
+                    } else if (instance.getString("type").equals("ccpacks:durable_item")) {
+                        instance2 = SerializableObjects.itemData.read(jsonObject);
+                        new MMDurableItem((Identifier) instance2.get("identifier"), (List<String>) instance2.get("lore"), instance2.getInt("durability"), (List<PowerTypeReference>) instance2.get("powers"));
+                    } else if (instance.getString("type").equals("ccpacks:axe")) {
+                        instance2 = SerializableObjects.toolData.read(jsonObject);
+                        new MMAxeItem((Identifier) instance2.get("identifier"),instance2.getInt( "durability"),instance2.getFloat( "mining_speed_multiplier"),instance2.getInt("attack_speed"),instance2.getInt("mining_level"),instance2.getInt("enchantability"),instance2.getInt("attack_damage"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"));
+                    } else if (instance.getString("type").equals("ccpacks:block")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+                        new MMBlock((Identifier) instance2.get("identifier"), instance2.getString("material"), instance2.getString("effective_tool"), instance2.getString("sound"),instance2.getBoolean("collidable"), instance2.getInt("hardness"), instance2.getInt("resistance"),instance2.getFloat("slipperiness"),instance2.getInt("luminance"),instance2.getInt("mining_level"),(ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"), (Identifier) instance2.get("loot_table"));
+                    } else if (instance.getString("type").equals("ccpacks:falling_block")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+                        new MMFallingBlock((Identifier) instance2.get("identifier"), instance2.getString("material"), instance2.getString("effective_tool"), instance2.getString("sound"),instance2.getBoolean("collidable"), instance2.getInt("hardness"), instance2.getInt("resistance"),instance2.getFloat("slipperiness"),instance2.getInt("luminance"),instance2.getInt("mining_level"),(ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"), (Identifier) instance2.get("loot_table"));
+                    } else if (instance.getString("type").equals("ccpacks:vertical_slab")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+                        new MMVSlabBlock((Identifier) instance2.get("identifier"), instance2.getString("material"), instance2.getString("effective_tool"), instance2.getString("sound"),instance2.getBoolean("collidable"), instance2.getInt("hardness"), instance2.getInt("resistance"),instance2.getFloat("slipperiness"),instance2.getInt("luminance"),instance2.getInt("mining_level"),(ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"), (Identifier) instance2.get("loot_table"));
+                    } else if (instance.getString("type").equals("ccpacks:horizontal_slab")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+                        new MMHSlabBlock((Identifier) instance2.get("identifier"), instance2.getString("material"), instance2.getString("effective_tool"), instance2.getString("sound"),instance2.getBoolean("collidable"), instance2.getInt("hardness"), instance2.getInt("resistance"),instance2.getFloat("slipperiness"),instance2.getInt("luminance"),instance2.getInt("mining_level"),(ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"), (Identifier) instance2.get("loot_table"));
+                    } else if (instance.getString("type").equals("ccpacks:stairs")) {
+                        instance2 = SerializableObjects.stairsData.read(jsonObject);
+                        new MMStairBlock((Identifier) instance2.get("identifier"), instance2.getString("material"), instance2.getString("effective_tool"), instance2.getString("sound"),instance2.getBoolean("collidable"), instance2.getInt("hardness"), instance2.getInt("resistance"),instance2.getFloat("slipperiness"),instance2.getInt("luminance"),instance2.getInt("mining_level"),(ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"), (Identifier) instance2.get("loot_table"), Registry.BLOCK.get((Identifier) instance2.get("base_block")));
+                    } else if (instance.getString("type").equals("ccpacks:boots")) {
+                        instance2 = SerializableObjects.armorData.read(jsonObject);
+                        new MMBoots((Identifier) instance2.get("identifier"),instance2.getInt("durability"),instance2.getString("name"),instance2.getInt("protection"),instance2.getInt("toughness"),instance2.getInt("enchantability"),instance2.getInt("knockback_resistance"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"), (Item)instance2.get("repair_item"));
+                    } else if (instance.getString("type").equals("ccpacks:chestplate")) {
+                        instance2 = SerializableObjects.armorData.read(jsonObject);
+                        new MMChestplate((Identifier) instance2.get("identifier"),instance2.getInt("durability"),instance2.getString("name"),instance2.getInt("protection"),instance2.getInt("toughness"),instance2.getInt("enchantability"),instance2.getInt("knockback_resistance"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"), (Item)instance2.get("repair_item"));
+                    } else if (instance.getString("type").equals("ccpacks:food")) {
+                        instance2 = SerializableObjects.foodData.read(jsonObject);
+                        new MMFoodItem((Identifier) instance2.get("identifier"),instance2.getInt("max_count"),instance2.getInt("hunger"),instance2.getFloat("saturation"),instance2.getBoolean("meat"),instance2.getBoolean("snack"),instance2.getBoolean("always_edible"));
+                    } else if (instance.getString("type").equals("ccpacks:helmet")) {
+                        instance2 = SerializableObjects.armorData.read(jsonObject);
+                        new MMHelmet((Identifier) instance2.get("identifier"),instance2.getInt("durability"),instance2.getString("name"),instance2.getInt("protection"),instance2.getInt("toughness"),instance2.getInt("enchantability"),instance2.getInt("knockback_resistance"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"), (Item)instance2.get("repair_item"));
+                    } else if (instance.getString("type").equals("ccpacks:hoe")) {
+                        instance2 = SerializableObjects.toolData.read(jsonObject);
+                        new MMHoeItem((Identifier) instance2.get("identifier"),instance2.getInt( "durability"),instance2.getFloat( "mining_speed_multiplier"),instance2.getInt("attack_speed"),instance2.getInt("mining_level"),instance2.getInt("enchantability"),instance2.getInt("attack_damage"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"));
+                    } else if (instance.getString("type").equals("ccpacks:leggings")) {
+                        instance2 = SerializableObjects.armorData.read(jsonObject);
+                        new MMLegging((Identifier) instance2.get("identifier"),instance2.getInt("durability"),instance2.getString("name"),instance2.getInt("protection"),instance2.getInt("toughness"),instance2.getInt("enchantability"),instance2.getInt("knockback_resistance"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"), (Item)instance2.get("repair_item"));
+                    } else if (instance.getString("type").equals("ccpacks:pickaxe")) {
+                        instance2 = SerializableObjects.toolData.read(jsonObject);
+                        new MMPickaxeItem((Identifier) instance2.get("identifier"),instance2.getInt( "durability"),instance2.getFloat( "mining_speed_multiplier"),instance2.getInt("attack_speed"),instance2.getInt("mining_level"),instance2.getInt("enchantability"),instance2.getInt("attack_damage"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"));
+                    } else if (instance.getString("type").equals("ccpacks:shovels")) {
+                        instance2 = SerializableObjects.toolData.read(jsonObject);
+                        new MMShovelItem((Identifier) instance2.get("identifier"),instance2.getInt( "durability"),instance2.getFloat( "mining_speed_multiplier"),instance2.getInt("attack_speed"),instance2.getInt("mining_level"),instance2.getInt("enchantability"),instance2.getInt("attack_damage"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"));
+                    } else if (instance.getString("type").equals("ccpacks:sword")) {
+                        instance2 = SerializableObjects.toolData.read(jsonObject);
+                        new MMSword((Identifier) instance2.get("identifier"),instance2.getInt( "durability"),instance2.getFloat( "mining_speed_multiplier"),instance2.getInt("attack_speed"),instance2.getInt("mining_level"),instance2.getInt("enchantability"),instance2.getInt("attack_damage"), (List<PowerTypeReference>) instance2.get("powers"), (List<String>)instance2.get("lore"));
+                    } else if (instance.getString("type").equals("ccpacks:keybind")) {
+                        instance2 = SerializableObjects.keybindData.read(jsonObject);
+                        new MMKeybind(instance2.getString("name"),instance2.getString("category"));
+                    } else if (instance.getString("type").equals("ccpacks:status_effect")) {
+                        instance2 = SerializableObjects.statusEffectData.read(jsonObject);
+                        new MMStatusEffectType((Identifier) instance2.get("identifier"), instance2.getString("color"), (List<PowerTypeReference>)instance2.get("powers"));
+                    } else if (instance.getString("type").equals("ccpacks:enchantment")) {
+                        instance2 = SerializableObjects.statusEffectData.read(jsonObject);
+                        new MMEnchantment((Identifier) instance2.get("identifier"));
+                    } else if (instance.getString("type").equals("ccpacks:portal")) {
+                        instance2 = SerializableObjects.portalData.read(jsonObject);
+                        CustomPortalApiRegistry.addPortal((Block) instance2.get("block"), PortalIgnitionSource.ItemUseSource((Item)instance2.get("ignition_item")), (Identifier)instance2.get("dimension"), instance2.getInt("r"), instance2.getInt("g"), instance2.getInt("b"));
                     }
                 }
             }

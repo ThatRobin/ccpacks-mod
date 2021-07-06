@@ -5,14 +5,15 @@
   "name": "Custom Content Packs",
   "description": "Data Driven blocks, items, tools and weapons, in minecraft!",
   "authors": [
-    "CyaConnor"
+    "ThatRobin",
+    "PixelNinja"
   ],
   "license": "CC0-1.0",
   "icon": "assets/ccpacks/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.connor3001.ccpacks.CCPacksMain"
+      "io.github.ThatRobin.ccpacks.CCPacksMain"
     ]
   },
   "mixins": [

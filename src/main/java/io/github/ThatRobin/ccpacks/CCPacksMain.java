@@ -24,20 +24,7 @@ public class CCPacksMain implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		CCPackFactory.register();
-		try {
-			File[] fileArray = DATAPACKS_PATH.toFile().listFiles();
-			for(int i = 0; i < fileArray.length; i++){
-				if(fileArray[i].isDirectory()) {
-					new CCPackRegistry(true, fileArray[i], null);
-				} else if(fileArray[i].getName().endsWith(".zip")) {
-					new CCPackRegistry(false, fileArray[i], new ZipFile(fileArray[i]));
-				} else {
-					continue;
-                }
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		new CCPackRegistry();
 	}
 
 	public static Identifier identifier(String path) {

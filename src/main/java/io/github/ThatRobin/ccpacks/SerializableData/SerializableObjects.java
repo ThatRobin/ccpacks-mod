@@ -28,9 +28,9 @@ public class SerializableObjects {
             .add("dimension", SerializableDataTypes.IDENTIFIER)
             .add("block", SerializableDataTypes.BLOCK)
             .add("ignition_item", SerializableDataTypes.ITEM)
-            .add("r", SerializableDataTypes.INT, 255)
-            .add("g", SerializableDataTypes.INT, 255)
-            .add("b", SerializableDataTypes.INT, 255);
+            .add("red", SerializableDataTypes.INT, 255)
+            .add("green", SerializableDataTypes.INT, 255)
+            .add("blue", SerializableDataTypes.INT, 255);
 
     public static SerializableData keybindData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)

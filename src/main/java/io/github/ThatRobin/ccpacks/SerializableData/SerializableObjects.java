@@ -13,6 +13,13 @@ public class SerializableObjects {
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER);
 
+    public static SerializableData animalEntityData = new SerializableData()
+            .add("type", SerializableDataTypes.STRING)
+            .add("identifier", SerializableDataTypes.IDENTIFIER)
+            .add("texture", SerializableDataTypes.IDENTIFIER)
+            .add("width", SerializableDataTypes.FLOAT)
+            .add("height", SerializableDataTypes.FLOAT);
+
     public static SerializableData statusEffectData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
@@ -71,6 +78,7 @@ public class SerializableObjects {
             .add("effective_tool", SerializableDataTypes.STRING)
             .add("sound", SerializableDataTypes.STRING)
             .add("collidable", SerializableDataTypes.BOOLEAN, true)
+            .add("transparent", SerializableDataTypes.BOOLEAN, false)
             .add("hardness", SerializableDataTypes.INT, 3)
             .add("slipperiness", SerializableDataTypes.FLOAT, 0.6f)
             .add("resistance", SerializableDataTypes.INT, 3)
@@ -87,6 +95,7 @@ public class SerializableObjects {
             .add("effective_tool", SerializableDataTypes.STRING)
             .add("sound", SerializableDataTypes.STRING)
             .add("collidable", SerializableDataTypes.BOOLEAN, true)
+            .add("transparent", SerializableDataTypes.BOOLEAN, false)
             .add("hardness", SerializableDataTypes.INT, 3)
             .add("slipperiness", SerializableDataTypes.FLOAT, 0.6f)
             .add("resistance", SerializableDataTypes.INT, 3)

@@ -1,10 +1,8 @@
 package io.github.ThatRobin.ccpacks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
-import io.github.ThatRobin.ccpacks.Util.PriorityList;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.power.PowerTypeReference;
@@ -14,6 +12,8 @@ import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
@@ -24,32 +24,25 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.logging.log4j.core.config.plugins.convert.HexConverter;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -61,6 +54,7 @@ public class CCPackRegistry {
     public CCPackRegistry() {
         try {
             File[] fileArray = CCPacksMain.DATAPACKS_PATH.toFile().listFiles();
+            CCPacksMain.LOGGER.info("Types to Register:");
             for(int i = 0; i < fileArray.length; i++){
                 if(fileArray[i].isDirectory()) {
                     readFromDir(fileArray[i], null);
@@ -73,7 +67,6 @@ public class CCPackRegistry {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        CCPacksMain.LOGGER.info(list);
         register(list);
     }
 
@@ -81,10 +74,12 @@ public class CCPackRegistry {
 
         // Item and Block Registration
 
+        CCPacksMain.LOGGER.info("Item/Block Registration:");
         for(int i = 0; i < list.size(); i++){
             String type = list.get(i).getLeft();
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
+            CCPacksMain.LOGGER.info(type);
             if(type.equals("ccpacks:item")) {
 
                 instance2 = SerializableObjects.itemData.read(jsonObject);
@@ -120,7 +115,11 @@ public class CCPackRegistry {
                 Material mat = getMat(instance2.getString("material"));
                 BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                 Tag<Item> tools = getTool(instance2.getString("effective_tool"));
-                DDBlock EXAMPLE_BLOCK = new DDBlock(FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table")), (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table"));
+                if(instance2.getBoolean("transparent")){
+                    blockSettings.nonOpaque();
+                }
+                DDBlock EXAMPLE_BLOCK = new DDBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
                 Registry.register(Registry.BLOCK, (Identifier) instance2.get("identifier"), EXAMPLE_BLOCK);
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -131,7 +130,11 @@ public class CCPackRegistry {
                 Material mat = getMat(instance2.getString("material"));
                 BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                 Tag<Item> tools = getTool(instance2.getString("effective_tool"));
-                DDFallingBlock EXAMPLE_BLOCK = new DDFallingBlock(FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table")), (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table"));
+                if(instance2.getBoolean("transparent")){
+                    blockSettings.nonOpaque();
+                }
+                DDFallingBlock EXAMPLE_BLOCK = new DDFallingBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
                 Registry.register(Registry.BLOCK, (Identifier) instance2.get("identifier"), EXAMPLE_BLOCK);
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -142,7 +145,11 @@ public class CCPackRegistry {
                 Material mat = getMat(instance2.getString("material"));
                 BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                 Tag<Item> tools = getTool(instance2.getString("effective_tool"));
-                DDVSlabBlock EXAMPLE_BLOCK = new DDVSlabBlock(FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table")), (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table"));
+                if(instance2.getBoolean("transparent")){
+                    blockSettings.nonOpaque();
+                }
+                DDVSlabBlock EXAMPLE_BLOCK = new DDVSlabBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
                 Registry.register(Registry.BLOCK, (Identifier) instance2.get("identifier"), EXAMPLE_BLOCK);
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -153,7 +160,11 @@ public class CCPackRegistry {
                 Material mat = getMat(instance2.getString("material"));
                 BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                 Tag<Item> tools = getTool(instance2.getString("effective_tool"));
-                DDHSlabBlock EXAMPLE_BLOCK = new DDHSlabBlock(FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table")), (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table"));
+                if(instance2.getBoolean("transparent")){
+                    blockSettings.nonOpaque();
+                }
+                DDHSlabBlock EXAMPLE_BLOCK = new DDHSlabBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
                 Registry.register(Registry.BLOCK, (Identifier) instance2.get("identifier"), EXAMPLE_BLOCK);
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -165,7 +176,11 @@ public class CCPackRegistry {
                 BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                 BlockState state = (Registry.BLOCK.get((Identifier) instance2.get("base_block"))).getDefaultState();
                 Tag<Item> tools = getTool(instance2.getString("effective_tool"));
-                DDStairBlock EXAMPLE_BLOCK = new DDStairBlock(state, FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table")), (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops((Identifier) instance2.get("loot_table"));
+                if(instance2.getBoolean("transparent")){
+                    blockSettings.nonOpaque();
+                }
+                DDStairBlock EXAMPLE_BLOCK = new DDStairBlock(state, blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
                 Registry.register(Registry.BLOCK, (Identifier) instance2.get("identifier"), EXAMPLE_BLOCK);
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -269,10 +284,13 @@ public class CCPackRegistry {
             }
         }
 
-        //Post Item and Block Registration
+        // Post Item and Block Registration
+
         List<PowerTypeReference> powers = new ArrayList<>();
+        CCPacksMain.LOGGER.info("Post Item/Block Registration:");
         for(int i = 0; i < list.size(); i++) {
             String type = list.get(i).getLeft();
+            CCPacksMain.LOGGER.info(type);
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
             if (type.equals("ccpacks:portal")) {
@@ -285,7 +303,16 @@ public class CCPackRegistry {
                 for(int e = 0; e < ((List<PowerTypeReference>)instance2.get("powers")).size(); e++){
                     powers.add(((List<PowerTypeReference>)instance2.get("powers")).get(e));
                 }
+            } else if (type.equals("ccpacks:animal_entity")) {
+
+                instance2 = SerializableObjects.animalEntityData.read(jsonObject);
+                CCPacksMain.LOGGER.info("Entity is being made!");
+                EntityType<DDEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).build();
+                Registry.register(Registry.ENTITY_TYPE, (Identifier) instance2.get("identifier"), entity);
+                FabricDefaultAttributeRegistry.register(entity, DDEntity.createMobAttributes());
+
             }
+
         }
 
 
@@ -356,6 +383,7 @@ public class CCPackRegistry {
     }
 
     public void registerElements(JsonObject jsonObject, SerializableData.Instance instance){
+        CCPacksMain.LOGGER.info(instance.getString("type"));
         Pair<String, JsonObject> pair = new Pair<>(instance.getString("type"), jsonObject);
         list.add(pair);
     }

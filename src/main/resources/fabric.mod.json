@@ -14,6 +14,9 @@
   "entrypoints": {
     "main": [
       "io.github.ThatRobin.ccpacks.CCPacksMain"
+    ],
+    "client": [
+      "io.github.ThatRobin.ccpacks.CCPacksClient"
     ]
   },
   "mixins": [

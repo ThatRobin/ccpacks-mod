@@ -7,6 +7,7 @@ import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.DDParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDMushroomCowEntityRenderer;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
@@ -14,6 +15,7 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -323,6 +325,9 @@ public class CCPackClientRegistry {
                     EntityType<DDMushroomCowEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDMushroomCowEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
+
+                    EntityRendererRegistry.INSTANCE.register((EntityType<DDMushroomCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDMooshroomCowEntityRenderer(context, instance2.getId("texture"), instance2.getId("back_item")));
+
                 }
 
             } else if(type.equals("ccpacks:particle")) {

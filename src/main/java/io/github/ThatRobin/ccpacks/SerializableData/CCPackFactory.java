@@ -16,19 +16,32 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Util.CustomCraftingTable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -40,7 +53,7 @@ public class CCPackFactory {
                         .add("render_elytra", SerializableDataTypes.BOOLEAN)
                         .add("sprite_location", SerializableDataTypes.IDENTIFIER),
                 data ->
-                        (type, player) -> new CustomElytraFlightPower(type, player, data.getBoolean("render_elytra"),((Identifier) data.get("sprite_location"))))
+                        (type, player) -> new CustomElytraFlightPower(type, player, data.getBoolean("render_elytra"),data.getId("sprite_location")))
                 .allowCondition());
         registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("block_looking_action"), new SerializableData()
                 .add("block_action", ApoliDataTypes.BLOCK_ACTION),
@@ -94,6 +107,19 @@ public class CCPackFactory {
                         }
                     }
                     return false;
+                }));
+        registerEntityCondition(new ConditionFactory<>(CCPacksMain.identifier("raycast_block"), new SerializableData()
+                .add("distance", SerializableDataTypes.DOUBLE, 2.0)
+                .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
+                (data, entity) -> {
+                        ConditionFactory<CachedBlockPosition>.Instance condition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
+
+                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(entity.getCameraPosVec(0.0F), entity.getCameraPosVec(0.0F).add(entity.getRotationVec(0.0F).x * data.getDouble("distance"), entity.getRotationVec(0.0F).y * data.getDouble("distance"), entity.getRotationVec(0.0F).z * data.getDouble("distance")), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+                        if (blockHitResult.getType() == HitResult.Type.BLOCK && blockHitResult != null) {
+                            return condition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
+                        } else {
+                            return false;
+                        }
                 }));
 
         registerItemCondition(new ConditionFactory<>(CCPacksMain.identifier("compare_amount"), new SerializableData()

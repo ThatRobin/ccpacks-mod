@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.Util;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,9 +8,9 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class TestParticle extends AbstractSlowingParticle {
+public class DDParticle extends SpriteBillboardParticle {
 
-    protected TestParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+    protected DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, g, h, i);
         this.scale = 1f; //about a block tall
         this.maxAge = 300; //ticks
@@ -39,11 +39,6 @@ public class TestParticle extends AbstractSlowingParticle {
         return j | k << 16;
     }
 
-    public void move(double dx, double dy, double dz) { //not currently sure but might be movement?
-        this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
-        this.repositionFromBoundingBox();
-    }
-
     @Environment(EnvType.CLIENT)
     public static class Factory implements ParticleFactory<DefaultParticleType> {
 
@@ -57,10 +52,11 @@ public class TestParticle extends AbstractSlowingParticle {
         @Nullable
         @Override
         public Particle createParticle(DefaultParticleType parameters, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            TestParticle testParticle = new TestParticle(clientWorld, d, e, f, g, h, i, spriteProvider);
+            DDParticle testParticle = new DDParticle(clientWorld, d, e, f, g, h, i, spriteProvider);
             testParticle.setSprite(this.spriteProvider);
             return testParticle;
         }
     }
 
 }
+

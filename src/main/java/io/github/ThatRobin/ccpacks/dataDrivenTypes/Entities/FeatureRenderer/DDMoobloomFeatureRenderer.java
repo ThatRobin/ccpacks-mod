@@ -1,5 +1,7 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.FeatureRenderer;
 
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Models.DDMooshroomCowEntityModel;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -8,18 +10,20 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.CowEntityModel;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
-public class DDFeatureRenderer<T extends DDEntity> extends FeatureRenderer<T, DDEntityModel<T>> {
-    public DDFeatureRenderer(FeatureRendererContext<T, DDEntityModel<T>> featureRendererContext) {
+public class DDMoobloomFeatureRenderer<T extends DDMushroomCowEntity> extends FeatureRenderer<T, DDMooshroomCowEntityModel<T>> {
+
+    private Identifier block;
+    
+    public DDMoobloomFeatureRenderer(FeatureRendererContext<T, DDMooshroomCowEntityModel<T>> featureRendererContext, Identifier block) {
         super(featureRendererContext);
+        this.block = block;
     }
 
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l) {
@@ -28,7 +32,7 @@ public class DDFeatureRenderer<T extends DDEntity> extends FeatureRenderer<T, DD
             boolean bl = minecraftClient.hasOutline(mooshroomEntity) && mooshroomEntity.isInvisible();
             if (!mooshroomEntity.isInvisible() || bl) {
                 BlockRenderManager blockRenderManager = minecraftClient.getBlockRenderManager();
-                BlockState blockState = Registry.BLOCK.get(new Identifier("minecraft","dandelion")).getDefaultState();
+                BlockState blockState = Registry.BLOCK.get(block).getDefaultState();
                 int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0F);
                 BakedModel bakedModel = blockRenderManager.getModel(blockState);
                 matrixStack.push();
@@ -48,7 +52,7 @@ public class DDFeatureRenderer<T extends DDEntity> extends FeatureRenderer<T, DD
                 this.method_37314(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
                 matrixStack.pop();
                 matrixStack.push();
-                ((DDEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
+                ((DDMooshroomCowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
                 matrixStack.translate(0.0D, -0.699999988079071D, -0.20000000298023224D);
                 matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
                 matrixStack.scale(-1.0F, -1.0F, 1.0F);

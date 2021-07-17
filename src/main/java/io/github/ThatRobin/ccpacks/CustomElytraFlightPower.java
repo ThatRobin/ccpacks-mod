@@ -17,6 +17,10 @@ public class CustomElytraFlightPower extends PlayerAbilityPower {
         this.skin = skin;
     }
 
+    public Identifier getElytraTexture() {
+        return this.skin;
+    }
+
     public boolean shouldRenderElytra() {
         return renderElytra;
     }

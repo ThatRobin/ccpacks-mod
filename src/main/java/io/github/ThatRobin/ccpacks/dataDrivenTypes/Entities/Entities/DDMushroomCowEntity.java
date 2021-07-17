@@ -1,9 +1,13 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities;
 
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,9 +19,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class DDEntity extends AnimalEntity {
+public class DDMushroomCowEntity extends AnimalEntity {
 
-    public DDEntity(EntityType<? extends AnimalEntity> entityType, World world) {
+    public DDMushroomCowEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
     }
 

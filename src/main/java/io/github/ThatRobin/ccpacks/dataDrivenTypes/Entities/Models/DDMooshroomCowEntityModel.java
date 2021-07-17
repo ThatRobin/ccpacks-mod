@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Models;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,9 +11,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class DDEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
+public class DDMooshroomCowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 
-    public DDEntityModel(ModelPart root) {
+    public DDMooshroomCowEntityModel(ModelPart root) {
         super(root, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
     }
 

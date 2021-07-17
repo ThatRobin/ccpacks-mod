@@ -1,6 +1,7 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.Registries.CCPackClientRegistry;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +20,7 @@ public class MinecraftServerMixin {
         Set<ResourcePackProvider> pack = ((AccessorMixin)resourcePackManager).getProviders();
         pack.add(
                 new FileResourcePackProvider(
-                        CCPacksMain.DATAPACKS_PATH.toFile(),
+                        CCPackClientRegistry.DATAPACKS_PATH.toFile(),
                         CCPacksMain.RESOURCE_PACK_SOURCE
                 )
         );

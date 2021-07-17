@@ -1,32 +1,34 @@
-package io.github.ThatRobin.ccpacks;
+package io.github.ThatRobin.ccpacks.Registries;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
-import io.github.apace100.apoli.ApoliClient;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -36,24 +38,27 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class CCPackRegistry {
+public class CCPackServerRegistry {
 
     private List<Pair<String, JsonObject>> list = new ArrayList<>();
+    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("resourcepacks");
 
-    public CCPackRegistry() {
+    public CCPackServerRegistry() {
         try {
-            File[] fileArray = CCPacksMain.DATAPACKS_PATH.toFile().listFiles();
+            CCPacksMain.LOGGER.info(DATAPACKS_PATH);
+            File[] fileArray = DATAPACKS_PATH.toFile().listFiles();
             CCPacksMain.LOGGER.info("Types to Register:");
             for(int i = 0; i < fileArray.length; i++){
                 if(fileArray[i].isDirectory()) {
@@ -198,7 +203,7 @@ public class CCPackRegistry {
 
                 DDArmorMaterial CUSTOM_MATERIAL = new DDArmorMaterial(instance2.getInt("durability"), instance2.getInt("protection"), instance2.getInt("enchantability"), instance2.getInt("toughness"), instance2.getInt("knockback_resistance"), instance2.getString("name"), (Item)instance2.get("repair_item"));
                 DDArmorItem EXAMPLE_ITEM = new DDArmorItem(CUSTOM_MATERIAL, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT), (List<String>)instance2.get("lore"));
-                Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), EXAMPLE_ITEM);
+                Registry.register(Registry.ITEM, ((Identifier) instance2.get("identifier")), EXAMPLE_ITEM);
 
             } else if (type.equals("ccpacks:food")) {
 
@@ -261,14 +266,6 @@ public class CCPackRegistry {
                 DDSwordItem EXAMPLE_ITEM = new DDSwordItem(new DDToolMaterial(instance2.getInt( "durability"), instance2.getFloat( "mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>)instance2.get("lore"));
                 Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), EXAMPLE_ITEM);
 
-            } else if (type.equals("ccpacks:keybind")) {
-
-                instance2 = SerializableObjects.keybindData.read(jsonObject);
-
-                KeyBinding key = new KeyBinding("key.ccpacks."+instance2.getString("name"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + instance2.getString("category"));
-                ApoliClient.registerPowerKeybinding("key.ccpacks."+instance2.getString("name"), key);
-                KeyBindingHelper.registerKeyBinding(key);
-
             } else if (type.equals("ccpacks:status_effect")) {
 
                 instance2 = SerializableObjects.statusEffectData.read(jsonObject);
@@ -305,16 +302,18 @@ public class CCPackRegistry {
                 }
             } else if (type.equals("ccpacks:animal_entity")) {
 
-                instance2 = SerializableObjects.animalEntityData.read(jsonObject);
-                CCPacksMain.LOGGER.info("Entity is being made!");
-                EntityType<DDEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).build();
-                Registry.register(Registry.ENTITY_TYPE, (Identifier) instance2.get("identifier"), entity);
-                FabricDefaultAttributeRegistry.register(entity, DDEntity.createMobAttributes());
+                SerializableData.Instance entityTypeGot = SerializableObjects.getEntityType.read(jsonObject);
+                String entityType = entityTypeGot.getString("subtype");
 
+                if(entityType.equals("mooshroom")) {
+                    instance2 = SerializableObjects.mooshroomEntityData.read(jsonObject);
+
+                    EntityType<DDMushroomCowEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDMushroomCowEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
+                    Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
+                    FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
+                }
             }
-
         }
-
 
         StatusEffect effect = new DDUniversalPowers(StatusEffectType.NEUTRAL,0x000000, powers, new Identifier("ccpacks", "universal_powers"));
         Registry.register(Registry.STATUS_EFFECT, new Identifier("ccpacks", "universal_powers"), effect);

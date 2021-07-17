@@ -9,16 +9,21 @@ public class SerializableObjects {
     public static SerializableData getItemType = new SerializableData()
             .add("type", SerializableDataTypes.STRING);
 
+    public static SerializableData getEntityType = new SerializableData()
+            .add("type", SerializableDataTypes.STRING)
+            .add("subtype", SerializableDataTypes.STRING);
+
+
     public static SerializableData particleData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER);
 
-    public static SerializableData animalEntityData = new SerializableData()
+
+    public static SerializableData mooshroomEntityData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("texture", SerializableDataTypes.IDENTIFIER)
-            .add("width", SerializableDataTypes.FLOAT)
-            .add("height", SerializableDataTypes.FLOAT);
+            .add("back_item", SerializableDataTypes.IDENTIFIER);
 
     public static SerializableData statusEffectData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)

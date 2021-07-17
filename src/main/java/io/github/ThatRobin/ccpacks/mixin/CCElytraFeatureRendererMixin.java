@@ -1,5 +1,6 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.CustomElytraFlightPower;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.mixin.ElytraFeatureRendererMixin;
@@ -31,11 +32,15 @@ public class CCElytraFeatureRendererMixin {
     @Inject(method = "render", at = @At(value = "HEAD"))
     private void modifyEquippedStackToElytra(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci) {
         List<CustomElytraFlightPower> powers = PowerHolderComponent.getPowers(livingEntity, CustomElytraFlightPower.class);
-        if(powers.stream().anyMatch(CustomElytraFlightPower::shouldRenderElytra) && !livingEntity.isInvisible()) {
-            this.SKIN = new Identifier("ccpacks", "textures/entity/elytra.png");;
-        } else {
-            this.SKIN = new Identifier("minecraft", "textures/entity/elytra.png");
-        }
+        CCPacksMain.LOGGER.info(powers);
+        powers.forEach((power) -> {
+            CCPacksMain.LOGGER.info(power);
+            if(power.shouldRenderElytra() && !livingEntity.isInvisible()) {
+                CCPacksMain.LOGGER.info(power.getElytraTexture());
+                this.SKIN = power.getElytraTexture();
+            }
+        });
+
     }
 
 }

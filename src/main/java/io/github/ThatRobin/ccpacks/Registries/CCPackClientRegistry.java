@@ -326,7 +326,7 @@ public class CCPackClientRegistry {
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
 
-                    EntityRendererRegistry.INSTANCE.register((EntityType<DDMushroomCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDMooshroomCowEntityRenderer(context, instance2.getId("texture"), instance2.getId("back_item")));
+                    EntityRendererRegistry.INSTANCE.register((EntityType<DDMushroomCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDMushroomCowEntityRenderer(context, instance2.getId("texture"), instance2.getId("back_item")));
 
                 }
 

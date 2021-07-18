@@ -7,8 +7,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 public class SerializableObjects {
 
     public static SerializableData getItemType = new SerializableData()
-            .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING, null);
+            .add("type", SerializableDataTypes.STRING);
 
     public static SerializableData getEntityType = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -20,28 +19,12 @@ public class SerializableObjects {
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("glowing", SerializableDataTypes.BOOLEAN);
 
-    public static SerializableData musicDiscData = new SerializableData()
-            .add("type",SerializableDataTypes.STRING)
-            .add("identifier",SerializableDataTypes.IDENTIFIER)
-            .add("comparator_output",SerializableDataTypes.INT)
-            .add("sound",SerializableDataTypes.SOUND_EVENT);
-
-    public static SerializableData soundEventData = new SerializableData()
-            .add("type",SerializableDataTypes.STRING)
-            .add("identifier",SerializableDataTypes.IDENTIFIER);
 
     public static SerializableData mooshroomEntityData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("texture", SerializableDataTypes.IDENTIFIER)
             .add("back_item", SerializableDataTypes.IDENTIFIER);
-
-    public static SerializableData genericEntityData = new SerializableData()
-            .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
-            .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("texture", SerializableDataTypes.IDENTIFIER);
 
     public static SerializableData statusEffectData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -69,7 +52,6 @@ public class SerializableObjects {
 
     public static SerializableData itemData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("lore", CCPackDataTypes.STRINGS, null)
             .add("durability", SerializableDataTypes.INT, null)
@@ -86,7 +68,6 @@ public class SerializableObjects {
 
     public static SerializableData toolData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("durability", SerializableDataTypes.INT, 10)
             .add("mining_speed_multiplier",SerializableDataTypes.FLOAT, 0f)
@@ -98,7 +79,6 @@ public class SerializableObjects {
 
     public static SerializableData blockData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("material", SerializableDataTypes.STRING)
             .add("effective_tool", SerializableDataTypes.STRING)
@@ -116,7 +96,6 @@ public class SerializableObjects {
 
     public static SerializableData stairsData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("material", SerializableDataTypes.STRING)
             .add("effective_tool", SerializableDataTypes.STRING)
@@ -135,7 +114,6 @@ public class SerializableObjects {
 
     public static SerializableData armorData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("name", SerializableDataTypes.STRING)
             .add("durability", SerializableDataTypes.INT, 10)
@@ -148,7 +126,6 @@ public class SerializableObjects {
 
     public static SerializableData foodData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("max_count", SerializableDataTypes.INT, 64)
             .add("hunger",SerializableDataTypes.INT, 4)
@@ -157,4 +134,15 @@ public class SerializableObjects {
             .add("always_edible",SerializableDataTypes.BOOLEAN, false)
             .add("lore", CCPackDataTypes.STRINGS, null)
             .add("snack",SerializableDataTypes.BOOLEAN, false);
+
+    public static SerializableData musicDiscData = new SerializableData()
+            .add("type",SerializableDataTypes.STRING)
+            .add("identifier",SerializableDataTypes.IDENTIFIER)
+            .add("comparator_output",SerializableDataTypes.INT)
+            .add("sound",SerializableDataTypes.SOUND_EVENT);
+
+    public static SerializableData soundEventData = new SerializableData()
+            .add("type",SerializableDataTypes.STRING)
+            .add("identifier",SerializableDataTypes.IDENTIFIER);
+
 }

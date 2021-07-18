@@ -1,18 +1,14 @@
-package io.github.ThatRobin.ccpacks.mixin;
+package io.github.ThatRobin.ccpacks.Mixin;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import net.minecraft.resource.*;
-import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.LiteralText;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

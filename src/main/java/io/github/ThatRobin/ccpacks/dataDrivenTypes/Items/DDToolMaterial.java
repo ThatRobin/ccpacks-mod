@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;

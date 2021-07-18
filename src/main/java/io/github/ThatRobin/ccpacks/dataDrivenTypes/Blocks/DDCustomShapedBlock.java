@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.HorizontalFacingBlock;

@@ -1,8 +1,9 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -10,12 +11,12 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class DDItem extends Item {
+public class DDPickaxeItem extends PickaxeItem {
 
     private List<String> lore;
 
-    public DDItem(Settings settings, List<String> lore) {
-        super(settings);
+    public DDPickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings, List<String> lore) {
+        super(material, attackDamage, attackSpeed, settings);
         this.lore = lore;
     }
 

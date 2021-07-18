@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.AxeItem;

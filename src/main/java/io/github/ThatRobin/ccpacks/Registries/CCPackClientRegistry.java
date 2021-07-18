@@ -4,10 +4,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.DDParticle;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDChickenEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDCowEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDPigEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDChickenEntityRenderer;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDCowEntityRenderer;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDMushroomCowEntityRenderer;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDPigEntityRenderer;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
@@ -35,13 +44,17 @@ import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.MooshroomEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -83,6 +96,23 @@ public class CCPackClientRegistry {
 
     private void register(List<Pair<SerializableData.Instance, JsonObject>> list){
 
+        // Pre-Item and Block Registration
+        CCPacksMain.LOGGER.info("Pre-Item/Block Registration:");
+
+        for(int i = 0; i < list.size(); i++) {
+            SerializableData.Instance instance = list.get(i).getLeft();
+            String type = instance.getString("type");
+            JsonObject jsonObject = list.get(i).getRight();
+            SerializableData.Instance instance2;
+            CCPacksMain.LOGGER.info(type);
+            if (type.equals("ccpacks:sound")) {
+                instance2 = SerializableObjects.soundEventData.read(jsonObject);
+
+                SoundEvent CUSTOM_SOUND = new DDSound(instance2.getId("identifier"));
+                Registry.register(Registry.SOUND_EVENT, instance2.getId("identifier"), CUSTOM_SOUND);
+            }
+        }
+
         // Item and Block Registration
 
         CCPacksMain.LOGGER.info("Item/Block Registration:");
@@ -100,6 +130,7 @@ public class CCPackClientRegistry {
 
                     DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>)instance2.get("lore"));
                     Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), EXAMPLE_ITEM);
+
                 } else if(itemType.equals("trinket")) {
                     instance2 = SerializableObjects.itemData.read(jsonObject);
 
@@ -185,6 +216,12 @@ public class CCPackClientRegistry {
                     DDArmorMaterial CUSTOM_MATERIAL = new DDArmorMaterial(instance2.getInt("durability"), instance2.getInt("protection"), instance2.getInt("enchantability"), instance2.getInt("toughness"), instance2.getInt("knockback_resistance"), instance2.getString("name"), (Item)instance2.get("repair_item"));
                     DDArmorItem EXAMPLE_ITEM = new DDArmorItem(CUSTOM_MATERIAL, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT), (List<String>)instance2.get("lore"));
                     Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), EXAMPLE_ITEM);
+
+                }else if(itemType.equals("music_disc")) {
+                    instance2 = SerializableObjects.musicDiscData.read(jsonObject);
+
+                    Item CUSTOM_MUSIC_DISC = new DDMusicDiscItem(instance2.getInt("comparator_output"), (SoundEvent) instance2.get("sound"), (new Item.Settings().maxCount(1)));
+                    CUSTOM_MUSIC_DISC = Registry.register(Registry.ITEM, (Identifier) instance2.get("identifier"), CUSTOM_MUSIC_DISC);
 
                 }
 
@@ -314,18 +351,47 @@ public class CCPackClientRegistry {
 
                     EntityType<DDMushroomCowEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDMushroomCowEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
-                    FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
+                    FabricDefaultAttributeRegistry.register(entity, MooshroomEntity.createMobAttributes());
 
                     EntityRendererRegistry.INSTANCE.register((EntityType<DDMushroomCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDMushroomCowEntityRenderer(context, instance2.getId("texture"), instance2.getId("back_item")));
+                } else if(entityType.equals("cow")) {
+                    instance2 = SerializableObjects.genericEntityData.read(jsonObject);
 
+                    EntityType<DDCowEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDCowEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
+                    Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
+                    FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
+
+                    EntityRendererRegistry.INSTANCE.register((EntityType<DDCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDCowEntityRenderer(context, instance2.getId("texture")));
+                } else if(entityType.equals("pig")) {
+                    instance2 = SerializableObjects.genericEntityData.read(jsonObject);
+
+                    EntityType<DDPigEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDPigEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
+                    Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
+                    FabricDefaultAttributeRegistry.register(entity, PigEntity.createMobAttributes());
+
+                    EntityRendererRegistry.INSTANCE.register((EntityType<DDPigEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDPigEntityRenderer(context, instance2.getId("texture")));
+                } else if(entityType.equals("chicken")) {
+                    instance2 = SerializableObjects.genericEntityData.read(jsonObject);
+
+                    EntityType<DDChickenEntity> entity = FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DDChickenEntity::new).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build();
+                    Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
+                    FabricDefaultAttributeRegistry.register(entity, ChickenEntity.createMobAttributes());
+
+                    EntityRendererRegistry.INSTANCE.register((EntityType<DDChickenEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDChickenEntityRenderer(context, instance2.getId("texture")));
                 }
 
             } else if(type.equals("ccpacks:particle")) {
 
                 instance2 = SerializableObjects.particleData.read(jsonObject);
 
+
                 DefaultParticleType TEST = Registry.register(Registry.PARTICLE_TYPE, instance2.getId("identifier"), FabricParticleTypes.simple(true));
-                ParticleFactoryRegistry.getInstance().register(TEST, DDParticle.Factory::new);
+
+                if (instance2.getBoolean("glowing")) {
+                    ParticleFactoryRegistry.getInstance().register(TEST, DDGlowParticle.Factory::new);
+                } else {
+                    ParticleFactoryRegistry.getInstance().register(TEST, DDParticle.Factory::new);
+                }
             }
 
         }

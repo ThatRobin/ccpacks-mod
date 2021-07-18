@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.mixin;
+package io.github.ThatRobin.ccpacks.Mixin;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Registries.CCPackClientRegistry;

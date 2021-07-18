@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks;
 
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import net.minecraft.block.*;

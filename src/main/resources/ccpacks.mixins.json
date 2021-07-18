@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.ThatRobin.ccpacks.mixin",
+  "package": "io.github.ThatRobin.ccpacks.Mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AccessorMixin",

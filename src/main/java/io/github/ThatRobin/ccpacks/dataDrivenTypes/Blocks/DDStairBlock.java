@@ -1,8 +1,8 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks;
 
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,13 +14,13 @@ import net.minecraft.world.World;
 
 import java.util.function.Consumer;
 
-public class DDHSlabBlock extends SlabBlock {
+public class DDStairBlock extends StairsBlock {
 
     private Consumer<Entity> entityAction;
     private ConditionFactory<LivingEntity>.Instance condition;
 
-    public DDHSlabBlock(Settings settings, Consumer<Entity> entityAction, ConditionFactory<LivingEntity>.Instance condition) {
-        super(settings);
+    public DDStairBlock(BlockState state, Settings settings, Consumer<Entity> entityAction, ConditionFactory<LivingEntity>.Instance condition) {
+        super(state, settings);
         this.entityAction = entityAction;
         this.condition = condition;
     }

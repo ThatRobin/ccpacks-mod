@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.mixin;
+package io.github.ThatRobin.ccpacks.Mixin;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.network.ServerPlayerEntity;

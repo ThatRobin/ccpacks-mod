@@ -8,9 +8,9 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class DDParticle extends SpriteBillboardParticle {
+public class DDGlowParticle extends SpriteBillboardParticle {
 
-    protected DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+    protected DDGlowParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, g, h, i);
         this.scale = 0.25f; //about a block tall
         this.maxAge = 300; //ticks
@@ -25,6 +25,18 @@ public class DDParticle extends SpriteBillboardParticle {
         return ParticleTextureSheet.PARTICLE_SHEET_LIT;
     } //this can be PARTICLE_SHEET_TRANSLUCENT , PARTICLE_SHEET_OPAQUE or PARTICLE_SHEET_LIT
 
+    public int getBrightness(float tint) { //What makes it glow
+        float f = ((float)this.age + tint);
+        f = MathHelper.clamp(f, 0.0F, 1.0F);
+        int i = super.getBrightness(tint);
+        int j = i & 255;
+        int k = i >> 16 & 255;
+        j += (int)(f * 15.0F * 16.0F);
+        if (j > 240) {
+            j = 240;
+        }
+        return j | k << 16;
+    }
 
     @Environment(EnvType.CLIENT)
     public static class Factory implements ParticleFactory<DefaultParticleType> {
@@ -39,7 +51,7 @@ public class DDParticle extends SpriteBillboardParticle {
         @Nullable
         @Override
         public Particle createParticle(DefaultParticleType parameters, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            DDParticle testParticle = new DDParticle(clientWorld, d, e, f, g, h, i, spriteProvider);
+            DDGlowParticle testParticle = new DDGlowParticle(clientWorld, d, e, f, g, h, i, spriteProvider);
             testParticle.setSprite(this.spriteProvider);
             return testParticle;
         }

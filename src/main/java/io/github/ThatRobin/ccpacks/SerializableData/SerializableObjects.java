@@ -7,8 +7,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 public class SerializableObjects {
 
     public static SerializableData getItemType = new SerializableData()
-            .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING);
+            .add("type", SerializableDataTypes.STRING);
 
     public static SerializableData getEntityType = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -17,7 +16,8 @@ public class SerializableObjects {
 
     public static SerializableData particleData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
-            .add("identifier", SerializableDataTypes.IDENTIFIER);
+            .add("identifier", SerializableDataTypes.IDENTIFIER)
+            .add("glowing", SerializableDataTypes.BOOLEAN);
 
 
     public static SerializableData mooshroomEntityData = new SerializableData()
@@ -134,4 +134,15 @@ public class SerializableObjects {
             .add("always_edible",SerializableDataTypes.BOOLEAN, false)
             .add("lore", CCPackDataTypes.STRINGS, null)
             .add("snack",SerializableDataTypes.BOOLEAN, false);
+
+    public static SerializableData musicDiscData = new SerializableData()
+            .add("type",SerializableDataTypes.STRING)
+            .add("identifier",SerializableDataTypes.IDENTIFIER)
+            .add("comparator_output",SerializableDataTypes.INT)
+            .add("sound",SerializableDataTypes.SOUND_EVENT);
+
+    public static SerializableData soundEventData = new SerializableData()
+            .add("type",SerializableDataTypes.STRING)
+            .add("identifier",SerializableDataTypes.IDENTIFIER);
+
 }

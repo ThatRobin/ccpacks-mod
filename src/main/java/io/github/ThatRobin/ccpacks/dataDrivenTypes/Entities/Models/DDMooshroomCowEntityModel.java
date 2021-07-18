@@ -11,9 +11,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class DDMushroomCowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
+public class DDMooshroomCowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 
-    public DDMushroomCowEntityModel(ModelPart root) {
+    public DDMooshroomCowEntityModel(ModelPart root) {
         super(root, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
     }
 

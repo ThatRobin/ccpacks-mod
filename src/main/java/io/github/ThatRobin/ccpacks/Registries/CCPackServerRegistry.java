@@ -32,6 +32,8 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -83,7 +85,12 @@ public class CCPackServerRegistry {
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
             CCPacksMain.LOGGER.info(type);
-            if(type.equals("ccpacks:item")) {
+
+            if (type.equals("ccpacks:sound_event")) {
+                instance2 = SerializableObjects.soundEventData.read(jsonObject);
+
+                Registry.register(Registry.SOUND_EVENT, instance2.getId("identifier"), new SoundEvent(instance2.getId("identifier")));
+            } else if(type.equals("ccpacks:item")) {
 
                 instance2 = SerializableObjects.itemData.read(jsonObject);
 
@@ -276,6 +283,12 @@ public class CCPackServerRegistry {
 
                 DDEnchantment EXAMPLE_ENCHANTMENT = new DDEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.BREAKABLE, null);
                 Registry.register(Registry.ENCHANTMENT, (Identifier) instance2.get("identifier"), EXAMPLE_ENCHANTMENT);
+            } else if(type.equals("ccpacks:music_disc")) {
+                instance2 = SerializableObjects.musicDiscData.read(jsonObject);
+
+                Item CUSTOM_MUSIC_DISC = new DDMusicDiscItem(instance2.getInt("comparator_output"), (SoundEvent) instance2.get("sound"), (new Item.Settings().maxCount(instance2.getInt("max_count"))));
+                CUSTOM_MUSIC_DISC = Registry.register(Registry.ITEM, instance2.getString("identifier"), CUSTOM_MUSIC_DISC);
+
             }
         }
 

@@ -7,7 +7,8 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 public class SerializableObjects {
 
     public static SerializableData getItemType = new SerializableData()
-            .add("type", SerializableDataTypes.STRING);
+            .add("type", SerializableDataTypes.STRING)
+            .add("subtype", SerializableDataTypes.STRING);
 
     public static SerializableData getEntityType = new SerializableData()
             .add("type", SerializableDataTypes.STRING)

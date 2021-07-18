@@ -35,7 +35,6 @@ public abstract class FileResourcePackProviderMixin {
             for(int var6 = 0; var6 < var5; ++var6) {
                 File file = var4[var6];
                 String string = "file/" + file.getName();
-                CCPacksMain.LOGGER.info(string);
                 Path test = Path.of(file.getPath(),"ccdata");
                 ResourcePackProfile resourcePackProfile;
                 if(test.toFile().exists()) {

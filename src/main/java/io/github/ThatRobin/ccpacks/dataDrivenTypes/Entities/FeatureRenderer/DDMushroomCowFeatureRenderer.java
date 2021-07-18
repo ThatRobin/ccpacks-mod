@@ -1,6 +1,6 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.FeatureRenderer;
 
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Models.DDMooshroomCowEntityModel;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Models.DDMushroomCowEntityModel;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -17,11 +17,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
-public class DDMoobloomFeatureRenderer<T extends DDMushroomCowEntity> extends FeatureRenderer<T, DDMooshroomCowEntityModel<T>> {
+public class DDMushroomCowFeatureRenderer<T extends DDMushroomCowEntity> extends FeatureRenderer<T, DDMushroomCowEntityModel<T>> {
 
     private Identifier block;
     
-    public DDMoobloomFeatureRenderer(FeatureRendererContext<T, DDMooshroomCowEntityModel<T>> featureRendererContext, Identifier block) {
+    public DDMushroomCowFeatureRenderer(FeatureRendererContext<T, DDMushroomCowEntityModel<T>> featureRendererContext, Identifier block) {
         super(featureRendererContext);
         this.block = block;
     }
@@ -52,7 +52,7 @@ public class DDMoobloomFeatureRenderer<T extends DDMushroomCowEntity> extends Fe
                 this.method_37314(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
                 matrixStack.pop();
                 matrixStack.push();
-                ((DDMooshroomCowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
+                ((DDMushroomCowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
                 matrixStack.translate(0.0D, -0.699999988079071D, -0.20000000298023224D);
                 matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
                 matrixStack.scale(-1.0F, -1.0F, 1.0F);

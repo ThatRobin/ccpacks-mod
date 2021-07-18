@@ -29,9 +29,7 @@ public class CCElytraFeatureRendererMixin {
         List<CustomElytraFlightPower> powers = PowerHolderComponent.getPowers(livingEntity, CustomElytraFlightPower.class);
         CCPacksMain.LOGGER.info(powers);
         powers.forEach((power) -> {
-            CCPacksMain.LOGGER.info(power);
             if(power.shouldRenderElytra() && !livingEntity.isInvisible()) {
-                CCPacksMain.LOGGER.info(power.getElytraTexture());
                 this.SKIN = power.getElytraTexture();
             }
         });

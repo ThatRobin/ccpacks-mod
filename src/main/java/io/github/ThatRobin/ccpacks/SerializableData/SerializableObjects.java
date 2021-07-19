@@ -71,7 +71,6 @@ public class SerializableObjects {
     public static SerializableData shieldData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("lore", CCPackDataTypes.STRINGS, null)
             .add("durability", SerializableDataTypes.INT, null)
             .add("cooldown", SerializableDataTypes.INT, 60)
             .add("enchantability",SerializableDataTypes.INT, 0)

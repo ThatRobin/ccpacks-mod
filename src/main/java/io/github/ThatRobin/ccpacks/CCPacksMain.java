@@ -1,6 +1,7 @@
 package io.github.ThatRobin.ccpacks;
 
 import io.github.ThatRobin.ccpacks.SerializableData.CCPackFactory;
+import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.util.Identifier;
@@ -16,6 +17,8 @@ public class CCPacksMain implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		NamespaceAlias.addAlias(MODID, "apoli");
+		NamespaceAlias.addAlias("origins", "apoli");
 		CCPackFactory.register();
 	}
 

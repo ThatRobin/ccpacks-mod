@@ -21,7 +21,4 @@ public class DDPigEntity extends PigEntity {
         return (DDPigEntity)entity;
     }
 
-    public Object getSize() {
-        return 1f;
-    }
 }

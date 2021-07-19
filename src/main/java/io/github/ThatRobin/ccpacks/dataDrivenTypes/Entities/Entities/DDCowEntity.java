@@ -18,7 +18,4 @@ public class DDCowEntity extends CowEntity {
         return (DDCowEntity)entity;
     }
 
-    public Object getSize() {
-        return 1f;
-    }
 }

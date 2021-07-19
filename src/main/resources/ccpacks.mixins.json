@@ -7,7 +7,6 @@
     "AccessorMixin",
     "PlayerManagerMixin",
     "MinecraftServerMixin",
-    "CCElytraFeatureRendererMixin",
     "FileResourcePackProviderMixin"
   ],
   "client": [

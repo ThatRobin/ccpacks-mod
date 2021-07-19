@@ -18,7 +18,4 @@ public class DDMushroomCowEntity extends MooshroomEntity {
         return (DDMushroomCowEntity)entity;
     }
 
-    public Object getSize() {
-        return 1f;
-    }
 }

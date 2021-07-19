@@ -3,10 +3,7 @@ package io.github.ThatRobin.ccpacks.SerializableData;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
-import io.github.ThatRobin.ccpacks.CustomElytraFlightPower;
-import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.ElytraFlightPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
@@ -16,30 +13,18 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Util.CustomCraftingTable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -48,13 +33,6 @@ import org.apache.commons.lang3.tuple.Triple;
 public class CCPackFactory {
 
     public static void register() {
-        registerPowerType(new PowerFactory<>(CCPacksMain.identifier("elytra_flight"),
-                new SerializableData()
-                        .add("render_elytra", SerializableDataTypes.BOOLEAN)
-                        .add("sprite_location", SerializableDataTypes.IDENTIFIER),
-                data ->
-                        (type, player) -> new CustomElytraFlightPower(type, player, data.getBoolean("render_elytra"),data.getId("sprite_location")))
-                .allowCondition());
         registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("block_looking_action"), new SerializableData()
                 .add("block_action", ApoliDataTypes.BLOCK_ACTION),
                 (data, entity) -> {

@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.DDMusicDiscItem;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;

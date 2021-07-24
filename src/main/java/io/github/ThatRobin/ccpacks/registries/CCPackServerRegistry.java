@@ -1,9 +1,9 @@
-package io.github.ThatRobin.ccpacks.Registries;
+package io.github.ThatRobin.ccpacks.registries;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.SerializableData.SerializableObjects;
+import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDChickenEntity;
@@ -331,7 +331,6 @@ public class CCPackServerRegistry {
 
         // Post Item and Block Registration
 
-        List<PowerTypeReference> powers = new ArrayList<>();
         CCPacksMain.LOGGER.info("Post Item/Block Registration:");
         for(int i = 0; i < list.size(); i++) {
             String type = list.get(i).getLeft().getString("type");
@@ -341,13 +340,6 @@ public class CCPackServerRegistry {
             if (type.equals("ccpacks:portal")) {
                 instance2 = SerializableObjects.portalData.read(jsonObject);
                 CustomPortalApiRegistry.addPortal((Block) instance2.get("block"), PortalIgnitionSource.ItemUseSource((Item) instance2.get("ignition_item")), instance2.getId("dimension"), instance2.getInt("red"), instance2.getInt("green"), instance2.getInt("blue"));
-            } else if (type.equals("ccpacks:universal_powers")) {
-
-                instance2 = SerializableObjects.universalPowerData.read(jsonObject);
-
-                for(int e = 0; e < ((List<PowerTypeReference>)instance2.get("powers")).size(); e++){
-                    powers.add(((List<PowerTypeReference>)instance2.get("powers")).get(e));
-                }
             } else if (type.equals("ccpacks:animal_entity")) {
 
                 SerializableData.Instance entityTypeGot = SerializableObjects.getEntityType.read(jsonObject);
@@ -402,9 +394,6 @@ public class CCPackServerRegistry {
             }
 
         }
-
-        StatusEffect effect = new DDUniversalPowers(StatusEffectType.NEUTRAL,0x000000, powers, new Identifier("ccpacks", "universal_powers"));
-        Registry.register(Registry.STATUS_EFFECT, new Identifier("ccpacks", "universal_powers"), effect);
     }
 
     public void readFromDir(File base, ZipFile zipFile) throws IOException {

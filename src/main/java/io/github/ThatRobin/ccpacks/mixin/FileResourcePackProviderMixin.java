@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.Mixin;
+package io.github.ThatRobin.ccpacks.mixin;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import net.minecraft.resource.*;

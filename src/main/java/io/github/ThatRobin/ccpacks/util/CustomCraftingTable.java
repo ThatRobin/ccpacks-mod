@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.Util;
+package io.github.ThatRobin.ccpacks.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

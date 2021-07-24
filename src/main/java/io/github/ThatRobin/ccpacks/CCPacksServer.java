@@ -1,6 +1,6 @@
 package io.github.ThatRobin.ccpacks;
 
-import io.github.ThatRobin.ccpacks.Registries.CCPackServerRegistry;
+import io.github.ThatRobin.ccpacks.registries.CCPackServerRegistry;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

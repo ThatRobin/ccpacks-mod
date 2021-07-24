@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.SerializableData;
+package io.github.ThatRobin.ccpacks.serializableData;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
@@ -12,7 +12,7 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.Util.CustomCraftingTable;
+import io.github.ThatRobin.ccpacks.util.CustomCraftingTable;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

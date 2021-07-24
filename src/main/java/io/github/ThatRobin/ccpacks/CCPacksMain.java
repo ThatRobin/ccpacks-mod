@@ -1,9 +1,12 @@
 package io.github.ThatRobin.ccpacks;
 
-import io.github.ThatRobin.ccpacks.SerializableData.CCPackFactory;
+import io.github.ThatRobin.ccpacks.serializableData.CCPackFactory;
+import io.github.ThatRobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +20,7 @@ public class CCPacksMain implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new UniversalPowerManager());
 		NamespaceAlias.addAlias(MODID, "apoli");
 		NamespaceAlias.addAlias("origins", "apoli");
 		CCPackFactory.register();

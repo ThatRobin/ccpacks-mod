@@ -1,4 +1,4 @@
-package io.github.ThatRobin.ccpacks.SerializableData;
+package io.github.ThatRobin.ccpacks.serializableData;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableData;

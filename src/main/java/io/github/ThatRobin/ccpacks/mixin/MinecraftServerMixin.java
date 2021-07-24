@@ -1,7 +1,7 @@
-package io.github.ThatRobin.ccpacks.Mixin;
+package io.github.ThatRobin.ccpacks.mixin;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.Registries.CCPackClientRegistry;
+import io.github.ThatRobin.ccpacks.registries.CCPackClientRegistry;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;

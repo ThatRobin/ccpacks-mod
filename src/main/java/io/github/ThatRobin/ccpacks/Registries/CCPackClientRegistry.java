@@ -68,13 +68,15 @@ public class CCPackClientRegistry {
         try {
             File[] fileArray = DATAPACKS_PATH.toFile().listFiles();
             CCPacksMain.LOGGER.info("Types to Register:");
-            for(int i = 0; i < fileArray.length; i++){
-                if(fileArray[i].isDirectory()) {
-                    readFromDir(fileArray[i], null);
-                } else if(fileArray[i].getName().endsWith(".zip")) {
-                    readFromZip(fileArray[i], new ZipFile(fileArray[i]));
-                } else {
-                    continue;
+            if(!fileArray.equals(null)) {
+                for (int i = 0; i < fileArray.length; i++) {
+                    if (fileArray[i].isDirectory()) {
+                        readFromDir(fileArray[i], null);
+                    } else if (fileArray[i].getName().endsWith(".zip")) {
+                        readFromZip(fileArray[i], new ZipFile(fileArray[i]));
+                    } else {
+                        continue;
+                    }
                 }
             }
         } catch (IOException e) {

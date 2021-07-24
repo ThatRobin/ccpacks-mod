@@ -68,7 +68,7 @@ public class CCPackClientRegistry {
         try {
             File[] fileArray = DATAPACKS_PATH.toFile().listFiles();
             CCPacksMain.LOGGER.info("Types to Register:");
-            if(!fileArray.equals(null)) {
+            if(fileArray != null) {
                 for (int i = 0; i < fileArray.length; i++) {
                     if (fileArray[i].isDirectory()) {
                         readFromDir(fileArray[i], null);

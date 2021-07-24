@@ -50,11 +50,13 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -303,7 +305,8 @@ public class CCPackClientRegistry {
             } else if (type.equals("ccpacks:status_effect")) {
 
                 instance2 = SerializableObjects.statusEffectData.read(jsonObject);
-                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Integer.parseInt(instance2.getString("color")));
+                float[] color = Color.RGBtoHSB(instance2.getInt("red"),instance2.getInt("green"),instance2.getInt("blue"), null);
+                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0],color[1],color[2]).hashCode());
                 Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
 
             } else if (type.equals("ccpacks:enchantment")) {

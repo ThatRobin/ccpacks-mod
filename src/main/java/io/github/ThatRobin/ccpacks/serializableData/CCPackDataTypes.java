@@ -4,7 +4,10 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.util.registry.Registry;
 
+import java.awt.*;
 import java.util.List;
 
 public class CCPackDataTypes {

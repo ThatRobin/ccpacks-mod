@@ -39,12 +39,9 @@ public class SerializableObjects {
     public static SerializableData statusEffectData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("color", SerializableDataTypes.STRING, "0x00FFFF")
-            .add("powers", CCPackDataTypes.POWER_TYPES, null);
-
-    public static SerializableData universalPowerData = new SerializableData()
-            .add("type", SerializableDataTypes.STRING)
-            .add("powers", CCPackDataTypes.POWER_TYPES, null);
+            .add("red", SerializableDataTypes.INT, 255)
+            .add("green", SerializableDataTypes.INT, 255)
+            .add("blue", SerializableDataTypes.INT, 255);
 
     public static SerializableData portalData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)

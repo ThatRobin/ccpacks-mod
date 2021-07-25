@@ -13,6 +13,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.util.CustomCraftingTable;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -33,12 +34,6 @@ import org.apache.commons.lang3.tuple.Triple;
 public class CCPackFactory {
 
     public static void register() {
-        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("block_looking_action"), new SerializableData()
-                .add("block_action", ApoliDataTypes.BLOCK_ACTION),
-                (data, entity) -> {
-                    ((ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action")).accept(
-                            Triple.of(entity.world, entity.getBlockPos(), Direction.UP));
-                }));
         registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("crafting_gui"), new SerializableData(),
                 (data, entity) -> {
                     if (entity instanceof PlayerEntity) {
@@ -73,30 +68,46 @@ public class CCPackFactory {
         registerEntityCondition(new ConditionFactory<>(CCPacksMain.identifier("equipped_trinket"), new SerializableData()
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
                 (data, user) -> {
-                    var optional = TrinketsApi.getTrinketComponent(user);
-                    if (optional.isPresent()) {
-                        TrinketComponent comp = optional.get();
-                        for (var group : comp.getInventory().values()) {
-                            for (TrinketInventory inv : group.values()) {
-                                for (int i = 0; i < inv.size(); i++) {
-                                    return ((ConditionFactory<ItemStack>.Instance)data.get("item_condition")).test(inv.getStack(i));
+                    FabricLoader.getInstance().getModContainer("trinkets").ifPresent(modContainer -> {
+                        var optional = TrinketsApi.getTrinketComponent(user);
+                        if (optional.isPresent()) {
+                            TrinketComponent comp = optional.get();
+                            for (var group : comp.getInventory().values()) {
+                                for (TrinketInventory inv : group.values()) {
+                                    for (int i = 0; i < inv.size(); i++) {
+                                        if (((ConditionFactory<ItemStack>.Instance) data.get("item_condition")).test(inv.getStack(i))) {
+                                            return;
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
                     return false;
                 }));
-        registerEntityCondition(new ConditionFactory<>(CCPacksMain.identifier("raycast_block"), new SerializableData()
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("raycast_block"), new SerializableData()
                 .add("distance", SerializableDataTypes.DOUBLE, 2.0)
+                .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 (data, entity) -> {
-                        ConditionFactory<CachedBlockPosition>.Instance condition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
+                    ActionFactory<Triple<World, BlockPos, Direction>>.Instance blockAction = (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action");
+                    ActionFactory<Entity>.Instance entityAction = (ActionFactory<Entity>.Instance)data.get("entity_action");
+                    ConditionFactory<CachedBlockPosition>.Instance blockCondition = (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition");
 
-                        BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(entity.getCameraPosVec(0.0F), entity.getCameraPosVec(0.0F).add(entity.getRotationVec(0.0F).x * data.getDouble("distance"), entity.getRotationVec(0.0F).y * data.getDouble("distance"), entity.getRotationVec(0.0F).z * data.getDouble("distance")), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+
+                    BlockHitResult blockHitResult = entity.world.raycast(new RaycastContext(entity.getCameraPosVec(0.0F), entity.getCameraPosVec(0.0F).add(entity.getRotationVec(0.0F).x * data.getDouble("distance"), entity.getRotationVec(0.0F).y * data.getDouble("distance"), entity.getRotationVec(0.0F).z * data.getDouble("distance")), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
                         if (blockHitResult.getType() == HitResult.Type.BLOCK && blockHitResult != null) {
-                            return condition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true));
-                        } else {
-                            return false;
+                            if(blockCondition != null) {
+                                if (blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true))) {
+                                    if (blockAction != null) {
+                                        blockAction.accept(Triple.of(entity.world, blockHitResult.getBlockPos(), Direction.UP));
+                                    }
+                                    if (entityAction != null) {
+                                        entityAction.accept(entity);
+                                    }
+                                }
+                            }
                         }
                 }));
 

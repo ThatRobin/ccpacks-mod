@@ -16,34 +16,8 @@ import java.util.function.Consumer;
 
 public class DDBlock extends Block {
 
-    private Consumer<Entity> entityAction;
-    private ConditionFactory<LivingEntity>.Instance condition;
-
-    public DDBlock(Settings settings, Consumer<Entity> entityAction, ConditionFactory<LivingEntity>.Instance condition) {
+    public DDBlock(Settings settings) {
         super(settings);
-        this.entityAction = entityAction;
-        this.condition = condition;
     }
 
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (this.entityAction != null) {
-            if (condition != null) {
-                if (this.condition.test(player)) {
-                    this.entityAction.accept(player);
-                    return ActionResult.SUCCESS;
-                }
-            } else {
-                if (this.entityAction != null) {
-                    this.entityAction.accept(player);
-                    return ActionResult.SUCCESS;
-                } else {
-                    return ActionResult.FAIL;
-                }
-            }
-        } else {
-            return ActionResult.FAIL;
-        }
-        return ActionResult.FAIL;
-    }
 }

@@ -68,7 +68,7 @@ public class SerializableObjects {
     public static SerializableData shieldData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("durability", SerializableDataTypes.INT, null)
+            .add("durability", SerializableDataTypes.INT, 100)
             .add("cooldown", SerializableDataTypes.INT, 60)
             .add("enchantability",SerializableDataTypes.INT, 0)
             .add("repair_item", SerializableDataTypes.ITEM, null);
@@ -99,8 +99,6 @@ public class SerializableObjects {
             .add("resistance", SerializableDataTypes.INT, 3)
             .add("luminance", SerializableDataTypes.INT, 0)
             .add("mining_level", SerializableDataTypes.INT, 1)
-            .add("action", ApoliDataTypes.ENTITY_ACTION, null)
-            .add("condition", ApoliDataTypes.ENTITY_CONDITION, null)
             .add("loot_table", SerializableDataTypes.IDENTIFIER);
 
     public static SerializableData stairsData = new SerializableData()
@@ -117,8 +115,6 @@ public class SerializableObjects {
             .add("resistance", SerializableDataTypes.INT, 3)
             .add("luminance", SerializableDataTypes.INT, 0)
             .add("mining_level", SerializableDataTypes.INT, 1)
-            .add("action", ApoliDataTypes.ENTITY_ACTION, null)
-            .add("condition", ApoliDataTypes.ENTITY_CONDITION, null)
             .add("loot_table", SerializableDataTypes.IDENTIFIER)
             .add("base_block", SerializableDataTypes.IDENTIFIER);
 
@@ -151,7 +147,7 @@ public class SerializableObjects {
             .add("type",SerializableDataTypes.STRING)
             .add("subtype", SerializableDataTypes.STRING)
             .add("identifier",SerializableDataTypes.IDENTIFIER)
-            .add("comparator_output",SerializableDataTypes.INT)
+            .add("comparator_output",SerializableDataTypes.INT,1)
             .add("sound",SerializableDataTypes.SOUND_EVENT);
 
     public static SerializableData soundEventData = new SerializableData()

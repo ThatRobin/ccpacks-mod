@@ -136,12 +136,13 @@ public class CCPackServerRegistry {
                     DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>)instance2.get("lore"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
-                } else if(itemType.equals("trinket")) {
-                    instance2 = SerializableObjects.itemData.read(jsonObject);
+                } else if (itemType.equals("trinket")) {
+                    FabricLoader.getInstance().getModContainer("trinkets").ifPresent(modContainer -> {
+                        SerializableData.Instance instance3 = SerializableObjects.itemData.read(jsonObject);
 
-                    DDTrinketItem EXAMPLE_ITEM = new DDTrinketItem(new FabricItemSettings().maxCount(1).group(ItemGroup.MISC), (List<String>)instance2.get("lore"));
-                    Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
-
+                        DDTrinketItem EXAMPLE_ITEM = new DDTrinketItem(new FabricItemSettings().maxCount(1).group(ItemGroup.MISC), (List<String>) instance3.get("lore"));
+                        Registry.register(Registry.ITEM, instance3.getId("identifier"), EXAMPLE_ITEM);
+                    });
                 } else if (itemType.equals("durable")) {
 
                     instance2 = SerializableObjects.itemData.read(jsonObject);
@@ -245,7 +246,7 @@ public class CCPackServerRegistry {
                     if(instance2.getBoolean("transparent")){
                         blockSettings.nonOpaque();
                     }
-                    DDBlock EXAMPLE_BLOCK = new DDBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                    DDBlock EXAMPLE_BLOCK = new DDBlock(blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
                 } else if(itemType.equals("falling")) {
@@ -258,7 +259,7 @@ public class CCPackServerRegistry {
                     if(instance2.getBoolean("transparent")){
                         blockSettings.nonOpaque();
                     }
-                    DDFallingBlock EXAMPLE_BLOCK = new DDFallingBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                    DDFallingBlock EXAMPLE_BLOCK = new DDFallingBlock(blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -272,7 +273,7 @@ public class CCPackServerRegistry {
                     if(instance2.getBoolean("transparent")){
                         blockSettings.nonOpaque();
                     }
-                    DDHSlabBlock EXAMPLE_BLOCK = new DDHSlabBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                    DDHSlabBlock EXAMPLE_BLOCK = new DDHSlabBlock(blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -286,7 +287,7 @@ public class CCPackServerRegistry {
                     if(instance2.getBoolean("transparent")){
                         blockSettings.nonOpaque();
                     }
-                    DDVSlabBlock EXAMPLE_BLOCK = new DDVSlabBlock(blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                    DDVSlabBlock EXAMPLE_BLOCK = new DDVSlabBlock(blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 
@@ -301,7 +302,7 @@ public class CCPackServerRegistry {
                     if(instance2.getBoolean("transparent")){
                         blockSettings.nonOpaque();
                     }
-                    DDStairBlock EXAMPLE_BLOCK = new DDStairBlock(state, blockSettings, (ActionFactory<Entity>.Instance)instance2.get("action"),(ConditionFactory<LivingEntity>.Instance)instance2.get("condition"));
+                    DDStairBlock EXAMPLE_BLOCK = new DDStairBlock(state, blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
 

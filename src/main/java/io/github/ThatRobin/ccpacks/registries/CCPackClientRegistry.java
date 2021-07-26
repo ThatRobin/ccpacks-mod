@@ -304,6 +304,21 @@ public class CCPackClientRegistry {
                         if (instance2.getBoolean("make_block_item")) {
                             Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
                         }
+                    } else if (itemType.equals("fence")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+
+                        Material mat = getMat(instance2.getString("material"));
+                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Tag<Item> tools = getTool(instance2.getString("effective_tool"));
+                        FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
+                        if (instance2.getBoolean("transparent")) {
+                            blockSettings.nonOpaque();
+                        }
+                        DDFenceBlock EXAMPLE_BLOCK = new DDFenceBlock(blockSettings);
+                        Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
+                        if (instance2.getBoolean("make_block_item")) {
+                            Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
+                        }
                     }
                 } else if (type.equals("ccpacks:keybind")) {
 

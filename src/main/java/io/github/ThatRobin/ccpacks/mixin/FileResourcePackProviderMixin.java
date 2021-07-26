@@ -49,6 +49,8 @@ public abstract class FileResourcePackProviderMixin {
                         ZipEntry zipEntry = enumeration.nextElement();
                         if (zipEntry.getName().endsWith(string2)) {
                             resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
+                        } else {
+                            resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
                         }
                     }
                 } else if(test.toFile().exists()) {

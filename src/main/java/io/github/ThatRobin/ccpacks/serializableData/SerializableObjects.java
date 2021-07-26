@@ -99,7 +99,8 @@ public class SerializableObjects {
             .add("resistance", SerializableDataTypes.INT, 3)
             .add("luminance", SerializableDataTypes.INT, 0)
             .add("mining_level", SerializableDataTypes.INT, 1)
-            .add("loot_table", SerializableDataTypes.IDENTIFIER);
+            .add("loot_table", SerializableDataTypes.IDENTIFIER)
+            .add("make_block_item", SerializableDataTypes.BOOLEAN, true);
 
     public static SerializableData stairsData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -116,7 +117,8 @@ public class SerializableObjects {
             .add("luminance", SerializableDataTypes.INT, 0)
             .add("mining_level", SerializableDataTypes.INT, 1)
             .add("loot_table", SerializableDataTypes.IDENTIFIER)
-            .add("base_block", SerializableDataTypes.IDENTIFIER);
+            .add("base_block", SerializableDataTypes.IDENTIFIER)
+            .add("make_block_item", SerializableDataTypes.BOOLEAN, true);
 
     public static SerializableData armorData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)

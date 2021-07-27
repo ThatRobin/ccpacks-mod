@@ -179,14 +179,11 @@ public class CCPackClientRegistry {
                         if (instance2.getBoolean("meat")) {
                             food.meat();
                         }
-                        if (instance2.getBoolean("snack")) {
-                            food.snack();
-                        }
                         if (instance2.getBoolean("always_edible")) {
                             food.alwaysEdible();
                         }
                         FoodComponent foodComp = food.build();
-                        Item EXAMPLE_ITEM = new Item(new FabricItemSettings().group(ItemGroup.FOOD).maxCount(instance2.getInt("max_count")).food(foodComp));
+                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                     } else if (itemType.equals("helmet")) {
                         instance2 = SerializableObjects.armorData.read(jsonObject);

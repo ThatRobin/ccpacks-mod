@@ -3,6 +3,7 @@ package io.github.ThatRobin.ccpacks.serializableData;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.sound.SoundEvents;
 
 public class SerializableObjects {
 
@@ -143,7 +144,10 @@ public class SerializableObjects {
             .add("meat",SerializableDataTypes.BOOLEAN, false)
             .add("always_edible",SerializableDataTypes.BOOLEAN, false)
             .add("lore", CCPackDataTypes.STRINGS, null)
-            .add("snack",SerializableDataTypes.BOOLEAN, false);
+            .add("drinkable", SerializableDataTypes.BOOLEAN, false)
+            .add("sound", SerializableDataTypes.SOUND_EVENT, SoundEvents.ENTITY_GENERIC_EAT)
+            .add("returns", SerializableDataTypes.ITEM, null)
+            .add("eating_time", SerializableDataTypes.INT, 30);
 
     public static SerializableData musicDiscData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)

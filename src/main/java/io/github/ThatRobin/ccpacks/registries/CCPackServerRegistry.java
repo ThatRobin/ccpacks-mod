@@ -48,10 +48,7 @@ import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -184,17 +181,14 @@ public class CCPackServerRegistry {
                     instance2 = SerializableObjects.foodData.read(jsonObject);
 
                     FoodComponent.Builder food = new FoodComponent.Builder().hunger(instance2.getInt("hunger")).saturationModifier(instance2.getFloat("saturation"));
-                    if(instance2.getBoolean("meat")) {
+                    if (instance2.getBoolean("meat")) {
                         food.meat();
                     }
-                    if(instance2.getBoolean("snack")){
-                        food.snack();
-                    }
-                    if(instance2.getBoolean("always_edible")){
+                    if (instance2.getBoolean("always_edible")) {
                         food.alwaysEdible();
                     }
                     FoodComponent foodComp = food.build();
-                    Item EXAMPLE_ITEM = new Item(new FabricItemSettings().group(ItemGroup.FOOD).maxCount(instance2.getInt("max_count")).food(foodComp));
+                    DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                 } else if (itemType.equals("helmet")) {
                     instance2 = SerializableObjects.armorData.read(jsonObject);

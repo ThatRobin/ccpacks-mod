@@ -147,7 +147,9 @@ public class SerializableObjects {
             .add("drinkable", SerializableDataTypes.BOOLEAN, false)
             .add("sound", SerializableDataTypes.SOUND_EVENT, SoundEvents.ENTITY_GENERIC_EAT)
             .add("returns", SerializableDataTypes.ITEM, null)
-            .add("eating_time", SerializableDataTypes.INT, 30);
+            .add("eating_time", SerializableDataTypes.INT, 30)
+            .add("add_effect", SerializableDataTypes.STATUS_EFFECT_INSTANCE, null)
+            .add("remove_effect", SerializableDataTypes.STATUS_EFFECT, null);
 
     public static SerializableData musicDiscData = new SerializableData()
             .add("type",SerializableDataTypes.STRING)

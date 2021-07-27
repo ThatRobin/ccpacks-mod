@@ -3,6 +3,8 @@ package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -26,14 +28,18 @@ public class DDFoodItem extends Item {
     private ItemConvertible returns;
     private int eating_time;
     private List<String> lore;
+    private StatusEffect remove_effect;
+    private StatusEffectInstance add_effect;
 
-    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore) {
+    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore, StatusEffect remove_effect, StatusEffectInstance add_effect) {
         super(settings);
         this.drinkable = drinkable;
         this.sound = sound;
         this.returns = returns;
         this.eating_time = eating_time;
         this.lore = lore;
+        this.remove_effect = remove_effect;
+        this.add_effect = add_effect;
     }
 
     @Override
@@ -60,6 +66,11 @@ public class DDFoodItem extends Item {
         if (user instanceof ServerPlayerEntity serverPlayerEntity) {
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        }
+
+        if (!world.isClient) {
+            user.removeStatusEffect(remove_effect);
+            user.addStatusEffect(add_effect);
         }
 
         if (stack.isEmpty()) {

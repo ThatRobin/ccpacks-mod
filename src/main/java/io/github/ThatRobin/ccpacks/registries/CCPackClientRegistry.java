@@ -31,6 +31,7 @@ import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowerBlock;
 import net.minecraft.block.Material;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.option.KeyBinding;
@@ -39,6 +40,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.*;
 import net.minecraft.item.*;
@@ -51,6 +53,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
 import java.io.*;
@@ -105,6 +108,13 @@ public class CCPackClientRegistry {
 
                 SoundEvent CUSTOM_SOUND = new DDSound(instance2.getId("identifier"));
                 Registry.register(Registry.SOUND_EVENT, instance2.getId("identifier"), CUSTOM_SOUND);
+            } else if (type.equals("ccpacks:status_effect")) {
+
+                instance2 = SerializableObjects.statusEffectData.read(jsonObject);
+                float[] color = Color.RGBtoHSB(instance2.getInt("red"), instance2.getInt("green"), instance2.getInt("blue"), null);
+                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
+                Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
+
             }
         }
 
@@ -183,7 +193,7 @@ public class CCPackClientRegistry {
                             food.alwaysEdible();
                         }
                         FoodComponent foodComp = food.build();
-                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"));
+                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (StatusEffect) instance2.get("remove_effect"), (StatusEffectInstance) instance2.get("add_effect"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                     } else if (itemType.equals("helmet")) {
                         instance2 = SerializableObjects.armorData.read(jsonObject);
@@ -324,13 +334,6 @@ public class CCPackClientRegistry {
                     KeyBinding key = new KeyBinding("key.ccpacks." + instance2.getString("name"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + instance2.getString("category"));
                     ApoliClient.registerPowerKeybinding("key.ccpacks." + instance2.getString("name"), key);
                     KeyBindingHelper.registerKeyBinding(key);
-
-                } else if (type.equals("ccpacks:status_effect")) {
-
-                    instance2 = SerializableObjects.statusEffectData.read(jsonObject);
-                    float[] color = Color.RGBtoHSB(instance2.getInt("red"), instance2.getInt("green"), instance2.getInt("blue"), null);
-                    StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
-                    Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
 
                 } else if (type.equals("ccpacks:enchantment")) {
 

@@ -36,22 +36,25 @@ public abstract class FileResourcePackProviderMixin {
             for(int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 String string = "file/" + file.getName();
-                CCPacksMain.LOGGER.info(string);
                 Path test = Path.of(file.getPath(),"ccdata");
-                CCPacksMain.LOGGER.info(test.toString());
                 ResourcePackProfile resourcePackProfile = null;
-                CCPacksMain.LOGGER.info(test.toFile().exists());
                 if(file.getName().endsWith(".zip")) {
                     ZipFile zipFile = new ZipFile(file);
                     Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
-                    String string2 = "ccdata/";
+                    String string3 = "ccdata";
+                    boolean ccpack = false;
                     while (enumeration.hasMoreElements()) {
                         ZipEntry zipEntry = enumeration.nextElement();
-                        if (zipEntry.getName().endsWith(string2)) {
-                            resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
-                        } else {
-                            resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
+                        CCPacksMain.LOGGER.info(zipEntry.getName());
+                        CCPacksMain.LOGGER.info(zipEntry.getName().startsWith(string3));
+                        if (zipEntry.getName().startsWith(string3)) {
+                            ccpack = true;
                         }
+                    }
+                    if(ccpack) {
+                        resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
+                    } else {
+                        resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
                     }
                 } else if(test.toFile().exists()) {
                     resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);

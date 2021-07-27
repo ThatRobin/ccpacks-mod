@@ -106,12 +106,19 @@ public class CCPackServerRegistry {
             String type = instance.getString("type");
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
-            CCPacksMain.LOGGER.info(type);
             if (type.equals("ccpacks:sound")) {
+                CCPacksMain.LOGGER.info(type);
                 instance2 = SerializableObjects.soundEventData.read(jsonObject);
 
                 SoundEvent CUSTOM_SOUND = new DDSound(instance2.getId("identifier"));
                 Registry.register(Registry.SOUND_EVENT, instance2.getId("identifier"), CUSTOM_SOUND);
+            } else if (type.equals("ccpacks:status_effect")) {
+                CCPacksMain.LOGGER.info(type);
+
+                instance2 = SerializableObjects.statusEffectData.read(jsonObject);
+                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Integer.parseInt(instance2.getString("color")));
+                Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
+
             }
         }
 
@@ -123,8 +130,8 @@ public class CCPackServerRegistry {
             String type = list.get(i).getLeft().getString("type");
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
-            CCPacksMain.LOGGER.info(type);
             if(type.equals("ccpacks:item")) {
+                CCPacksMain.LOGGER.info(type);
                 SerializableData.Instance subtype = SerializableObjects.getItemType.read(jsonObject);
                 String itemType = subtype.getString("subtype");
 
@@ -189,7 +196,7 @@ public class CCPackServerRegistry {
                         food.alwaysEdible();
                     }
                     FoodComponent foodComp = food.build();
-                    DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (StatusEffect) instance2.get("remove_effect"), (StatusEffectInstance) instance2.get("add_effect"));
+                    DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (ActionFactory<Entity>.Instance) instance2.get("eat_action"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                 } else if (itemType.equals("helmet")) {
                     instance2 = SerializableObjects.armorData.read(jsonObject);
@@ -227,6 +234,7 @@ public class CCPackServerRegistry {
                 }
 
             } else if (type.equals("ccpacks:block")) {
+                CCPacksMain.LOGGER.info(type);
 
                 SerializableData.Instance subtype = SerializableObjects.getItemType.read(jsonObject);
                 String itemType = subtype.getString("subtype");
@@ -354,6 +362,7 @@ public class CCPackServerRegistry {
                     }
                 }
             } else if (type.equals("ccpacks:keybind")) {
+                CCPacksMain.LOGGER.info(type);
 
                 instance2 = SerializableObjects.keybindData.read(jsonObject);
 
@@ -361,13 +370,8 @@ public class CCPackServerRegistry {
                 ApoliClient.registerPowerKeybinding("key.ccpacks."+instance2.getString("name"), key);
                 KeyBindingHelper.registerKeyBinding(key);
 
-            } else if (type.equals("ccpacks:status_effect")) {
-
-                instance2 = SerializableObjects.statusEffectData.read(jsonObject);
-                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Integer.parseInt(instance2.getString("color")));
-                Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
-
             } else if (type.equals("ccpacks:enchantment")) {
+                CCPacksMain.LOGGER.info(type);
 
                 instance2 = SerializableObjects.statusEffectData.read(jsonObject);
 
@@ -381,13 +385,14 @@ public class CCPackServerRegistry {
         CCPacksMain.LOGGER.info("Post Item/Block Registration:");
         for(int i = 0; i < list.size(); i++) {
             String type = list.get(i).getLeft().getString("type");
-            CCPacksMain.LOGGER.info(type);
             JsonObject jsonObject = list.get(i).getRight();
             SerializableData.Instance instance2;
             if (type.equals("ccpacks:portal")) {
+                CCPacksMain.LOGGER.info(type);
                 instance2 = SerializableObjects.portalData.read(jsonObject);
                 CustomPortalApiRegistry.addPortal((Block) instance2.get("block"), PortalIgnitionSource.ItemUseSource((Item) instance2.get("ignition_item")), instance2.getId("dimension"), instance2.getInt("red"), instance2.getInt("green"), instance2.getInt("blue"));
             } else if (type.equals("ccpacks:animal_entity")) {
+                CCPacksMain.LOGGER.info(type);
 
                 SerializableData.Instance entityTypeGot = SerializableObjects.getEntityType.read(jsonObject);
                 String entityType = entityTypeGot.getString("subtype");

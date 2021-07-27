@@ -193,7 +193,7 @@ public class CCPackClientRegistry {
                             food.alwaysEdible();
                         }
                         FoodComponent foodComp = food.build();
-                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (StatusEffect) instance2.get("remove_effect"), (StatusEffectInstance) instance2.get("add_effect"));
+                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (ActionFactory<Entity>.Instance) instance2.get("eat_action"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                     } else if (itemType.equals("helmet")) {
                         instance2 = SerializableObjects.armorData.read(jsonObject);

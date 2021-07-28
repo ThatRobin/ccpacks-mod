@@ -17,6 +17,8 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import me.crimsondawn45.fabricshieldlib.lib.object.FabricShield;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -66,6 +68,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Environment(EnvType.CLIENT)
 public class CCPackClientRegistry {
 
     private List<Pair<SerializableData.Instance, JsonObject>> list = new ArrayList<>();
@@ -248,8 +251,24 @@ public class CCPackClientRegistry {
                         DDBlock EXAMPLE_BLOCK = new DDBlock(blockSettings);
                         Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                         if (instance2.getBoolean("make_block_item")) {
-                        Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
-                    }
+                            Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
+                        }
+                    } else if (itemType.equals("transparent")) {
+                        instance2 = SerializableObjects.blockData.read(jsonObject);
+
+                        Material mat = getMat(instance2.getString("material"));
+                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Tag<Item> tools = getTool(instance2.getString("effective_tool"));
+                        FabricBlockSettings blockSettings =
+                                FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
+                        if (instance2.getBoolean("transparent")) {
+                            blockSettings.nonOpaque();
+                        }
+                        DDTransparentBlock EXAMPLE_BLOCK = new DDTransparentBlock(blockSettings);
+                        Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
+                        if (instance2.getBoolean("make_block_item")) {
+                            Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
+                        }
                     } else if (itemType.equals("falling")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 

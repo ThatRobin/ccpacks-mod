@@ -3,7 +3,9 @@ package io.github.ThatRobin.ccpacks.serializableData;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
@@ -100,11 +102,11 @@ public class CCPackFactory {
                         if (blockHitResult.getType() == HitResult.Type.BLOCK && blockHitResult != null) {
                             if(blockCondition != null) {
                                 if (blockCondition.test(new CachedBlockPosition(entity.world, blockHitResult.getBlockPos(), true))) {
-                                    if (blockAction != null) {
-                                        blockAction.accept(Triple.of(entity.world, blockHitResult.getBlockPos(), Direction.UP));
-                                    }
                                     if (entityAction != null) {
                                         entityAction.accept(entity);
+                                    }
+                                    if (blockAction != null) {
+                                        blockAction.accept(Triple.of(entity.world, blockHitResult.getBlockPos(), Direction.UP));
                                     }
                                 }
                             }

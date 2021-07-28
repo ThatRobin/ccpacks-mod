@@ -12,12 +12,7 @@ group = project.maven_group
 
 repositories {
 	maven {
-		name = 'minelp'
-		url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
-	}
-	maven {
-		name = 'minelp-release'
-		url = 'https://repo.minelittlepony-mod.com/maven/release'
+		url = 'https://maven.blamejared.com'
 	}
 	maven {
 		url = "http://maven.kyrptonaught.dev"
@@ -61,9 +56,6 @@ dependencies {
 	modImplementation "com.github.apace100:calio:${project.calio_version}"
 	include "com.github.apace100:calio:${project.calio_version}"
 
-	modApi "com.minelittlepony:Mson:${project.mson_version}"
-	include "com.minelittlepony:Mson:${project.mson_version}"
-
 	modImplementation "dev.emi:trinkets:${project.trinkets_version}"
 
 	modImplementation "com.github.apace100:calio:${project.calio_version}"
@@ -74,6 +66,10 @@ dependencies {
 
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 	include "com.github.apace100:apoli:${project.apoli_version}"
+
+	modImplementation "vazkii.patchouli:Patchouli:${project.patch_version}"
+	include "vazkii.patchouli:Patchouli:${project.patch_version}"
+
 
 	modImplementation "com.github.CrimsonDawn45:Fabric-Shield-Lib:1.17-SNAPSHOT"
 	include "com.github.CrimsonDawn45:Fabric-Shield-Lib:1.17-SNAPSHOT"

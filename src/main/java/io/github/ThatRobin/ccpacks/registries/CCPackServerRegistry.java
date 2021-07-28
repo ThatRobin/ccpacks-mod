@@ -10,21 +10,16 @@ import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDChickenEn
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDCowEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDPigEntity;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDChickenEntityRenderer;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDCowEntityRenderer;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDMushroomCowEntityRenderer;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.DDPigEntityRenderer;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.apace100.apoli.ApoliClient;
-import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -70,10 +65,11 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Environment(EnvType.SERVER)
 public class CCPackServerRegistry {
 
     private List<Pair<SerializableData.Instance, JsonObject>> list = new ArrayList<>();
-    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("resourcepacks");
+    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("world");
 
     public CCPackServerRegistry() {
         try {
@@ -404,7 +400,6 @@ public class CCPackServerRegistry {
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, MooshroomEntity.createMobAttributes());
 
-                    EntityRendererRegistry.INSTANCE.register((EntityType<DDMushroomCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDMushroomCowEntityRenderer(context, instance2.getId("texture"), instance2.getId("back_item")));
                 } else if(entityType.equals("cow")) {
                     instance2 = SerializableObjects.genericEntityData.read(jsonObject);
 
@@ -412,7 +407,7 @@ public class CCPackServerRegistry {
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, CowEntity.createMobAttributes());
 
-                    EntityRendererRegistry.INSTANCE.register((EntityType<DDCowEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDCowEntityRenderer(context, instance2.getId("texture")));
+
                 } else if(entityType.equals("pig")) {
                     instance2 = SerializableObjects.genericEntityData.read(jsonObject);
 
@@ -420,7 +415,7 @@ public class CCPackServerRegistry {
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, PigEntity.createMobAttributes());
 
-                    EntityRendererRegistry.INSTANCE.register((EntityType<DDPigEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDPigEntityRenderer(context, instance2.getId("texture")));
+
                 } else if(entityType.equals("chicken")) {
                     instance2 = SerializableObjects.genericEntityData.read(jsonObject);
 
@@ -428,7 +423,6 @@ public class CCPackServerRegistry {
                     Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), entity);
                     FabricDefaultAttributeRegistry.register(entity, ChickenEntity.createMobAttributes());
 
-                    EntityRendererRegistry.INSTANCE.register((EntityType<DDChickenEntity>)(Registry.ENTITY_TYPE.get(instance2.getId("identifier"))), (context) -> new DDChickenEntityRenderer(context, instance2.getId("texture")));
                 }
 
             } else if(type.equals("ccpacks:particle")) {
@@ -437,12 +431,6 @@ public class CCPackServerRegistry {
 
 
                 DefaultParticleType TEST = Registry.register(Registry.PARTICLE_TYPE, instance2.getId("identifier"), FabricParticleTypes.simple(true));
-
-                if (instance2.getBoolean("glowing")) {
-                    ParticleFactoryRegistry.getInstance().register(TEST, DDGlowParticle.Factory::new);
-                } else {
-                    ParticleFactoryRegistry.getInstance().register(TEST, DDParticle.Factory::new);
-                }
             }
 
         }

@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -112,7 +113,6 @@ public class CCPackFactory {
                             }
                         }
                 }));
-
         registerItemCondition(new ConditionFactory<>(CCPacksMain.identifier("compare_amount"), new SerializableData()
                 .add("comparison", ApoliDataTypes.COMPARISON)
                 .add("compare_to", SerializableDataTypes.INT),

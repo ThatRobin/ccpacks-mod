@@ -3,6 +3,7 @@ package io.github.ThatRobin.ccpacks.registries;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.*;
@@ -16,6 +17,7 @@ import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import me.crimsondawn45.fabricshieldlib.lib.object.FabricShield;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -476,6 +478,10 @@ public class CCPackClientRegistry {
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), new FabricShield(new Item.Settings().group(ItemGroup.COMBAT), instance2.getInt("cooldown"), instance2.getInt("durability"), instance2.getInt("enchantability"), (Item)instance2.get("repair_item")));
 
                 }
+            } else if(type.equals("ccpacks:projectile")) {
+                instance2 = SerializableObjects.projectileData.read(jsonObject);
+
+                EntityType<DDProjectileEntity> DDProjectileEntityType = Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("length"), instance2.getFloat("width"))).trackRangeBlocks(4).trackedUpdateRate(10).build());
             }
 
         }

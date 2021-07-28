@@ -3,7 +3,7 @@ package io.github.ThatRobin.ccpacks.registries;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.*;
@@ -13,11 +13,8 @@ import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
 import io.github.apace100.apoli.ApoliClient;
-import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import me.crimsondawn45.fabricshieldlib.lib.object.FabricShield;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -35,16 +32,15 @@ import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowerBlock;
 import net.minecraft.block.Material;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.*;
 import net.minecraft.item.*;
@@ -53,11 +49,9 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
 import java.io.*;
@@ -69,6 +63,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static io.github.ThatRobin.ccpacks.CCPacksMain.EXAMPLE_PROJECTILE;
 
 @Environment(EnvType.CLIENT)
 public class CCPackClientRegistry {
@@ -480,8 +476,13 @@ public class CCPackClientRegistry {
                 }
             } else if(type.equals("ccpacks:projectile")) {
                 instance2 = SerializableObjects.projectileData.read(jsonObject);
+                DDProjectileEntity.damage = instance2.getInt("damage");
 
-                EntityType<DDProjectileEntity> DDProjectileEntityType = Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("length"), instance2.getFloat("width"))).trackRangeBlocks(4).trackedUpdateRate(10).build());
+                EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
+
+                Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), EXAMPLE_PROJECTILE);
+
+                EntityRendererRegistry.INSTANCE.register(EXAMPLE_PROJECTILE, (context) -> new FlyingItemEntityRenderer(context));
             }
 
         }

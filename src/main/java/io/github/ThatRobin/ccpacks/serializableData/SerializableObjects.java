@@ -164,8 +164,8 @@ public class SerializableObjects {
     public static SerializableData projectileData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("damage", SerializableDataTypes.INT)
-            .add("length", SerializableDataTypes.FLOAT)
+            .add("damage", SerializableDataTypes.INT, 3)
+            .add("height", SerializableDataTypes.FLOAT)
             .add("width", SerializableDataTypes.FLOAT);
 
 }

@@ -3,6 +3,7 @@ package io.github.ThatRobin.ccpacks.registries;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
@@ -11,15 +12,12 @@ import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDCowEntity
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDPigEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -38,7 +36,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CowEntity;
@@ -49,7 +46,6 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
@@ -64,6 +60,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static io.github.ThatRobin.ccpacks.CCPacksMain.EXAMPLE_PROJECTILE;
 
 @Environment(EnvType.SERVER)
 public class CCPackServerRegistry {
@@ -431,7 +429,15 @@ public class CCPackServerRegistry {
 
 
                 DefaultParticleType TEST = Registry.register(Registry.PARTICLE_TYPE, instance2.getId("identifier"), FabricParticleTypes.simple(true));
+            } else if(type.equals("ccpacks:projectile")) {
+                instance2 = SerializableObjects.projectileData.read(jsonObject);
+                DDProjectileEntity.damage = instance2.getInt("damage");
+
+                EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
+
+                Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), EXAMPLE_PROJECTILE);
             }
+
 
         }
     }

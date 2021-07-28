@@ -5,6 +5,7 @@ import io.github.ThatRobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.entity.EntityType;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -17,6 +18,7 @@ public class CCPacksMain implements ModInitializer {
 	public static final String MODID = "ccpacks";
 
 	public static final ResourcePackSource RESOURCE_PACK_SOURCE = ResourcePackSource.nameAndSource("pack.source.ccpacks");
+	public static EntityType EXAMPLE_PROJECTILE;
 
 	@Override
 	public void onInitialize() {

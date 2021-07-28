@@ -1,6 +1,8 @@
-package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities;
+package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities;
 
-import io.github.ThatRobin.ccpacks.registries.CCPackClientRegistry;
+import io.github.ThatRobin.ccpacks.CCPacksMain;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,7 +15,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
 public class DDProjectileEntity extends ThrownItemEntity {
-    private int damage;
+    public static int damage;
 
     public DDProjectileEntity(EntityType<? extends DDProjectileEntity> entityType, World world, int damage) {
         super(entityType, world);
@@ -21,11 +23,16 @@ public class DDProjectileEntity extends ThrownItemEntity {
     }
 
     public DDProjectileEntity(World world, LivingEntity owner) { //null will be changed into the entity type once it has been registered. Same for the constructor below
-        super(null, owner, world);
+        super(CCPacksMain.EXAMPLE_PROJECTILE, owner, world);
     }
 
+    @Environment(EnvType.CLIENT)
     public DDProjectileEntity(World world, double x, double y, double z) {
-        super(null, x, y, z, world);
+        super(CCPacksMain.EXAMPLE_PROJECTILE, x, y, z, world);
+    }
+
+    public DDProjectileEntity(EntityType<DDProjectileEntity> type, World world) {
+        super(type, world);
     }
 
     @Override

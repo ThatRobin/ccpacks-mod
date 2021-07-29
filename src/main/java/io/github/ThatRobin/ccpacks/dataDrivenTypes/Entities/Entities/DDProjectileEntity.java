@@ -1,6 +1,7 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -16,10 +17,18 @@ import net.minecraft.world.World;
 
 public class DDProjectileEntity extends ThrownItemEntity {
     public static int damage;
+    public static Item base_item;
+    public static DamageSource damage_source;
+    public static ActionFactory<Entity>.Instance hit_action;
+    public static ActionFactory<Entity>.Instance collision_action;
 
     public DDProjectileEntity(EntityType<? extends DDProjectileEntity> entityType, World world, int damage) {
         super(entityType, world);
         this.damage = damage;
+        this.base_item = base_item;
+        this.damage_source = damage_source;
+        this.hit_action = hit_action;
+        this.collision_action = collision_action;
     }
 
     public DDProjectileEntity(World world, LivingEntity owner) { //null will be changed into the entity type once it has been registered. Same for the constructor below
@@ -37,19 +46,21 @@ public class DDProjectileEntity extends ThrownItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return Items.DIAMOND;
+        return base_item;
     }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
-        entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), (float) damage);
+        entity.damage(damage_source, (float) damage);
+        this.hit_action.accept(entity);
     }
 
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
+        this.collision_action.accept(this);
         if(!this.world.isClient) {
             this.discard();
         }

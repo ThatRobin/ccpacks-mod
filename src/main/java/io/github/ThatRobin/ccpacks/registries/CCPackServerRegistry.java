@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
@@ -35,6 +36,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -427,11 +429,20 @@ public class CCPackServerRegistry {
 
                 instance2 = SerializableObjects.particleData.read(jsonObject);
 
+                DDParticle.red = instance2.getFloat("red");
+                DDParticle.green = instance2.getFloat("green");
+                DDParticle.blue = instance2.getFloat("blue");
+                DDParticle.alpha = instance2.getFloat("alpha");
+                DDParticle.max_age = instance2.getInt("max_age");
+                DDParticle.collides_with_world = instance2.getBoolean("collides_with_world");
+                DDParticle.size = instance2.getFloat("size");
 
                 DefaultParticleType TEST = Registry.register(Registry.PARTICLE_TYPE, instance2.getId("identifier"), FabricParticleTypes.simple(true));
             } else if(type.equals("ccpacks:projectile")) {
                 instance2 = SerializableObjects.projectileData.read(jsonObject);
                 DDProjectileEntity.damage = instance2.getInt("damage");
+                DDProjectileEntity.base_item = (Item) instance2.get("base_item");
+                DDProjectileEntity.damage_source = (DamageSource) instance2.get("damage_source");
 
                 EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
 

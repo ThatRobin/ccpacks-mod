@@ -23,7 +23,14 @@ public class SerializableObjects {
     public static SerializableData particleData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("glowing", SerializableDataTypes.BOOLEAN);
+            .add("glowing", SerializableDataTypes.BOOLEAN, false)
+            .add("red", SerializableDataTypes.FLOAT, null)
+            .add("green", SerializableDataTypes.FLOAT, null)
+            .add("blue", SerializableDataTypes.FLOAT, null)
+            .add("size", SerializableDataTypes.FLOAT, 0.25f)
+            .add("max_age", SerializableDataTypes.INT, 100)
+            .add("collides_with_world", SerializableDataTypes.BOOLEAN, false)
+            .add("alpha", SerializableDataTypes.FLOAT, 1f);
 
 
     public static SerializableData mooshroomEntityData = new SerializableData()
@@ -166,6 +173,10 @@ public class SerializableObjects {
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("damage", SerializableDataTypes.INT, 3)
             .add("height", SerializableDataTypes.FLOAT)
-            .add("width", SerializableDataTypes.FLOAT);
+            .add("width", SerializableDataTypes.FLOAT)
+            .add("base_item", SerializableDataTypes.ITEM)
+            .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE)
+            .add("hit_action", ApoliDataTypes.ENTITY_ACTION, null)
+            .add("collision_action", ApoliDataTypes.ENTITY_ACTION, null);
 
 }

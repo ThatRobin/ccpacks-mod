@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.*;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
@@ -40,11 +40,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.*;
 import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
@@ -457,6 +459,22 @@ public class CCPackClientRegistry {
 
                 instance2 = SerializableObjects.particleData.read(jsonObject);
 
+                DDParticle.red = instance2.getFloat("red");
+                DDParticle.green = instance2.getFloat("green");
+                DDParticle.blue = instance2.getFloat("blue");
+                DDParticle.alpha = instance2.getFloat("alpha");
+                DDParticle.max_age = instance2.getInt("max_age");
+                DDParticle.collides_with_world = instance2.getBoolean("collides_with_world");
+                DDParticle.size = instance2.getFloat("size");
+                DDGlowParticle.red = instance2.getFloat("red");
+                DDGlowParticle.green = instance2.getFloat("green");
+                DDGlowParticle.blue = instance2.getFloat("blue");
+                DDGlowParticle.alpha = instance2.getFloat("alpha");
+                DDGlowParticle.max_age = instance2.getInt("max_age");
+                DDGlowParticle.collides_with_world = instance2.getBoolean("collides_with_world");
+                DDGlowParticle.size = instance2.getFloat("size");
+
+
 
                 DefaultParticleType TEST = Registry.register(Registry.PARTICLE_TYPE, instance2.getId("identifier"), FabricParticleTypes.simple(true));
 
@@ -465,6 +483,7 @@ public class CCPackClientRegistry {
                 } else {
                     ParticleFactoryRegistry.getInstance().register(TEST, DDParticle.Factory::new);
                 }
+
             } else if(type.equals("ccpacks:item")) {
                 SerializableData.Instance subtype = SerializableObjects.getItemType.read(jsonObject);
                 String itemType = subtype.getString("subtype");
@@ -477,6 +496,10 @@ public class CCPackClientRegistry {
             } else if(type.equals("ccpacks:projectile")) {
                 instance2 = SerializableObjects.projectileData.read(jsonObject);
                 DDProjectileEntity.damage = instance2.getInt("damage");
+                DDProjectileEntity.base_item = (Item) instance2.get("base_item");
+                DDProjectileEntity.damage_source = (DamageSource) instance2.get("damage_source");
+                DDProjectileEntity.hit_action = (ActionFactory<Entity>.Instance) instance2.get("hit_action");
+                DDProjectileEntity.collision_action = (ActionFactory<Entity>.Instance) instance2.get("collision_action");
 
                 EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
 

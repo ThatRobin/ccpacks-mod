@@ -1,0 +1,13 @@
+{
+	"variants": {
+		"type=bottom": {
+			"model": "example_pack:block/crafting_hslab_bot"
+		},
+		"type=double": {
+		  "model": "minecraft:block/crafting_table"
+		},
+		"type=top": {
+		  "model": "example_pack:block/crafting_hslab_top"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"item.example_pack.funky_disc": "Music Disc",
+	"item.example_pack.funky_disc.desc": "PixelNinja - Funky",
+	"effect.example_pack.magic_effect": "Magicked",
+	"item.example_pack.elytra_trinket": "Elytra Trinket",
+	"item.example_pack.amethyst_axe": "Amethyst Axe",
+	"item.example_pack.amethyst_sword": "Amethyst Sword",
+	"item.example_pack.amethyst_netherite_ingot": "Amethyst Alloy",
+	"item.example_pack.goat_horn": "Goat Horn",
+	"item.example_pack.netherite_elytra": "Netherite Elytra",
+	"item.example_pack.glitter_food": "Glitter Food",
+	"block.example_pack.crafting_hslab": "Crafting Slab",
+	"block.example_pack.health_block": "Health Block",
+	"block.example_pack.ice_stairs": "Ice Stairs",
+	"block.example_pack.crafting_vslab": "Crafting Slab",
+	"category.example_pack_keybinds": "Example Pack Keybinds",
+	"key.ccpacks.winged_boost": "Winged Boost",
+	"enchantment.example_pack.winged_boost": "Winged Boost"
+}

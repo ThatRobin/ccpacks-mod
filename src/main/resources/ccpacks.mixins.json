@@ -6,11 +6,11 @@
   "mixins": [
     "AccessorMixin",
     "PlayerManagerMixin",
-    "MinecraftServerMixin",
     "FileResourcePackProviderMixin"
   ],
   "client": [
-
+    "MinecraftServerMixin",
+    "InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

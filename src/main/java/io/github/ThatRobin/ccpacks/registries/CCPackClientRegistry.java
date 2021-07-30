@@ -3,15 +3,16 @@ package io.github.ThatRobin.ccpacks.registries;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.EntityRenderer.*;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
+import io.github.ThatRobin.ccpacks.util.ColourHolder;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
@@ -46,7 +47,6 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.*;
 import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ParticleType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
@@ -65,8 +65,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import static io.github.ThatRobin.ccpacks.CCPacksMain.EXAMPLE_PROJECTILE;
 
 @Environment(EnvType.CLIENT)
 public class CCPackClientRegistry {
@@ -138,7 +136,7 @@ public class CCPackClientRegistry {
                     if (itemType.equals("generic")) {
                         instance2 = SerializableObjects.itemData.read(jsonObject);
 
-                        DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"));
+                        DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("trinket")) {
@@ -152,7 +150,7 @@ public class CCPackClientRegistry {
 
                         instance2 = SerializableObjects.itemData.read(jsonObject);
 
-                        DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"));
+                        DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("sword")) {
@@ -498,10 +496,8 @@ public class CCPackClientRegistry {
                 DDProjectileEntity.damage = instance2.getInt("damage");
                 DDProjectileEntity.base_item = (Item) instance2.get("base_item");
                 DDProjectileEntity.damage_source = (DamageSource) instance2.get("damage_source");
-                DDProjectileEntity.hit_action = (ActionFactory<Entity>.Instance) instance2.get("hit_action");
-                DDProjectileEntity.collision_action = (ActionFactory<Entity>.Instance) instance2.get("collision_action");
 
-                EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
+                EntityType EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
 
                 Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), EXAMPLE_PROJECTILE);
 
@@ -512,8 +508,7 @@ public class CCPackClientRegistry {
     }
 
     public void readFromDir(File base, ZipFile zipFile) throws IOException {
-        String string2 = "ccdata/";
-        File pack = new File(base, "ccdata");
+        File pack = new File(base, "data/ccpacks/content");
         try (Stream<Path> paths = Files.walk(Paths.get(pack.getPath()))) {
             paths.forEach((file) -> {
                 String string3 = file.toString();
@@ -552,7 +547,7 @@ public class CCPackClientRegistry {
     public void readFromZip(File base, ZipFile zipFile) throws IOException {
         ZipFile zipFile2 = this.getZipFile(base, zipFile);
         Enumeration<? extends ZipEntry> enumeration = zipFile2.entries();
-        String string2 = "ccdata/";
+        String string2 = "data/ccpacks/content/";
         while(enumeration.hasMoreElements()) {
             ZipEntry zipEntry = enumeration.nextElement();
             if (!zipEntry.isDirectory()) {

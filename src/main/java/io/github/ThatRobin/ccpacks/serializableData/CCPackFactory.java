@@ -3,9 +3,15 @@ package io.github.ThatRobin.ccpacks.serializableData;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.github.ThatRobin.ccpacks.Power.StatBar;
+import io.github.ThatRobin.ccpacks.util.AdvancedHudRender;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Active;
+import io.github.apace100.apoli.power.CooldownPower;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.VariableIntPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
@@ -22,9 +28,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
+import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -121,6 +127,59 @@ public class CCPackFactory {
                     count = stack.getCount();
                     return ((Comparison)data.get("comparison")).compare(count, data.getInt("compare_to"));
                 }));
+        registerPowerType(new PowerFactory<>(CCPacksMain.identifier("stat_bar"),
+                new SerializableData()
+                        .add("base_value", SerializableDataTypes.INT, 5)
+                        .add("hud_render", CCPackDataTypes.HUD_RENDER),
+                data ->
+                        (type, player) -> {
+                            StatBar power = new StatBar(type, player, (AdvancedHudRender) data.get("hud_render"));
+                            return power;
+                        })
+                .allowCondition());
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("change_stat"), new SerializableData()
+                        .add("stat_bar", ApoliDataTypes.POWER_TYPE)
+                        .add("change", SerializableDataTypes.INT),
+                (data, entity) -> {
+                    if(entity instanceof PlayerEntity) {
+                        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                        Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
+                        if(p instanceof StatBar) {
+                            StatBar statBar = (StatBar) p;
+                            statBar.getHudRender().addValue(data.getInt("change"));
+                            PowerHolderComponent.sync((PlayerEntity)entity);
+                        }
+                    }
+                }));
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("set_stat"), new SerializableData()
+                .add("stat_bar", ApoliDataTypes.POWER_TYPE)
+                .add("value", SerializableDataTypes.INT),
+                (data, entity) -> {
+                    if(entity instanceof PlayerEntity) {
+                        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                        Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
+                        if(p instanceof StatBar) {
+                            StatBar statBar = (StatBar) p;
+                            int newValue = data.getInt("value");
+                            statBar.getHudRender().setValue(newValue);
+                            PowerHolderComponent.sync((PlayerEntity)entity);
+                        }
+                    }
+                }));
+
+        registerEntityCondition(new ConditionFactory<>(Apoli.identifier("check_stat"), new SerializableData()
+                .add("stat_bar", ApoliDataTypes.POWER_TYPE)
+                .add("comparison", ApoliDataTypes.COMPARISON)
+                .add("compare_to", SerializableDataTypes.INT),
+                (data, entity) -> {
+                    int resourceValue = 0;
+                    PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                    Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
+                    if(p instanceof StatBar) {
+                        resourceValue = ((StatBar)p).getHudRender().getValue();
+                    }
+                    return ((Comparison)data.get("comparison")).compare(resourceValue, data.getInt("compare_to"));
+                }));
     }
 
     private static NamedScreenHandlerFactory craftingTable(World world_1, BlockPos blockPos_1) {
@@ -152,5 +211,4 @@ public class CCPackFactory {
     private static void registerPowerType(PowerFactory serializer) {
         Registry.register(ApoliRegistries.POWER_FACTORY, serializer.getSerializerId(), serializer);
     }
-
 }

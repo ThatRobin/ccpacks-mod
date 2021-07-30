@@ -1,9 +1,11 @@
 package io.github.ThatRobin.ccpacks.serializableData;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 
 public class SerializableObjects {
 
@@ -13,7 +15,7 @@ public class SerializableObjects {
 
     public static SerializableData getItemType = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
-            .add("subtype", SerializableDataTypes.STRING);
+            .add("subtype", SerializableDataTypes.STRING, null);
 
     public static SerializableData getEntityType = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -71,6 +73,8 @@ public class SerializableObjects {
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("lore", CCPackDataTypes.STRINGS, null)
             .add("durability", SerializableDataTypes.INT, null)
+            .add("start_color", CCPackDataTypes.COLOR, null)
+            .add("end_color", CCPackDataTypes.COLOR, null)
             .add("max_count", SerializableDataTypes.INT, 64);
 
     public static SerializableData shieldData = new SerializableData()
@@ -172,8 +176,8 @@ public class SerializableObjects {
             .add("type", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("damage", SerializableDataTypes.INT, 0)
-            .add("height", SerializableDataTypes.FLOAT, 0.25)
-            .add("width", SerializableDataTypes.FLOAT, 0.25)
+            .add("height", SerializableDataTypes.FLOAT, 0.25f)
+            .add("width", SerializableDataTypes.FLOAT, 0.25f)
             .add("base_item", SerializableDataTypes.ITEM)
             .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE)
             .add("hit_action", ApoliDataTypes.ENTITY_ACTION, null)

@@ -57,19 +57,13 @@ dependencies {
 	include "com.github.apace100:calio:${project.calio_version}"
 
 	modImplementation "dev.emi:trinkets:${project.trinkets_version}"
-
-	modImplementation "com.github.apace100:calio:${project.calio_version}"
-	include "com.github.apace100:calio:${project.calio_version}"
+	include "dev.emi:trinkets:${project.trinkets_version}"
 
 	modImplementation 'net.kyrptonaught:customportalapi:0.0.1-beta37-1.17'
 	include 'net.kyrptonaught:customportalapi:0.0.1-beta37-1.17'
 
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 	include "com.github.apace100:apoli:${project.apoli_version}"
-
-	modImplementation "vazkii.patchouli:Patchouli:${project.patch_version}"
-	include "vazkii.patchouli:Patchouli:${project.patch_version}"
-
 
 	modImplementation "com.github.CrimsonDawn45:Fabric-Shield-Lib:1.17-SNAPSHOT"
 	include "com.github.CrimsonDawn45:Fabric-Shield-Lib:1.17-SNAPSHOT"

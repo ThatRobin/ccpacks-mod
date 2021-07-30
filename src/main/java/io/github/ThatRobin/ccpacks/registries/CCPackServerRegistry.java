@@ -3,7 +3,7 @@ package io.github.ThatRobin.ccpacks.registries;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDProjectileEntity;
+import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.serializableData.SerializableObjects;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.*;
@@ -13,12 +13,12 @@ import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDCowEntity
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDMushroomCowEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.Entities.DDPigEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Items.*;
-import io.github.apace100.apoli.ApoliClient;
+import io.github.ThatRobin.ccpacks.util.ColourHolder;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -30,9 +30,9 @@ import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
@@ -49,9 +49,11 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.world.BlockView;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,13 +65,11 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static io.github.ThatRobin.ccpacks.CCPacksMain.EXAMPLE_PROJECTILE;
-
 @Environment(EnvType.SERVER)
 public class CCPackServerRegistry {
 
     private List<Pair<SerializableData.Instance, JsonObject>> list = new ArrayList<>();
-    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("world");
+    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("datapacks");
 
     public CCPackServerRegistry() {
         try {
@@ -112,7 +112,8 @@ public class CCPackServerRegistry {
                 CCPacksMain.LOGGER.info(type);
 
                 instance2 = SerializableObjects.statusEffectData.read(jsonObject);
-                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Integer.parseInt(instance2.getString("color")));
+                float[] color = Color.RGBtoHSB(instance2.getInt("red"), instance2.getInt("green"), instance2.getInt("blue"), null);
+                StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                 Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
 
             }
@@ -134,7 +135,7 @@ public class CCPackServerRegistry {
                 if(itemType.equals("generic")) {
                     instance2 = SerializableObjects.itemData.read(jsonObject);
 
-                    DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>)instance2.get("lore"));
+                    DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>)instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                 } else if (itemType.equals("trinket")) {
@@ -148,7 +149,7 @@ public class CCPackServerRegistry {
 
                     instance2 = SerializableObjects.itemData.read(jsonObject);
 
-                    DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"));
+                    DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                 } else if (itemType.equals("sword")) {
@@ -242,10 +243,22 @@ public class CCPackServerRegistry {
                     BlockSoundGroup sounds = getSound(instance2.getString("sound"));
                     Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                     FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
-                    if(instance2.getBoolean("transparent")){
-                        blockSettings.nonOpaque();
-                    }
+
                     DDBlock EXAMPLE_BLOCK = new DDBlock(blockSettings);
+                    Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
+                    if (instance2.getBoolean("make_block_item")) {
+                        Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
+                    }
+                } else if (itemType.equals("transparent")) {
+                    instance2 = SerializableObjects.blockData.read(jsonObject);
+
+                    Material mat = getMat(instance2.getString("material"));
+                    BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                    Tag<Item> tools = getTool(instance2.getString("effective_tool"));
+                    FabricBlockSettings blockSettings =
+                            FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
+                    blockSettings.nonOpaque().solidBlock(CCPackServerRegistry::never).suffocates(CCPackServerRegistry::never).blockVision(CCPackServerRegistry::never);
+                    DDTransparentBlock EXAMPLE_BLOCK = new DDTransparentBlock(blockSettings);
                     Registry.register(Registry.BLOCK, instance2.getId("identifier"), EXAMPLE_BLOCK);
                     if (instance2.getBoolean("make_block_item")) {
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
@@ -357,15 +370,6 @@ public class CCPackServerRegistry {
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), new BlockItem(EXAMPLE_BLOCK, new FabricItemSettings().group(ItemGroup.DECORATIONS)));
                     }
                 }
-            } else if (type.equals("ccpacks:keybind")) {
-                CCPacksMain.LOGGER.info(type);
-
-                instance2 = SerializableObjects.keybindData.read(jsonObject);
-
-                KeyBinding key = new KeyBinding("key.ccpacks."+instance2.getString("name"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + instance2.getString("category"));
-                ApoliClient.registerPowerKeybinding("key.ccpacks."+instance2.getString("name"), key);
-                KeyBindingHelper.registerKeyBinding(key);
-
             } else if (type.equals("ccpacks:enchantment")) {
                 CCPacksMain.LOGGER.info(type);
 
@@ -444,7 +448,7 @@ public class CCPackServerRegistry {
                 DDProjectileEntity.base_item = (Item) instance2.get("base_item");
                 DDProjectileEntity.damage_source = (DamageSource) instance2.get("damage_source");
 
-                EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
+                EntityType EXAMPLE_PROJECTILE = FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(instance2.getFloat("width"), instance2.getFloat("height"))).trackable(64, 10).build();
 
                 Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), EXAMPLE_PROJECTILE);
             }
@@ -454,8 +458,7 @@ public class CCPackServerRegistry {
     }
 
     public void readFromDir(File base, ZipFile zipFile) throws IOException {
-        String string2 = "ccdata/";
-        File pack = new File(base, "ccdata");
+        File pack = new File(base, "data/ccpacks/content");
         try (Stream<Path> paths = Files.walk(Paths.get(pack.getPath()))) {
             paths.forEach((file) -> {
                 String string3 = file.toString();
@@ -494,7 +497,7 @@ public class CCPackServerRegistry {
     public void readFromZip(File base, ZipFile zipFile) throws IOException {
         ZipFile zipFile2 = this.getZipFile(base, zipFile);
         Enumeration<? extends ZipEntry> enumeration = zipFile2.entries();
-        String string2 = "ccdata/";
+        String string2 = "data/ccpacks/content/";
         while(enumeration.hasMoreElements()) {
             ZipEntry zipEntry = enumeration.nextElement();
             if (!zipEntry.isDirectory()) {
@@ -586,4 +589,13 @@ public class CCPackServerRegistry {
         }
         return mat;
     }
+
+    private static boolean never(BlockState state, BlockView world, BlockPos pos) {
+        return false;
+    }
+
+    private static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
+        return false;
+    }
+
 }

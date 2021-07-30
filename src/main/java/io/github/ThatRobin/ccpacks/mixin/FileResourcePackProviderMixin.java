@@ -36,12 +36,12 @@ public abstract class FileResourcePackProviderMixin {
             for(int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 String string = "file/" + file.getName();
-                Path test = Path.of(file.getPath(),"ccdata");
+                Path test = Path.of(file.getPath(),"data/ccpacks/content");
                 ResourcePackProfile resourcePackProfile = null;
                 if(file.getName().endsWith(".zip")) {
                     ZipFile zipFile = new ZipFile(file);
                     Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
-                    String string3 = "ccdata";
+                    String string3 = "data/ccpacks/content";
                     boolean ccpack = false;
                     while (enumeration.hasMoreElements()) {
                         ZipEntry zipEntry = enumeration.nextElement();

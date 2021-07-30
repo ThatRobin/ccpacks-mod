@@ -1,8 +1,0 @@
-{
-	"variants": {
-		"facing=north": { "model": "example_pack:block/crafting_vslab", "y": 180 },
-		"facing=east":  { "model": "example_pack:block/crafting_vslab", "y": 270 },
-		"facing=south": { "model": "example_pack:block/crafting_vslab" },
-		"facing=west":  { "model": "example_pack:block/crafting_vslab", "y":  90 }
-	}
-}

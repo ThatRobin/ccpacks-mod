@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "": { 
-		"model": "example_pack:block/health_block"
-	}
-  }
-}

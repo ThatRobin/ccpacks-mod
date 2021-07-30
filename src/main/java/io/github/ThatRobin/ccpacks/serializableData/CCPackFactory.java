@@ -18,6 +18,7 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.util.CustomCraftingTable;
@@ -31,6 +32,7 @@ import net.minecraft.screen.*;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -180,6 +182,12 @@ public class CCPackFactory {
                     }
                     return ((Comparison)data.get("comparison")).compare(resourceValue, data.getInt("compare_to"));
                 }));
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("swing_hand"), new SerializableData()
+                .add("hand", SerializableDataType.enumValue(Hand.class), Hand.MAIN_HAND),
+                (data, entity) -> {
+                    ((PlayerEntity)entity).swingHand((Hand) data.get("hand"));
+                }
+        ));
     }
 
     private static NamedScreenHandlerFactory craftingTable(World world_1, BlockPos blockPos_1) {

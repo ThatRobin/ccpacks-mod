@@ -1,17 +1,12 @@
 package io.github.ThatRobin.ccpacks.serializableData;
 
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketInventory;
-import dev.emi.trinkets.api.TrinketsApi;
+import io.github.ThatRobin.ccpacks.Power.InterfacePower;
 import io.github.ThatRobin.ccpacks.Power.StatBar;
 import io.github.ThatRobin.ccpacks.util.AdvancedHudRender;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.CooldownPower;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.VariableIntPower;
+import io.github.apace100.apoli.power.*;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
@@ -29,7 +24,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
-import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
@@ -75,26 +69,6 @@ public class CCPackFactory {
                     int durability = 0;
                     durability = stack.getMaxDamage() - stack.getDamage();
                     return ((Comparison)data.get("comparison")).compare(durability, data.getInt("compare_to"));
-                }));
-        registerEntityCondition(new ConditionFactory<>(CCPacksMain.identifier("equipped_trinket"), new SerializableData()
-                .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
-                (data, user) -> {
-                    FabricLoader.getInstance().getModContainer("trinkets").ifPresent(modContainer -> {
-                        var optional = TrinketsApi.getTrinketComponent(user);
-                        if (optional.isPresent()) {
-                            TrinketComponent comp = optional.get();
-                            for (var group : comp.getInventory().values()) {
-                                for (TrinketInventory inv : group.values()) {
-                                    for (int i = 0; i < inv.size(); i++) {
-                                        if (((ConditionFactory<ItemStack>.Instance) data.get("item_condition")).test(inv.getStack(i))) {
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    return false;
                 }));
         registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("raycast_block"), new SerializableData()
                 .add("distance", SerializableDataTypes.DOUBLE, 2.0)
@@ -169,7 +143,7 @@ public class CCPackFactory {
                     }
                 }));
 
-        registerEntityCondition(new ConditionFactory<>(Apoli.identifier("check_stat"), new SerializableData()
+        registerEntityCondition(new ConditionFactory<>(CCPacksMain.identifier("check_stat"), new SerializableData()
                 .add("stat_bar", ApoliDataTypes.POWER_TYPE)
                 .add("comparison", ApoliDataTypes.COMPARISON)
                 .add("compare_to", SerializableDataTypes.INT),
@@ -188,6 +162,35 @@ public class CCPackFactory {
                     ((PlayerEntity)entity).swingHand((Hand) data.get("hand"));
                 }
         ));
+
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("open_interface"), new SerializableData()
+                .add("interface_power", ApoliDataTypes.POWER_TYPE, null),
+                (data, entity) -> {
+                    PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                    Power p = component.getPower((PowerType<?>)data.get("interface_power"));
+                    if(p instanceof InterfacePower) {
+                        ((PlayerEntity)entity).openHandledScreen(new SimpleNamedScreenHandlerFactory(((InterfacePower) p).factory,((InterfacePower) p).containerName));
+                    }
+
+                }
+        ));
+
+        registerPowerType(new PowerFactory<>(CCPacksMain.identifier("interface"),
+                new SerializableData()
+                        .add("interface_type", SerializableDataTypes.STRING, "minecraft:dropper")
+                        .add("rows", SerializableDataTypes.INT, 1)
+                        .add("name", SerializableDataTypes.STRING, "container.inventory")
+                        .add("drop_on_death", SerializableDataTypes.BOOLEAN, false)
+                        .add("drop_on_death_filter", ApoliDataTypes.ITEM_CONDITION, null),
+                data ->
+                        (type, player) -> {
+                            InterfacePower power = new InterfacePower(type, player, data.getString("name"),data.getString("interface_type"), 9, data.getInt("rows"),
+                                    data.getBoolean("drop_on_death"),
+                                    data.isPresent("drop_on_death_filter") ? (ConditionFactory<ItemStack>.Instance) data.get("drop_on_death_filter") :
+                                            itemStack -> true);
+                            return power;
+                        }));
+
     }
 
     private static NamedScreenHandlerFactory craftingTable(World world_1, BlockPos blockPos_1) {

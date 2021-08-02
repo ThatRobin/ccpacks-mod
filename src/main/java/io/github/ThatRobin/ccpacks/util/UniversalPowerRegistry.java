@@ -48,7 +48,7 @@ public class UniversalPowerRegistry {
 
     public static UniversalPower get(Identifier id) {
         if(!idToUP.containsKey(id)) {
-            throw new IllegalArgumentException("Could not get origin from id '" + id.toString() + "', as it was not registered!");
+            throw new IllegalArgumentException("Could not get power from id '" + id.toString() + "', as it was not registered!");
         }
         UniversalPower origin = idToUP.get(id);
         return origin;

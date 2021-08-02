@@ -6,11 +6,13 @@
   "mixins": [
     "AccessorMixin",
     "PlayerManagerMixin",
-    "FileResourcePackProviderMixin"
+    "FileResourcePackProviderMixin",
+    "ServerWorldMixin"
   ],
   "client": [
     "MinecraftServerMixin",
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "ParrotEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,11 +1,26 @@
 package io.github.ThatRobin.ccpacks.serializableData;
 
+import com.google.gson.JsonParseException;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.calio.Calio;
+import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import java.util.Collection;
+import java.util.List;
 
 public class SerializableObjects {
 
@@ -21,6 +36,15 @@ public class SerializableObjects {
             .add("type", SerializableDataTypes.STRING)
             .add("subtype", SerializableDataTypes.STRING);
 
+    public static SerializableData biomeData = new SerializableData()
+            .add("type", SerializableDataTypes.STRING)
+            .add("identifier", SerializableDataTypes.IDENTIFIER)
+            .add("primary_block", SerializableDataTypes.BLOCK)
+            .add("secondary_block", SerializableDataTypes.BLOCK)
+            .add("tertiary_block", SerializableDataTypes.BLOCK)
+            .add("weight", SerializableDataTypes.DOUBLE)
+            .add("climates", CCPackDataTypes.OVERWORLD_CLIMATES);
+
 
     public static SerializableData particleData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -34,6 +58,11 @@ public class SerializableObjects {
             .add("collides_with_world", SerializableDataTypes.BOOLEAN, false)
             .add("alpha", SerializableDataTypes.FLOAT, 1f);
 
+    public static SerializableData paintingData = new SerializableData()
+            .add("type", SerializableDataTypes.STRING)
+            .add("identifier", SerializableDataTypes.IDENTIFIER)
+            .add("width", SerializableDataTypes.INT, 1)
+            .add("height", SerializableDataTypes.INT, 1);
 
     public static SerializableData mooshroomEntityData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -52,6 +81,13 @@ public class SerializableObjects {
             .add("red", SerializableDataTypes.INT, 255)
             .add("green", SerializableDataTypes.INT, 255)
             .add("blue", SerializableDataTypes.INT, 255);
+
+    public static SerializableData enchantmentData = new SerializableData()
+            .add("type", SerializableDataTypes.STRING)
+            .add("identifier", SerializableDataTypes.IDENTIFIER)
+            .add("curse", SerializableDataTypes.BOOLEAN)
+            .add("max_level", SerializableDataTypes.INT, 1)
+            .add("rarity", SerializableDataType.enumValue(Enchantment.Rarity.class), Enchantment.Rarity.VERY_RARE);
 
     public static SerializableData portalData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
@@ -73,6 +109,7 @@ public class SerializableObjects {
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("lore", CCPackDataTypes.STRINGS, null)
             .add("durability", SerializableDataTypes.INT, null)
+            .add("fuel_tick", SerializableDataTypes.INT, 0)
             .add("start_color", CCPackDataTypes.COLOR, null)
             .add("end_color", CCPackDataTypes.COLOR, null)
             .add("max_count", SerializableDataTypes.INT, 64);
@@ -95,15 +132,16 @@ public class SerializableObjects {
             .add("mining_level",SerializableDataTypes.INT, 0)
             .add("enchantability",SerializableDataTypes.INT, 0)
             .add("attack_damage",SerializableDataTypes.INT, 0)
+            .add("repair_item",SerializableDataTypes.ITEM_STACK,null)
             .add("lore", CCPackDataTypes.STRINGS, null);
 
     public static SerializableData blockData = new SerializableData()
             .add("type", SerializableDataTypes.STRING)
             .add("subtype", SerializableDataTypes.STRING)
             .add("identifier", SerializableDataTypes.IDENTIFIER)
-            .add("material", SerializableDataTypes.STRING)
+            .add("material", CCPackDataTypes.MATERIAL)
             .add("effective_tool", SerializableDataTypes.STRING)
-            .add("sound", SerializableDataTypes.STRING)
+            .add("block_sound_group", CCPackDataTypes.BLOCK_SOUND_GROUP)
             .add("collidable", SerializableDataTypes.BOOLEAN, true)
             .add("transparent", SerializableDataTypes.BOOLEAN, false)
             .add("hardness", SerializableDataTypes.INT, 3)
@@ -120,7 +158,7 @@ public class SerializableObjects {
             .add("identifier", SerializableDataTypes.IDENTIFIER)
             .add("material", SerializableDataTypes.STRING)
             .add("effective_tool", SerializableDataTypes.STRING)
-            .add("sound", SerializableDataTypes.STRING)
+            .add("block_sound_group", CCPackDataTypes.BLOCK_SOUND_GROUP)
             .add("collidable", SerializableDataTypes.BOOLEAN, true)
             .add("transparent", SerializableDataTypes.BOOLEAN, false)
             .add("hardness", SerializableDataTypes.INT, 3)

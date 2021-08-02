@@ -30,16 +30,14 @@ public class DDFoodItem extends Item {
     private ItemConvertible returns;
     private int eating_time;
     private List<String> lore;
-    private ActionFactory<Entity>.Instance eatAction;
 
-    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore, ActionFactory<Entity>.Instance eatAction) {
+    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore) {
         super(settings);
         this.drinkable = drinkable;
         this.sound = sound;
         this.returns = returns;
         this.eating_time = eating_time;
         this.lore = lore;
-        this.eatAction = eatAction;
     }
 
     @Override
@@ -67,8 +65,6 @@ public class DDFoodItem extends Item {
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-
-        this.eatAction.accept(user);
 
         if (stack.isEmpty()) {
             return new ItemStack(returns);

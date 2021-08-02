@@ -19,6 +19,9 @@ import io.github.apace100.calio.data.SerializableData;
 import me.crimsondawn45.fabricshieldlib.lib.object.FabricShield;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.biome.v1.OverworldBiomes;
+import net.fabricmc.fabric.api.biome.v1.OverworldClimate;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -27,13 +30,13 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
+import net.fabricmc.fabric.mixin.object.builder.MaterialBuilderAccessor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
@@ -42,6 +45,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.passive.*;
@@ -51,8 +55,16 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.*;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -116,6 +128,12 @@ public class CCPackClientRegistry {
                 StatusEffect effect = new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                 Registry.register(Registry.STATUS_EFFECT, instance2.getId("identifier"), effect);
 
+            } else if (type.equals("ccpacks:painting")) {
+
+                instance2 = SerializableObjects.paintingData.read(jsonObject);
+
+                Registry.register(Registry.PAINTING_MOTIVE, instance2.getId("identifier"), new PaintingMotive(instance2.getInt("width") * 16, instance2.getInt("height") * 16));
+
             }
         }
 
@@ -137,15 +155,11 @@ public class CCPackClientRegistry {
                         instance2 = SerializableObjects.itemData.read(jsonObject);
 
                         DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxCount(instance2.getInt("max_count")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
+                        if(instance2.getInt("fuel_tick") > 0) {
+                            FuelRegistry.INSTANCE.add(EXAMPLE_ITEM, instance2.getInt("fuel_tick"));
+                        }
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
-                    } else if (itemType.equals("trinket")) {
-                        FabricLoader.getInstance().getModContainer("trinkets").ifPresent(modContainer -> {
-                            SerializableData.Instance instance3 = SerializableObjects.itemData.read(jsonObject);
-
-                            DDTrinketItem EXAMPLE_ITEM = new DDTrinketItem(new FabricItemSettings().maxCount(1).group(ItemGroup.MISC), (List<String>) instance3.get("lore"));
-                            Registry.register(Registry.ITEM, instance3.getId("identifier"), EXAMPLE_ITEM);
-                        });
                     } else if (itemType.equals("durable")) {
 
                         instance2 = SerializableObjects.itemData.read(jsonObject);
@@ -156,31 +170,31 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("sword")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 
-                        DDSwordItem EXAMPLE_ITEM = new DDSwordItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
+                        DDSwordItem EXAMPLE_ITEM = new DDSwordItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("pickaxe")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 
-                        DDPickaxeItem EXAMPLE_ITEM = new DDPickaxeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
+                        DDPickaxeItem EXAMPLE_ITEM = new DDPickaxeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("axe")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 
-                        DDAxeItem EXAMPLE_ITEM = new DDAxeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
+                        DDAxeItem EXAMPLE_ITEM = new DDAxeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("shovel")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 
-                        DDShovelItem EXAMPLE_ITEM = new DDShovelItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
+                        DDShovelItem EXAMPLE_ITEM = new DDShovelItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("hoe")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 
-                        DDHoeItem EXAMPLE_ITEM = new DDHoeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
+                        DDHoeItem EXAMPLE_ITEM = new DDHoeItem(new DDToolMaterial(instance2.getInt("durability"), instance2.getFloat("mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
                     } else if (itemType.equals("food")) {
@@ -194,11 +208,11 @@ public class CCPackClientRegistry {
                             food.alwaysEdible();
                         }
                         FoodComponent foodComp = food.build();
-                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"), (ActionFactory<Entity>.Instance) instance2.get("eat_action"));
+                        DDFoodItem EXAMPLE_ITEM = new DDFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(foodComp).maxCount(instance2.getInt("max_count")), instance2.getBoolean("drinkable"), (SoundEvent) instance2.get("sound"), (ItemConvertible) instance2.get("returns"), instance2.getInt("eating_time"), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
                     } else if (itemType.equals("helmet")) {
                         instance2 = SerializableObjects.armorData.read(jsonObject);
-
+                        CCPacksMain.LOGGER.info(instance2.getId("identifier"));
                         DDArmorMaterial CUSTOM_MATERIAL = new DDArmorMaterial(instance2.getInt("durability"), instance2.getInt("protection"), instance2.getInt("enchantability"), instance2.getInt("toughness"), instance2.getInt("knockback_resistance"), instance2.getString("name"), (Item) instance2.get("repair_item"));
                         DDArmorItem EXAMPLE_ITEM = new DDArmorItem(CUSTOM_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT), (List<String>) instance2.get("lore"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
@@ -238,8 +252,8 @@ public class CCPackClientRegistry {
                     if (itemType.equals("generic")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings =
                                 FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
@@ -254,8 +268,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("transparent")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings =
                                 FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
@@ -270,8 +284,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("falling")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -285,8 +299,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("horizontal_slab")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -300,8 +314,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("vertical_slab")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -315,8 +329,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("stairs")) {
                         instance2 = SerializableObjects.stairsData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         BlockState state = (Registry.BLOCK.get(instance2.getId("base_block"))).getDefaultState();
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
@@ -331,8 +345,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("fence")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -346,8 +360,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("fence_gate")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -361,8 +375,8 @@ public class CCPackClientRegistry {
                     } else if (itemType.equals("wall")) {
                         instance2 = SerializableObjects.blockData.read(jsonObject);
 
-                        Material mat = getMat(instance2.getString("material"));
-                        BlockSoundGroup sounds = getSound(instance2.getString("sound"));
+                        Material mat = (Material) instance2.get("material");
+                        BlockSoundGroup sounds = (BlockSoundGroup) instance2.get("block_sound_group");
                         Tag<Item> tools = getTool(instance2.getString("effective_tool"));
                         FabricBlockSettings blockSettings = FabricBlockSettings.of(mat).breakByTool(tools, instance2.getInt("mining_level")).collidable(instance2.getBoolean("collidable")).strength(instance2.getInt("hardness"), instance2.getInt("resistance")).slipperiness(instance2.getFloat("slipperiness")).luminance(instance2.getInt("luminance")).sounds(sounds).requiresTool().drops(instance2.getId("loot_table"));
                         if (instance2.getBoolean("transparent")) {
@@ -384,9 +398,9 @@ public class CCPackClientRegistry {
 
                 } else if (type.equals("ccpacks:enchantment")) {
 
-                    instance2 = SerializableObjects.statusEffectData.read(jsonObject);
+                    instance2 = SerializableObjects.enchantmentData.read(jsonObject);
 
-                    DDEnchantment EXAMPLE_ENCHANTMENT = new DDEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.BREAKABLE, null);
+                    DDEnchantment EXAMPLE_ENCHANTMENT = new DDEnchantment((Enchantment.Rarity)instance2.get("rarity"), EnchantmentTarget.BREAKABLE, null, instance2.getInt("max_level"), instance2.getBoolean("curse"));
                     Registry.register(Registry.ENCHANTMENT, instance2.getId("identifier"), EXAMPLE_ENCHANTMENT);
                 }
             } catch (Exception e) {
@@ -502,9 +516,64 @@ public class CCPackClientRegistry {
                 Registry.register(Registry.ENTITY_TYPE, instance2.getId("identifier"), EXAMPLE_PROJECTILE);
 
                 EntityRendererRegistry.INSTANCE.register(EXAMPLE_PROJECTILE, (context) -> new FlyingItemEntityRenderer(context));
+            } else if(type.equals("ccpacks:biome")) {
+                instance2 = SerializableObjects.biomeData.read(jsonObject);
+
+                ConfiguredSurfaceBuilder<TernarySurfaceConfig> BIOME_SURFACE_BUILDER = SurfaceBuilder.DEFAULT
+                        .withConfig(new TernarySurfaceConfig(
+                                ((Block) instance2.get("primary_block")).getDefaultState(),
+                                ((Block) instance2.get("secondary_block")).getDefaultState(),
+                                ((Block) instance2.get("tertiary_block")).getDefaultState()));
+                Biome OBSILAND = createBiome(BIOME_SURFACE_BUILDER);
+                RegistryKey<Biome> OBSILAND_KEY = RegistryKey.of(Registry.BIOME_KEY, instance2.getId("identifier"));
+                Registry.register(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, instance2.getId("identifier"), BIOME_SURFACE_BUILDER);
+                Registry.register(BuiltinRegistries.BIOME, OBSILAND_KEY.getValue(), OBSILAND);
+                for (int e = 0; e < ((List<OverworldClimate>) instance2.get("climates")).size(); e++) {
+                    OverworldBiomes.addContinentalBiome(OBSILAND_KEY, ((List<OverworldClimate>) instance2.get("climates")).get(e), ((List<Double>)instance2.get("weight")).get(e).doubleValue());
+                }
             }
 
         }
+    }
+
+    private static Biome createBiome(ConfiguredSurfaceBuilder<TernarySurfaceConfig> OBSIDIAN_SURFACE_BUILDER) {
+        // We specify what entities spawn and what features generate in the biome.
+        // Aside from some structures, trees, rocks, plants and
+        //   custom entities, these are mostly the same for each biome.
+        // Vanilla configured features for biomes are defined in DefaultBiomeFeatures.
+
+        SpawnSettings.Builder spawnSettings = new SpawnSettings.Builder();
+        DefaultBiomeFeatures.addFarmAnimals(spawnSettings);
+        DefaultBiomeFeatures.addMonsters(spawnSettings, 95, 5, 100);
+
+        GenerationSettings.Builder generationSettings = new GenerationSettings.Builder();
+        generationSettings.surfaceBuilder(OBSIDIAN_SURFACE_BUILDER);
+        DefaultBiomeFeatures.addDefaultUndergroundStructures(generationSettings);
+        DefaultBiomeFeatures.addLandCarvers(generationSettings);
+        DefaultBiomeFeatures.addDefaultLakes(generationSettings);
+        DefaultBiomeFeatures.addDungeons(generationSettings);
+        DefaultBiomeFeatures.addMineables(generationSettings);
+        DefaultBiomeFeatures.addDefaultOres(generationSettings);
+        DefaultBiomeFeatures.addDefaultDisks(generationSettings);
+        DefaultBiomeFeatures.addSprings(generationSettings);
+        DefaultBiomeFeatures.addFrozenTopLayer(generationSettings);
+
+        return (new Biome.Builder())
+                .precipitation(Biome.Precipitation.RAIN)
+                .category(Biome.Category.NONE)
+                .depth(0.125F)
+                .scale(0.05F)
+                .temperature(0.8F)
+                .downfall(0.4F)
+                .effects((new BiomeEffects.Builder())
+                        .waterColor(0x3f76e4)
+                        .waterFogColor(0x050533)
+                        .fogColor(0xc0d8ff)
+                        .skyColor(0x77adff)
+                        .build())
+                .spawnSettings(spawnSettings.build())
+                .generationSettings(generationSettings.build())
+                .build();
     }
 
     public void readFromDir(File base, ZipFile zipFile) throws IOException {
@@ -592,51 +661,4 @@ public class CCPackClientRegistry {
         list.add(pair);
     }
 
-    private BlockSoundGroup getSound(String name){
-        BlockSoundGroup sound;
-        if(name.equalsIgnoreCase("bone")){
-            sound = BlockSoundGroup.BONE;
-        } else if(name.equalsIgnoreCase("glass")){
-            sound = BlockSoundGroup.GLASS;
-        } else if(name.equalsIgnoreCase("stone")){
-            sound = BlockSoundGroup.STONE;
-        } else if(name.equalsIgnoreCase("amethyst")){
-            sound = BlockSoundGroup.AMETHYST_BLOCK;
-        } else if(name.equalsIgnoreCase("leaves")){
-            sound = BlockSoundGroup.WET_GRASS;
-        } else if(name.equalsIgnoreCase("wood")){
-            sound = BlockSoundGroup.WOOD;
-        } else if(name.equalsIgnoreCase("snow_block")){
-            sound = BlockSoundGroup.SNOW;
-        } else if(name.equalsIgnoreCase("anvil")){
-            sound = BlockSoundGroup.ANVIL;
-        } else {
-            sound = BlockSoundGroup.BONE;
-        }
-        return sound;
-    }
-
-    private Material getMat(String name){
-        Material mat;
-        if(name.equalsIgnoreCase("air")){
-            mat = Material.AIR;
-        } else if(name.equalsIgnoreCase("ice")){
-            mat = Material.ICE;
-        } else if(name.equalsIgnoreCase("stone")){
-            mat = Material.STONE;
-        } else if(name.equalsIgnoreCase("amethyst")){
-            mat = Material.AMETHYST;
-        } else if(name.equalsIgnoreCase("leaves")){
-            mat = Material.LEAVES;
-        } else if(name.equalsIgnoreCase("wood")){
-            mat = Material.WOOD;
-        } else if(name.equalsIgnoreCase("snow_block")){
-            mat = Material.SNOW_BLOCK;
-        } else if(name.equalsIgnoreCase("tnt")){
-            mat = Material.TNT;
-        } else {
-            mat = Material.STONE;
-        }
-        return mat;
-    }
 }

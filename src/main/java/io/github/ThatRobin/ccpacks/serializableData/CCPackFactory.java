@@ -65,15 +65,15 @@ public class CCPackFactory {
                 }));
         registerItemAction(new ActionFactory<>(CCPacksMain.identifier("remove_durability"), new SerializableData()
                 .add("amount", SerializableDataTypes.INT, 1),
-                (data, worldItemStackPair) -> {
-                    if(worldItemStackPair.getRight().getDamage() > -1){
-                        worldItemStackPair.getRight().setDamage(worldItemStackPair.getRight().getDamage()+data.getInt("amount"));
+                (data, stack) -> {
+                    if(stack.getDamage() > -1){
+                        stack.setDamage(stack.getDamage()+data.getInt("amount"));
                     }
                 }));
         registerItemAction(new ActionFactory<>(CCPacksMain.identifier("change_name"), new SerializableData()
                 .add("name", SerializableDataTypes.STRING),
-                (data, worldItemStackPair) -> {
-                    worldItemStackPair.getRight().setCustomName(new TranslatableText(data.getString("name")));
+                (data, stack) -> {
+                    stack.setCustomName(new TranslatableText(data.getString("name")));
                 }));
         registerItemCondition(new ConditionFactory<>(CCPacksMain.identifier("compare_durability"), new SerializableData()
                 .add("comparison", ApoliDataTypes.COMPARISON)
@@ -254,7 +254,7 @@ public class CCPackFactory {
         Registry.register(ApoliRegistries.ITEM_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
-    private static void registerItemAction(ActionFactory<Pair<World, ItemStack>> actionFactory) {
+    private static void registerItemAction(ActionFactory<ItemStack> actionFactory) {
         Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
 

@@ -2,6 +2,8 @@ package io.github.ThatRobin.ccpacks.registries;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.emi.trinkets.TrinketSlot;
+import dev.emi.trinkets.api.TrinketEnums;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
 import io.github.ThatRobin.ccpacks.dataDrivenTypes.Particles.DDParticle;
@@ -156,7 +158,7 @@ public class CCPackServerRegistry {
                     DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                     Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
-                } else if (itemType.equals("sword")) {
+                }  else if (itemType.equals("sword")) {
                     instance2 = SerializableObjects.toolData.read(jsonObject);
 
                     DDSwordItem EXAMPLE_ITEM = new DDSwordItem(new DDToolMaterial(instance2.getInt( "durability"), instance2.getFloat( "mining_speed_multiplier"), instance2.getInt("attack_damage"), instance2.getInt("mining_level"), instance2.getInt("enchantability"), (ItemStack)instance2.get("repair_item")), instance2.getInt("attack_damage") - 4, instance2.getInt("attack_speed") - 3.3f, new FabricItemSettings().maxCount(1).group(ItemGroup.TOOLS), (List<String>)instance2.get("lore"));

@@ -4,6 +4,7 @@ import io.github.ThatRobin.ccpacks.Commands.ItemActionCommand;
 import io.github.ThatRobin.ccpacks.Commands.SetAttributeFromScoreboard;
 import io.github.ThatRobin.ccpacks.Commands.SetFoodFromScoreboard;
 import io.github.ThatRobin.ccpacks.Commands.SetHealthFromScoreboard;
+import io.github.ThatRobin.ccpacks.networkin.ModPacketsClientToServer;
 import io.github.ThatRobin.ccpacks.serializableData.CCPackFactory;
 import io.github.ThatRobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
@@ -32,6 +33,7 @@ public class CCPacksMain implements ModInitializer {
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new UniversalPowerManager());
 		NamespaceAlias.addAlias(MODID, "apoli");
 		NamespaceAlias.addAlias("origins", "apoli");
+		ModPacketsClientToServer.register();
 		CCPackFactory.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
 			SetAttributeFromScoreboard.register(dispatcher);

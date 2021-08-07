@@ -167,6 +167,13 @@ public class CCPackClientRegistry {
                         DDItem EXAMPLE_ITEM = new DDItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
                         Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
 
+                    } else if (itemType.equals("trinket")) {
+
+                        instance2 = SerializableObjects.itemData.read(jsonObject);
+
+                        DDTrinketItem EXAMPLE_ITEM = new DDTrinketItem(new FabricItemSettings().maxDamage(instance2.getInt("durability")).group(ItemGroup.MISC), (List<String>) instance2.get("lore"), (ColourHolder) instance2.get("start_color"), (ColourHolder) instance2.get("end_color"));
+                        Registry.register(Registry.ITEM, instance2.getId("identifier"), EXAMPLE_ITEM);
+
                     } else if (itemType.equals("sword")) {
                         instance2 = SerializableObjects.toolData.read(jsonObject);
 

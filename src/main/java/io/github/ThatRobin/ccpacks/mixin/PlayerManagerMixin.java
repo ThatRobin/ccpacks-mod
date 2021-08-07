@@ -1,7 +1,15 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
+import io.github.ThatRobin.ccpacks.Screen.ChoiceScreen;
+import io.github.ThatRobin.ccpacks.networkin.ModPackets;
 import io.github.ThatRobin.ccpacks.util.UniversalPowerRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -21,6 +29,7 @@ public abstract class PlayerManagerMixin {
         for(int i = 0; i < this.getServerWorld().getPlayers().size(); i++){
             PowerHolderComponent component = PowerHolderComponent.KEY.get(this.getServerWorld().getPlayers().get(i));
             int finalI = i;
+
             UniversalPowerRegistry.entries().forEach((up -> {
                 if(up.getValue().entityTypes.contains(this.getServerWorld().getPlayers().get(finalI).getType())) {
                     up.getValue().powerTypes.forEach(powerType -> {

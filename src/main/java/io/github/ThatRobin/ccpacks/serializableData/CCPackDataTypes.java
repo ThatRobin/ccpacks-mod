@@ -3,8 +3,11 @@ package io.github.ThatRobin.ccpacks.serializableData;
 import com.google.gson.JsonParseException;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.util.AdvancedHudRender;
+import io.github.ThatRobin.ccpacks.util.Choice;
 import io.github.ThatRobin.ccpacks.util.ColourHolder;
+import io.github.ThatRobin.ccpacks.util.Outcome;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.util.HudRender;
@@ -116,8 +119,8 @@ public class CCPackDataTypes {
                 return dataInst;
             });
 
-    public static final SerializableDataType<Material> MATERIAL = SerializableDataType.compound(Material.class, new
-                    SerializableData()
+    public static final SerializableDataType<Material> MATERIAL = SerializableDataType.compound(Material.class,
+            new SerializableData()
                     .add("allow_light", SerializableDataTypes.BOOLEAN, false),
             (dataInst) -> {
                 FabricMaterialBuilder mat = new FabricMaterialBuilder(MapColor.BLACK);
@@ -192,6 +195,51 @@ public class CCPackDataTypes {
                 }
                 return inst;
             });
+
+    public static final SerializableDataType<List<Choice>> CHOICES =
+            SerializableDataType.list(CCPackDataTypes.CHOICE);
+
+    public static final SerializableDataType<Choice> CHOICE = SerializableDataType.compound(Choice.class, new SerializableData()
+            .add("flavour_text", SerializableDataTypes.STRING, "")
+            .add("outcome_list", CCPackDataTypes.OUTCOMES),
+            dataInstance -> {
+                if (dataInstance.get("outcome_list") != null) {
+                    Choice choice = new Choice(dataInstance.getString("flavour_text"), (Outcome) dataInstance.get("outcome_list"));
+                    return choice;
+                }
+                return new Choice("tester", new Outcome("tester2"));
+            }, (data, choice) -> {
+                SerializableData.Instance inst = data.new Instance();
+                inst.set("flavour_text", choice.getText());
+                inst.set("outcome_list", choice.getOutcomes());
+                return inst;
+            });
+
+    public static final SerializableDataType<List<Outcome>> OUTCOMES =
+            SerializableDataType.list(CCPackDataTypes.OUTCOME);
+
+
+    public static final SerializableDataType<Outcome> OUTCOME = SerializableDataType.compound(Outcome.class, new SerializableData()
+                    .add("power", ApoliDataTypes.POWER_TYPE, null)
+                    .add("text", SerializableDataTypes.STRING, null),
+            dataInstance -> {
+                boolean powerPresent = dataInstance.isPresent("power");
+                boolean textPresent = dataInstance.isPresent("text");
+                if(powerPresent == textPresent) {
+                    throw new JsonParseException("An ingredient entry is either a power or text, " + (powerPresent ? "not both" : "one has to be provided."));
+                }
+                if(textPresent) {
+                    return new Outcome(dataInstance.getString("text"));
+                } else {
+                    return new Outcome((PowerTypeReference)dataInstance.get("power"));
+                }
+            }, (data, outcome) -> {
+                SerializableData.Instance inst = data.new Instance();
+                inst.set("text", outcome.getText());
+                inst.set("power", outcome.getPower());
+                return inst;
+            });
+
 
 
 }

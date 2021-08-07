@@ -2,6 +2,8 @@ package io.github.ThatRobin.ccpacks.Commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import io.github.ThatRobin.ccpacks.Screen.ChoiceScreen;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
@@ -87,6 +89,7 @@ public class SetHealthFromScoreboard {
     public static void setHealth(LivingEntity entity, ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective){
         Scoreboard scoreboard = source.getServer().getScoreboard();
         Iterator var7 = targets.iterator();
+
         while(var7.hasNext()) {
             String string = (String)var7.next();
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);

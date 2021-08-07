@@ -1,9 +1,14 @@
 package io.github.ThatRobin.ccpacks.serializableData;
 
+import com.google.gson.Gson;
+import com.mojang.authlib.minecraft.client.ObjectMapper;
+import io.github.ThatRobin.ccpacks.Power.ChoiceScreenPower;
 import io.github.ThatRobin.ccpacks.Power.InterfacePower;
 import io.github.ThatRobin.ccpacks.Power.StatBar;
+import io.github.ThatRobin.ccpacks.Screen.ChoiceScreen;
+import io.github.ThatRobin.ccpacks.networkin.ModPackets;
 import io.github.ThatRobin.ccpacks.util.AdvancedHudRender;
-import io.github.apace100.apoli.Apoli;
+import io.github.ThatRobin.ccpacks.util.Choice;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.*;
@@ -17,16 +22,21 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.util.CustomCraftingTable;
-import net.fabricmc.loader.api.FabricLoader;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +45,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Triple;
+
+import java.io.ObjectOutputStream;
+import java.util.List;
 
 public class CCPackFactory {
 
@@ -52,15 +65,15 @@ public class CCPackFactory {
                 }));
         registerItemAction(new ActionFactory<>(CCPacksMain.identifier("remove_durability"), new SerializableData()
                 .add("amount", SerializableDataTypes.INT, 1),
-                (data, stack) -> {
-                    if(stack.getDamage() > -1){
-                        stack.setDamage(stack.getDamage()+data.getInt("amount"));
+                (data, worldItemStackPair) -> {
+                    if(worldItemStackPair.getRight().getDamage() > -1){
+                        worldItemStackPair.getRight().setDamage(worldItemStackPair.getRight().getDamage()+data.getInt("amount"));
                     }
                 }));
         registerItemAction(new ActionFactory<>(CCPacksMain.identifier("change_name"), new SerializableData()
                 .add("name", SerializableDataTypes.STRING),
-                (data, stack) -> {
-                    stack.setCustomName(new TranslatableText(data.getString("name")));
+                (data, worldItemStackPair) -> {
+                    worldItemStackPair.getRight().setCustomName(new TranslatableText(data.getString("name")));
                 }));
         registerItemCondition(new ConditionFactory<>(CCPacksMain.identifier("compare_durability"), new SerializableData()
                 .add("comparison", ApoliDataTypes.COMPARISON)
@@ -191,6 +204,40 @@ public class CCPackFactory {
                             return power;
                         }));
 
+        registerEntityAction(new ActionFactory<>(CCPacksMain.identifier("open_decision_screen"), new SerializableData()
+                .add("decision_screen", ApoliDataTypes.POWER_TYPE, null),
+                (data, entity) -> {
+                    if(entity instanceof PlayerEntity){
+                        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                        Power p = component.getPower((PowerType<?>)data.get("decision_screen"));
+                        if(p instanceof ChoiceScreenPower) {
+                            if (entity.getEntityWorld().isClient()) {
+                                MinecraftClient.getInstance().openScreen(((ChoiceScreenPower) p).getScreen());
+                            }
+                            if (!entity.getEntityWorld().isClient()) {
+                                PacketByteBuf data2 = new PacketByteBuf(Unpooled.buffer());
+                                ChoiceScreen stream = (((ChoiceScreenPower) p).getScreen());
+                                String str = new ObjectMapper(new Gson()).writeValueAsString(stream);
+                                data2.writeString(str);
+                                ServerSidePacketRegistry.INSTANCE.sendToPlayer((PlayerEntity) entity, ModPackets.OPEN_CHOICE_SCREEN, data2);
+                            }
+                        }
+                    }
+                }
+        ));
+
+        registerPowerType(new PowerFactory<>(CCPacksMain.identifier("decision_screen"),
+                new SerializableData()
+                        .add("title", SerializableDataTypes.STRING, "")
+                        .add("show_dirt", SerializableDataTypes.BOOLEAN, false)
+                        .add("choices",CCPackDataTypes.OUTCOMES),
+                data ->
+                        (type, player) -> {
+                            ChoiceScreen screen = new ChoiceScreen(data.getBoolean("show_dirt"), null);
+                            ChoiceScreenPower power = new ChoiceScreenPower(type, player, screen);
+                            return power;
+                        }));
+
     }
 
     private static NamedScreenHandlerFactory craftingTable(World world_1, BlockPos blockPos_1) {
@@ -207,7 +254,7 @@ public class CCPackFactory {
         Registry.register(ApoliRegistries.ITEM_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
-    private static void registerItemAction(ActionFactory<ItemStack> actionFactory) {
+    private static void registerItemAction(ActionFactory<Pair<World, ItemStack>> actionFactory) {
         Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
 

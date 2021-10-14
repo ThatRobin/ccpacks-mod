@@ -1,5 +1,6 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeReference;
@@ -7,6 +8,7 @@ import io.github.apace100.apoli.power.PowerTypeRegistry;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.item.ToolMaterial;

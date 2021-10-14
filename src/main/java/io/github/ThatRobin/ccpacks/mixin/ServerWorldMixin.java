@@ -1,17 +1,14 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.util.UniversalPowerRegistry;
+import io.github.ThatRobin.ccpacks.Registries.UniversalPowerRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ServerWorld.class)
@@ -23,7 +20,6 @@ public class ServerWorldMixin {
             PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
             UniversalPowerRegistry.entries().forEach((up -> {
                 if(up.getValue().entityTypes.contains(entity.getType())) {
-                    CCPacksMain.LOGGER.info(entity.getType());
                     up.getValue().powerTypes.forEach(powerType -> {
                         component.addPower(powerType, new Identifier("ccpacks", "universal_powers"));
                     });

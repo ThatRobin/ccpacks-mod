@@ -1,12 +1,13 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks;
 
-import net.minecraft.block.*;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.math.Direction;
+import net.minecraft.block.WallBlock;
 
 public class DDWallBlock extends WallBlock {
-    public DDWallBlock(Settings settings) {
-        super(settings);
-    }
 
+    private boolean make_block;
+
+    public DDWallBlock(Settings settings, boolean make_block) {
+        super(settings);
+        this.make_block = make_block;
+    }
 }

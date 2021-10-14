@@ -3,14 +3,10 @@ package io.github.ThatRobin.ccpacks.mixin;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import net.minecraft.client.render.entity.ParrotEntityRenderer;
 import net.minecraft.entity.passive.ParrotEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import static net.minecraft.client.render.entity.ParrotEntityRenderer.TEXTURES;
 
 @Mixin(ParrotEntityRenderer.class)
 public class ParrotEntityRendererMixin {

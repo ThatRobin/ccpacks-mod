@@ -9,12 +9,14 @@ public class DDEnchantment extends Enchantment {
     private Rarity rarity;
     private int maxLevel;
     private boolean curse;
+    private boolean treasure;
 
-    public DDEnchantment(Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes, int maxLevel, boolean curse) {
+    public DDEnchantment(Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes, int maxLevel, boolean curse, boolean treasure) {
         super(weight, type, slotTypes);
         this.rarity = weight;
         this.curse = curse;
         this.maxLevel = maxLevel;
+        this.treasure = treasure;
     }
 
     @Override
@@ -30,5 +32,10 @@ public class DDEnchantment extends Enchantment {
     @Override
     public int getMaxLevel() {
         return this.maxLevel;
+    }
+
+    @Override
+    public boolean isTreasure() {
+        return this.treasure;
     }
 }

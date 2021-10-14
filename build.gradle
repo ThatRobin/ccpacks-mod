@@ -12,6 +12,12 @@ group = project.maven_group
 
 repositories {
 	maven {
+		url "https://maven.shedaniel.me/"
+	}
+	maven {
+		url = 'https://maven.nucleoid.xyz'
+	}
+	maven {
 		url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
 	}
 	maven {
@@ -43,6 +49,9 @@ repositories {
 			includeGroup 'net.adriantodt.fabricmc'
 		}
 	}
+	maven {
+		url 'https://storage.googleapis.com/devan-maven/'
+	}
 }
 
 dependencies {
@@ -60,7 +69,6 @@ dependencies {
 	modImplementation "com.github.apace100:calio:${project.calio_version}"
 	include "com.github.apace100:calio:${project.calio_version}"
 
-
 	modImplementation 'net.kyrptonaught:customportalapi:0.0.1-beta37-1.17'
 	include 'net.kyrptonaught:customportalapi:0.0.1-beta37-1.17'
 
@@ -72,6 +80,8 @@ dependencies {
 
 	modImplementation "com.github.emilyalexandra:trinkets:3.0.2"
 	include "com.github.emilyalexandra:trinkets:3.0.2"
+
+	modImplementation "software.bernie.geckolib:geckolib-fabric-1.17:3.0.16:dev"
 
 }
 

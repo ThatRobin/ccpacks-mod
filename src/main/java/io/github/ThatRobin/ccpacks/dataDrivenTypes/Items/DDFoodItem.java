@@ -1,5 +1,6 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;

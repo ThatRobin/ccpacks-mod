@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class DDParticle extends SpriteBillboardParticle {
@@ -18,7 +17,7 @@ public class DDParticle extends SpriteBillboardParticle {
     public static float blue;
 
 
-    protected DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+    public DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, g, h, i);
         this.scale = size;
         this.maxAge = max_age; //ticks

@@ -1,23 +1,14 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Blocks;
 
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import java.util.function.Consumer;
 
 public class DDStairBlock extends StairsBlock {
 
-    public DDStairBlock(BlockState state, Settings settings) {
-        super(state, settings);
-    }
+    private boolean make_block;
 
+    public DDStairBlock(BlockState baseBlockState, Settings settings, boolean make_block) {
+        super(baseBlockState, settings);
+        this.make_block = make_block;
+    }
 }

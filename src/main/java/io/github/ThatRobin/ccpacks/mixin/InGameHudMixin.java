@@ -1,7 +1,6 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Power.StatBar;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +8,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.stat.Stat;
 import net.minecraft.tag.FluidTags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,6 +35,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Inject(method = "renderStatusBars", at = @At("TAIL"))
     private void renderStatusBars(MatrixStack matrices, CallbackInfo ci) {
         PlayerEntity playerEntity = getCameraPlayer();
+
         int leftBars = 0;
         int rightBars = 0;
 

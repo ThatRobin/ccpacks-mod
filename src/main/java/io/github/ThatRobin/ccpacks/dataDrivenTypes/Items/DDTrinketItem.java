@@ -1,10 +1,12 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
 import dev.emi.trinkets.api.TrinketItem;
-import io.github.ThatRobin.ccpacks.util.ColourHolder;
+import io.github.ThatRobin.ccpacks.Util.ColourHolder;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;

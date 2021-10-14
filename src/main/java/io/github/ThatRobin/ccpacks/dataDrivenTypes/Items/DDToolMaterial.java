@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
-public class DDToolMaterial implements ToolMaterial {
+public class DDToolMaterial implements ToolMaterial{
 
     private int durability;
     private float miningMult;

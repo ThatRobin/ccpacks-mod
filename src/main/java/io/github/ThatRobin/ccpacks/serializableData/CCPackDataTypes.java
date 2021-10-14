@@ -1,32 +1,25 @@
 package io.github.ThatRobin.ccpacks.serializableData;
 
+import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonParseException;
-import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.util.AdvancedHudRender;
-import io.github.ThatRobin.ccpacks.util.Choice;
-import io.github.ThatRobin.ccpacks.util.ColourHolder;
-import io.github.ThatRobin.ccpacks.util.Outcome;
+import io.github.ThatRobin.ccpacks.Util.AdvancedHudRender;
+import io.github.ThatRobin.ccpacks.Util.ColourHolder;
+import io.github.ThatRobin.ccpacks.Util.StatBarHudRender;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.Calio;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.fabricmc.fabric.api.biome.v1.OverworldClimate;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
-import net.fabricmc.fabric.mixin.object.builder.MaterialBuilderAccessor;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
@@ -41,23 +34,31 @@ public class CCPackDataTypes {
     public static final SerializableDataType<List<String>> STRINGS =
             SerializableDataType.list(SerializableDataTypes.STRING);
 
-    public static final SerializableDataType<List<Double>> DOUBLES =
-            SerializableDataType.list(SerializableDataTypes.DOUBLE);
+    public static HashBiMap<String, ItemGroup> ITEM_GROUP_MAP = HashBiMap.create();
 
-    public static final SerializableDataType<OverworldClimate> OVERWORLD_CLIMATE =
-            SerializableDataType.enumValue(OverworldClimate.class);
+    static {
+        ITEM_GROUP_MAP.put("brewing", ItemGroup.BREWING);
+        ITEM_GROUP_MAP.put("building_blocks", ItemGroup.BUILDING_BLOCKS);
+        ITEM_GROUP_MAP.put("combat", ItemGroup.COMBAT);
+        ITEM_GROUP_MAP.put("decorations", ItemGroup.DECORATIONS);
+        ITEM_GROUP_MAP.put("food", ItemGroup.FOOD);
+        ITEM_GROUP_MAP.put("materials", ItemGroup.MATERIALS);
+        ITEM_GROUP_MAP.put("redstone", ItemGroup.REDSTONE);
+        ITEM_GROUP_MAP.put("tools", ItemGroup.TOOLS);
+        ITEM_GROUP_MAP.put("transportation", ItemGroup.TRANSPORTATION);
+    }
 
-    public static final SerializableDataType<List<OverworldClimate>> OVERWORLD_CLIMATES =
-            SerializableDataType.list(CCPackDataTypes.OVERWORLD_CLIMATE);
+    public static final SerializableDataType<ItemGroup> ITEM_GROUP =
+            SerializableDataType.mapped(ItemGroup.class, ITEM_GROUP_MAP);
 
-    public static final SerializableDataType<AdvancedHudRender> HUD_RENDER = SerializableDataType.compound(AdvancedHudRender.class, new
+    public static final SerializableDataType<StatBarHudRender> STAT_BAR_HUD_RENDER = SerializableDataType.compound(StatBarHudRender.class, new
                     SerializableData()
                     .add("should_render", SerializableDataTypes.BOOLEAN, true)
                     .add("bar_index", SerializableDataTypes.INT, 0)
                     .add("side", SerializableDataTypes.STRING, "right")
                     .add("sprite_location", SerializableDataTypes.IDENTIFIER, new Identifier("ccpacks", "textures/gui/icons.png"))
                     .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
-            (dataInst) -> new AdvancedHudRender(
+            (dataInst) -> new StatBarHudRender(
                     dataInst.getBoolean("should_render"),
                     dataInst.getInt("bar_index"),
                     dataInst.getId("sprite_location"),
@@ -70,6 +71,23 @@ public class CCPackDataTypes {
                 dataInst.set("sprite_location", inst.getSpriteLocation());
                 dataInst.set("condition", inst.getCondition());
                 dataInst.set("side", inst.getSide());
+                return dataInst;
+            });
+
+    public static final SerializableDataType<AdvancedHudRender> GUI_HUD_RENDER = SerializableDataType.compound(AdvancedHudRender.class, new
+                    SerializableData()
+                    .add("should_render", SerializableDataTypes.BOOLEAN, true)
+                    .add("sprite_location", SerializableDataTypes.IDENTIFIER, null)
+                    .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
+            (dataInst) -> new AdvancedHudRender(
+                    dataInst.getBoolean("should_render"),
+                    dataInst.getId("sprite_location"),
+                    (ConditionFactory<LivingEntity>.Instance)dataInst.get("condition")),
+            (data, inst) -> {
+                SerializableData.Instance dataInst = data.new Instance();
+                dataInst.set("should_render", inst.shouldRender());
+                dataInst.set("sprite_location", inst.getSpriteLocation());
+                dataInst.set("condition", inst.getCondition());
                 return dataInst;
             });
 
@@ -121,7 +139,14 @@ public class CCPackDataTypes {
 
     public static final SerializableDataType<Material> MATERIAL = SerializableDataType.compound(Material.class,
             new SerializableData()
-                    .add("allow_light", SerializableDataTypes.BOOLEAN, false),
+                    .add("allow_light", SerializableDataTypes.BOOLEAN, false)
+                    .add("allow_movement", SerializableDataTypes.BOOLEAN, false)
+                    .add("blocks_pistons", SerializableDataTypes.BOOLEAN, false)
+                    .add("burnable", SerializableDataTypes.BOOLEAN, false)
+                    .add("destroyed_by_piston", SerializableDataTypes.BOOLEAN, false)
+                    .add("liquid", SerializableDataTypes.BOOLEAN, false)
+                    .add("not_solid", SerializableDataTypes.BOOLEAN, false)
+                    .add("replaceable", SerializableDataTypes.BOOLEAN, false),
             (dataInst) -> {
                 FabricMaterialBuilder mat = new FabricMaterialBuilder(MapColor.BLACK);
                 if(dataInst.getBoolean("allow_light")){
@@ -195,51 +220,5 @@ public class CCPackDataTypes {
                 }
                 return inst;
             });
-
-    public static final SerializableDataType<List<Choice>> CHOICES =
-            SerializableDataType.list(CCPackDataTypes.CHOICE);
-
-    public static final SerializableDataType<Choice> CHOICE = SerializableDataType.compound(Choice.class, new SerializableData()
-            .add("flavour_text", SerializableDataTypes.STRING, "")
-            .add("outcome_list", CCPackDataTypes.OUTCOMES),
-            dataInstance -> {
-                if (dataInstance.get("outcome_list") != null) {
-                    Choice choice = new Choice(dataInstance.getString("flavour_text"), (Outcome) dataInstance.get("outcome_list"));
-                    return choice;
-                }
-                return new Choice("tester", new Outcome("tester2"));
-            }, (data, choice) -> {
-                SerializableData.Instance inst = data.new Instance();
-                inst.set("flavour_text", choice.getText());
-                inst.set("outcome_list", choice.getOutcomes());
-                return inst;
-            });
-
-    public static final SerializableDataType<List<Outcome>> OUTCOMES =
-            SerializableDataType.list(CCPackDataTypes.OUTCOME);
-
-
-    public static final SerializableDataType<Outcome> OUTCOME = SerializableDataType.compound(Outcome.class, new SerializableData()
-                    .add("power", ApoliDataTypes.POWER_TYPE, null)
-                    .add("text", SerializableDataTypes.STRING, null),
-            dataInstance -> {
-                boolean powerPresent = dataInstance.isPresent("power");
-                boolean textPresent = dataInstance.isPresent("text");
-                if(powerPresent == textPresent) {
-                    throw new JsonParseException("An ingredient entry is either a power or text, " + (powerPresent ? "not both" : "one has to be provided."));
-                }
-                if(textPresent) {
-                    return new Outcome(dataInstance.getString("text"));
-                } else {
-                    return new Outcome((PowerTypeReference)dataInstance.get("power"));
-                }
-            }, (data, outcome) -> {
-                SerializableData.Instance inst = data.new Instance();
-                inst.set("text", outcome.getText());
-                inst.set("power", outcome.getPower());
-                return inst;
-            });
-
-
 
 }

@@ -1,10 +1,11 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
-
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -32,5 +33,6 @@ public class DDArmorItem extends ArmorItem {
             }
         }
     }
+
 
 }

@@ -8,12 +8,13 @@
     "PlayerManagerMixin",
     "FileResourcePackProviderMixin",
     "ServerWorldMixin",
-    "LivingEntityMixin"
+    "ProjectileEntityMixin"
   ],
   "client": [
     "MinecraftServerMixin",
     "InGameHudMixin",
-    "ParrotEntityRendererMixin"
+    "ParrotEntityRendererMixin",
+    "SplashTextResourceSupplierMixin"
   ],
   "injectors": {
     "defaultRequire": 1

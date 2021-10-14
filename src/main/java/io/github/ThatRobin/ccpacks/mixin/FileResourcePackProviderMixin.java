@@ -1,8 +1,13 @@
 package io.github.ThatRobin.ccpacks.mixin;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
-import net.minecraft.resource.*;
-import org.spongepowered.asm.mixin.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,7 +36,8 @@ public abstract class FileResourcePackProviderMixin {
 
     @Inject(method = "register", at = @At(value = "HEAD"), cancellable = true)
     private void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory, CallbackInfo ci) throws IOException {
-        File[] files = this.packsFolder.listFiles(this.POSSIBLE_PACK);
+        File DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("mods").toFile();
+        File[] files = DATAPACKS_PATH.listFiles(this.POSSIBLE_PACK);
         if (files != null) {
             for(int i = 0; i < files.length; ++i) {
                 File file = files[i];
@@ -45,21 +51,15 @@ public abstract class FileResourcePackProviderMixin {
                     boolean ccpack = false;
                     while (enumeration.hasMoreElements()) {
                         ZipEntry zipEntry = enumeration.nextElement();
-                        CCPacksMain.LOGGER.info(zipEntry.getName());
-                        CCPacksMain.LOGGER.info(zipEntry.getName().startsWith(string3));
                         if (zipEntry.getName().startsWith(string3)) {
                             ccpack = true;
                         }
                     }
                     if(ccpack) {
                         resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
-                    } else {
-                        resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
                     }
                 } else if(test.toFile().exists()) {
                     resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
-                } else {
-                    resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
                 }
                 if (resourcePackProfile != null) {
                     profileAdder.accept(resourcePackProfile);
@@ -67,6 +67,5 @@ public abstract class FileResourcePackProviderMixin {
             }
 
         }
-        ci.cancel();
     }
 }

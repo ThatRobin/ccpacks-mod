@@ -1,10 +1,11 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.util.ColourHolder;
+import io.github.ThatRobin.ccpacks.Util.ColourHolder;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -19,6 +20,13 @@ public class DDItem extends Item {
     private List<String> lore;
     private ColourHolder startColours;
     private ColourHolder endColours;
+
+    public DDItem(Settings settings, List<String> lore) {
+        super(settings);
+        this.lore = lore;
+        this.startColours = null;
+        this.endColours = null;
+    }
 
     public DDItem(Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
         super(settings);

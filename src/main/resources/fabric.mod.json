@@ -15,16 +15,23 @@
     "main": [
       "io.github.ThatRobin.ccpacks.CCPacksMain"
     ],
+    "cardinal-components-entity": [
+      "io.github.ThatRobin.ccpacks.CCPacksMain",
+      "io.github.ThatRobin.ccpacks.Component.ModComponents"
+    ],
     "client": [
       "io.github.ThatRobin.ccpacks.CCPacksClient"
-    ],
-    "server": [
-      "io.github.ThatRobin.ccpacks.CCPacksServer"
     ]
   },
   "mixins": [
     "ccpacks.mixins.json"
   ],
+  "custom": {
+    "cardinal-components": [
+      "ccpacks:saved_items",
+      "ccpacks:choice"
+    ]
+  },
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",

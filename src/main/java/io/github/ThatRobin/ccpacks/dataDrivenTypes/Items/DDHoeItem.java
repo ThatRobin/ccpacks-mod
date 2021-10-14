@@ -1,7 +1,9 @@
 package io.github.ThatRobin.ccpacks.dataDrivenTypes.Items;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.HoeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.LiteralText;

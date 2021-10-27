@@ -1,19 +1,19 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.ThatRobin.ccpacks.mixin",
+  "package": "io.github.ThatRobin.ccpacks.Mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AccessorMixin",
     "PlayerManagerMixin",
     "FileResourcePackProviderMixin",
     "ServerWorldMixin",
+    "MinecraftServerMixin",
     "ProjectileEntityMixin"
   ],
   "client": [
-    "MinecraftServerMixin",
     "InGameHudMixin",
-    "ParrotEntityRendererMixin",
+    "TitleScreenMixin",
     "SplashTextResourceSupplierMixin"
   ],
   "injectors": {

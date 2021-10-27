@@ -1,7 +1,10 @@
 package io.github.ThatRobin.ccpacks.Factories;
 
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Power.StatBar;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Power;
@@ -12,7 +15,11 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EntityConditions {
 
@@ -26,10 +33,31 @@ public class EntityConditions {
                     PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
                     Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
                     if(p instanceof StatBar) {
-                        resourceValue = ((StatBar)p).getHudRender().getValue();
+                        resourceValue = ((StatBar)p).getValue();
                     }
                     return ((Comparison)data.get("comparison")).compare(resourceValue, data.getInt("compare_to"));
                 }));
+
+        register(new ConditionFactory<>(Apoli.identifier("equipped_trinket"), new SerializableData()
+                .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
+                (data, entity) -> {
+            if(entity instanceof PlayerEntity) {
+                try {
+                    AtomicBoolean found = new AtomicBoolean(false);
+                    TrinketComponent component = TrinketsApi.getTrinketComponent((PlayerEntity) entity).get();
+                    component.forEach((slotReference, itemStack) -> {
+                        if (((ConditionFactory<ItemStack>.Instance) data.get("item_condition")).test(itemStack)) {
+                            found.set(true);
+                        }
+                    });
+                    return found.get();
+                } catch (Exception e) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }));
     }
 
     private static void register(ConditionFactory<Entity> conditionFactory) {

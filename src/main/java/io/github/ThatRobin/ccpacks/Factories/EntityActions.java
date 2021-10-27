@@ -2,14 +2,15 @@ package io.github.ThatRobin.ccpacks.Factories;
 
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Networking.CCPacksModPackets;
-import io.github.ThatRobin.ccpacks.Power.StatBar;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.VariableIntPower;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -17,6 +18,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Hand;
@@ -32,11 +34,13 @@ import org.apache.commons.lang3.tuple.Triple;
 public class EntityActions {
 
     public static void register() {
-        register(new ActionFactory<>(CCPacksMain.identifier("open_decision_screen"), new SerializableData(),
+        register(new ActionFactory<>(CCPacksMain.identifier("open_choice_screen"), new SerializableData()
+                .add("choice_layer", SerializableDataTypes.IDENTIFIER),
                 (data, entity) -> {
                     if(!entity.getEntityWorld().isClient()) {
                         if (entity instanceof PlayerEntity player) {
                             PacketByteBuf data2 = new PacketByteBuf(Unpooled.buffer());
+                            data2.writeIdentifier(data.getId("choice_layer"));
                             data2.writeBoolean(false);
                             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, CCPacksModPackets.OPEN_CHOICE_SCREEN, data2);
                         }
@@ -49,30 +53,24 @@ public class EntityActions {
                 (data, entity) -> ((PlayerEntity)entity).swingHand((Hand) data.get("hand"))
         ));
 
-        register(new ActionFactory<>(CCPacksMain.identifier("set_stat"), new SerializableData()
-                .add("stat_bar", ApoliDataTypes.POWER_TYPE)
-                .add("value", SerializableDataTypes.INT),
-                (data, entity) -> {
-                    if(entity instanceof PlayerEntity) {
-                        PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
-                        Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
-                        if(p instanceof StatBar statBar) {
-                            int newValue = data.getInt("value");
-                            statBar.getHudRender().setValue(newValue);
-                            PowerHolderComponent.sync(entity);
-                        }
-                    }
-                }));
-
         register(new ActionFactory<>(CCPacksMain.identifier("change_stat"), new SerializableData()
                 .add("stat_bar", ApoliDataTypes.POWER_TYPE)
-                .add("change", SerializableDataTypes.INT),
+                .add("change", SerializableDataTypes.INT)
+                .add("operation", ApoliDataTypes.RESOURCE_OPERATION, ResourceOperation.ADD),
                 (data, entity) -> {
-                    if(entity instanceof PlayerEntity) {
+                    if(entity instanceof LivingEntity) {
                         PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
                         Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
-                        if(p instanceof StatBar statBar) {
-                            statBar.getHudRender().addValue(data.getInt("change"));
+                        ResourceOperation operation = (ResourceOperation) data.get("operation");
+                        int change = data.getInt("change");
+                        if(p instanceof VariableIntPower) {
+                            VariableIntPower vip = (VariableIntPower)p;
+                            if (operation == ResourceOperation.ADD) {
+                                int newValue = vip.getValue() + change;
+                                vip.setValue(newValue);
+                            } else if (operation == ResourceOperation.SET) {
+                                vip.setValue(change);
+                            }
                             PowerHolderComponent.sync(entity);
                         }
                     }

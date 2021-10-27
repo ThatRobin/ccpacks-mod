@@ -9,16 +9,12 @@ public class Portal {
     public Block frameBlock;
     public PortalIgnitionSource ignitionSource;
     public Identifier dimID;
-    public int r;
-    public int g;
-    public int b;
+    public ColourHolder colourHolder;
 
-    public Portal(Block frameBlock, PortalIgnitionSource ignitionSource, Identifier dimID, int r, int g, int b) {
+    public Portal(Block frameBlock, PortalIgnitionSource ignitionSource, Identifier dimID, ColourHolder colourHolder) {
         this.frameBlock = frameBlock;
         this.ignitionSource = ignitionSource;
         this.dimID= dimID;
-        this.r = r;
-        this.b = b;
-        this.g = g;
+        this.colourHolder = colourHolder;
     }
 }

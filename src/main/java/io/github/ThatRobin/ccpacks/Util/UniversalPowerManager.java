@@ -33,12 +33,9 @@ public class UniversalPowerManager extends MultiJsonDataLoader implements Identi
         prepared.forEach((id, jel) -> {
             jel.forEach(je -> {
                 try {
-                    UniversalPower origin = UniversalPower.fromJson(id, je.getAsJsonObject());
-                    for(int i = 0; i < origin.powerTypes.size(); i++) {
-                        CCPacksMain.LOGGER.info(origin.powerTypes.get(i).getIdentifier());
-                    }
+                    UniversalPower universalPower = UniversalPower.fromJson(id, je.getAsJsonObject());
                     if(!UniversalPowerRegistry.contains(id)) {
-                        UniversalPowerRegistry.register(id, origin);
+                        UniversalPowerRegistry.register(id, universalPower);
                     }
                 } catch(Exception e) {
                     CCPacksMain.LOGGER.error("There was a problem reading a Universal Powers file: " + id.toString() + " (skipping): " + e.getMessage());

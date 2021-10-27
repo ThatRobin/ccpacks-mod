@@ -7,11 +7,6 @@ public class CCPacksClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		//LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
-		//	if (entityRenderer instanceof PlayerEntityRenderer) {
-		//		registrationHelper.register(new PowerFeatureRenderer((PlayerEntityRenderer) entityRenderer));
-		//	}
-		//});
 		CCPacksModPacketS2C.register();
 	}
 

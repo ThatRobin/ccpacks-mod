@@ -1,7 +1,6 @@
 package io.github.ThatRobin.ccpacks.Component;
 
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import io.github.ThatRobin.ccpacks.Choice.Choice;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceLayer;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceLayers;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface ChoiceComponent extends AutoSyncedComponent, ServerTickingComponent {
+public interface ChoiceComponent extends AutoSyncedComponent {
 
     boolean hasChoice(ChoiceLayer layer);
     boolean hasAllChoices();

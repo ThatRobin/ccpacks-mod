@@ -1,6 +1,5 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.util.Identifier;
@@ -14,14 +13,11 @@ public class SoundEventFactories {
         return new Identifier("sound", string);
     }
 
-    @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ContentFactory<>(CCPacksMain.identifier("sound_event"), Types.SOUND,
+        register(new ContentFactory<>(identifier("sound_event"), Types.SOUND,
                 new SerializableData(),
                 data ->
-                        (contentType, content) -> {
-                            return null;
-                        }));
+                        (contentType, content) -> null));
     }
 
     private static void register(ContentFactory<Supplier<?>> serializer) {

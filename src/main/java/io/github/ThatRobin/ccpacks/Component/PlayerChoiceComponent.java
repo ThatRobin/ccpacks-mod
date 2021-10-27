@@ -5,6 +5,7 @@ import io.github.ThatRobin.ccpacks.Choice.Choice;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceLayer;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceLayers;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceRegistry;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -59,9 +60,9 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     private Set<PowerType<?>> getPowerTypes() {
         Set<PowerType<?>> powerTypes = new HashSet<>();
-        choices.values().forEach(origin -> {
-            if(origin != null) {
-                origin.getPowerTypes().forEach(powerTypes::add);
+        choices.values().forEach(choice -> {
+            if(choice != null) {
+                choice.getPowerTypes().forEach(powerTypes::add);
             }
         });
         return powerTypes;
@@ -84,43 +85,29 @@ public class PlayerChoiceComponent implements ChoiceComponent {
     }
 
     @Override
-    public void setChoice(ChoiceLayer layer, Choice origin) {
+    public void setChoice(ChoiceLayer layer, Choice choice) {
         Choice oldChoice = getChoice(layer);
-        if(oldChoice == origin) {
+        if(oldChoice == choice) {
             return;
         }
-        this.choices.put(layer, origin);
+        this.choices.put(layer, choice);
+        PowerHolderComponent powerComponent = PowerHolderComponent.KEY.get(player);
+        grantPowersFromChoice(choice, powerComponent);
         if(oldChoice != null) {
-            List<PowerType<?>> powersToRemove = new LinkedList<>();
-            for (Map.Entry<PowerType<?>, Power> powerEntry: powers.entrySet()) {
-                if(!hasPowerType(powerEntry.getKey())) {
-                    powerEntry.getValue().onRemoved();
-                    powerEntry.getValue().onLost();
-                    powersToRemove.add(powerEntry.getKey());
-                }
-            }
-            for(PowerType<?> toRemove : powersToRemove) {
-                powers.remove(toRemove);
-            }
+            powerComponent.removeAllPowersFromSource(oldChoice.getIdentifier());
         }
-        origin.getPowerTypes().forEach(powerType -> {
-            if(!powers.containsKey(powerType)) {
-                Power power = powerType.create(player);
-                this.powers.put(powerType, power);
-                power.onAdded();
-            }
-        });
+        powerComponent.sync();
         if(this.hasAllChoices()) {
             this.hadChoiceBefore = true;
         }
     }
 
-    @Override
-    public void serverTick() {
-        this.getPowers(Power.class, true).stream().filter(p -> p.shouldTick() && (p.shouldTickWhenInactive() || p.isActive())).forEach(Power::tick);
-        if(this.player.age % 10 == 0) {
-            this.getPowers(SimpleStatusEffectPower.class).forEach(SimpleStatusEffectPower::applyEffects);
-            this.getPowers(StackingStatusEffectPower.class, true).forEach(StackingStatusEffectPower::tick);
+    private void grantPowersFromChoice(Choice choice, PowerHolderComponent powerComponent) {
+        Identifier source = choice.getIdentifier();
+        for(PowerType<?> powerType : choice.getPowerTypes()) {
+            if(!powerComponent.hasPower(powerType, source)) {
+                powerComponent.addPower(powerType, source);
+            }
         }
     }
 
@@ -147,37 +134,37 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
         if(compoundTag.contains("Choice")) {
             try {
-                ChoiceLayer defaultChoiceLayer = ChoiceLayers.getLayer(new Identifier(CCPacksMain.MODID, "origin"));
+                ChoiceLayer defaultChoiceLayer = ChoiceLayers.getLayer(new Identifier(CCPacksMain.MODID, "choice"));
                 this.choices.put(defaultChoiceLayer, ChoiceRegistry.get(Identifier.tryParse(compoundTag.getString("Choice"))));
             } catch(IllegalArgumentException e) {
-                CCPacksMain.LOGGER.warn("Player " + player.getDisplayName().asString() + " had old origin which could not be migrated: " + compoundTag.getString("Choice"));
+                CCPacksMain.LOGGER.warn("Player " + player.getDisplayName().asString() + " had old choice which could not be migrated: " + compoundTag.getString("Choice"));
             }
         } else {
-            NbtList originLayerList = (NbtList)compoundTag.get("ChoiceLayers");
-            if(originLayerList != null) {
-                for(int i = 0; i < originLayerList.size(); i++) {
-                    NbtCompound layerTag = originLayerList.getCompound(i);
+            NbtList choiceLayerList = (NbtList)compoundTag.get("ChoiceLayers");
+            if(choiceLayerList != null) {
+                for(int i = 0; i < choiceLayerList.size(); i++) {
+                    NbtCompound layerTag = choiceLayerList.getCompound(i);
                     Identifier layerId = Identifier.tryParse(layerTag.getString("Layer"));
                     ChoiceLayer layer = null;
                     try {
                         layer = ChoiceLayers.getLayer(layerId);
                     } catch(IllegalArgumentException e) {
-                        CCPacksMain.LOGGER.warn("Could not find origin layer with id " + layerId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                        CCPacksMain.LOGGER.warn("Could not find choice layer with id " + layerId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
                     }
                     if(layer != null) {
-                        Identifier originId = Identifier.tryParse(layerTag.getString("Choice"));
-                        Choice origin = null;
+                        Identifier choiceId = Identifier.tryParse(layerTag.getString("Choice"));
+                        Choice choice = null;
                         try {
-                            origin = ChoiceRegistry.get(originId);
+                            choice = ChoiceRegistry.get(choiceId);
                         } catch(IllegalArgumentException e) {
-                            CCPacksMain.LOGGER.warn("Could not find origin with id " + originId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                            CCPacksMain.LOGGER.warn("Could not find choice with id " + choiceId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
                         }
-                        if(origin != null) {
-                            if(!layer.contains(origin)) {
-                                CCPacksMain.LOGGER.warn("Choice with id " + origin.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + " and is not special, but was found on " + player.getDisplayName().asString() + ", setting to EMPTY.");
-                                origin = Choice.EMPTY;
+                        if(choice != null) {
+                            if(!layer.contains(choice)) {
+                                CCPacksMain.LOGGER.warn("Choice with id " + choice.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + " and is not special, but was found on " + player.getDisplayName().asString() + ", setting to EMPTY.");
+                                choice = Choice.EMPTY;
                             }
-                            this.choices.put(layer, origin);
+                            this.choices.put(layer, choice);
                         }
                     }
                 }
@@ -219,14 +206,14 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     @Override
     public void writeToNbt(NbtCompound compoundTag) {
-        NbtList originLayerList = new NbtList();
+        NbtList choiceLayerList = new NbtList();
         for(Map.Entry<ChoiceLayer, Choice> entry : choices.entrySet()) {
             NbtCompound layerTag = new NbtCompound();
             layerTag.putString("Layer", entry.getKey().getIdentifier().toString());
             layerTag.putString("Choice", entry.getValue().getIdentifier().toString());
-            originLayerList.add(layerTag);
+            choiceLayerList.add(layerTag);
         }
-        compoundTag.put("ChoiceLayers", originLayerList);
+        compoundTag.put("ChoiceLayers", choiceLayerList);
         compoundTag.putBoolean("HadChoiceBefore", this.hadChoiceBefore);
         NbtList powerList = new NbtList();
         for(Map.Entry<PowerType<?>, Power> powerEntry : powers.entrySet()) {

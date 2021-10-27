@@ -1,3 +1,11 @@
 {
-  "pack.source.ccpacks": "CCPack Loader"
+  "pack.source.ccpacks": "CCPack Loader",
+  "ccpacks.gui.choice.title": "Which would you like to choose?",
+  "ccpacks.gui.select": "Select",
+  "write_data.enter_name": "Name:",
+  "write_data.enter_id": "Id:",
+  "write_data.enter_version": "Version:",
+  "write_data.enter_author": "Author:",
+  "write_data.enter_description": "Description:",
+  "write_data.enter_license": "License:"
 }

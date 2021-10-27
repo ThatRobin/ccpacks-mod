@@ -1,13 +1,16 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.CCPackDataTypes;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
+import io.github.ThatRobin.ccpacks.Util.ColourHolder;
 import io.github.ThatRobin.ccpacks.Util.Portal;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -19,15 +22,15 @@ public class PortalFactories {
         return new Identifier("portal", string);
     }
 
-    @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ContentFactory<>(CCPacksMain.identifier("vertical"), Types.PORTAL,
+        register(new ContentFactory<>(identifier("vertical"), Types.PORTAL,
                 new SerializableData()
-                        .add("red", SerializableDataTypes.INT, 255)
-                        .add("green", SerializableDataTypes.INT, 255)
-                        .add("blue", SerializableDataTypes.INT, 255),
+                        .add("block", SerializableDataTypes.BLOCK, Blocks.ACACIA_LEAVES)
+                        .add("ignition_item", SerializableDataTypes.ITEM, Items.FLINT_AND_STEEL)
+                        .add("dimension", SerializableDataTypes.IDENTIFIER, new Identifier("the_end"))
+                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
-                        (contentType, content) -> (Supplier<Portal>) () -> new Portal((Block) data.get("block"), PortalIgnitionSource.ItemUseSource((Item) data.get("ignition_item")), data.getId("dimension"), data.getInt("red"), data.getInt("green"), data.getInt("blue"))));
+                        (contentType, content) -> (Supplier<Portal>) () -> new Portal((Block) data.get("block"), PortalIgnitionSource.ItemUseSource((Item) data.get("ignition_item")), data.getId("dimension"), (ColourHolder) data.get("color"))));
 
     }
 

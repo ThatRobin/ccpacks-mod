@@ -2,7 +2,7 @@ package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
 
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.Entities.ProjectileEntities.DDProjectileEntity;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Entities.ProjectileEntities.DDProjectileEntity;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -22,7 +22,6 @@ public class ProjectileFactories {
         return new Identifier("projectile", string);
     }
 
-    @SuppressWarnings("unchecked")
     public static void register() {
         register(new ContentFactory<>(identifier("item"), Types.PROJECTILE,
                 new SerializableData()

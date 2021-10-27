@@ -4,9 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Component.ModComponents;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.MultiplePowerType;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
@@ -26,6 +28,7 @@ public class Choice {
             .add("powers", SerializableDataTypes.IDENTIFIERS, Lists.newArrayList())
             .add("name", SerializableDataTypes.STRING, "")
             .add("icon", SerializableDataTypes.STRING, "")
+            .add("action_on_chosen", ApoliDataTypes.ENTITY_ACTION, null)
             .add("description", SerializableDataTypes.STRING, "");
 
     public static final Choice EMPTY;
@@ -54,6 +57,7 @@ public class Choice {
 
     private final Identifier identifier;
     private ItemStack itemIcon;
+    private ActionFactory<Entity>.Instance action;
     private final List<PowerType<?>> powerTypes = new LinkedList<>();
 
     private String nameTranslationKey;
@@ -79,6 +83,10 @@ public class Choice {
 
     public void setIcon(String icon) {
         this.itemIcon = Registry.ITEM.get(Identifier.tryParse(icon)).getDefaultStack();
+    }
+
+    public void setAction(ActionFactory<Entity>.Instance action) {
+        this.action = action;
     }
 
     public void setDescription(String description) {
@@ -109,6 +117,10 @@ public class Choice {
 
     public ItemStack getIcon() {
         return itemIcon;
+    }
+
+    public ActionFactory<Entity>.Instance getAction() {
+        return this.action;
     }
 
     public String getOrCreateNameTranslationKey() {
@@ -148,7 +160,7 @@ public class Choice {
             }
         });
         choice.setIcon(data.getString("icon"));
-
+        choice.setAction((ActionFactory<Entity>.Instance)data.get("action_on_chosen"));
         choice.setName(data.getString("name"));
         choice.setDescription(data.getString("description"));
 

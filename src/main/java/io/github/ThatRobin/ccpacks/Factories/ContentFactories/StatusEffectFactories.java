@@ -1,10 +1,10 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.CCPackDataTypes;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.DDStatusEffect;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
-import io.github.ThatRobin.ccpacks.dataDrivenTypes.DDStatusEffect;
+import io.github.ThatRobin.ccpacks.Util.ColourHolder;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.util.Identifier;
@@ -19,38 +19,34 @@ public class StatusEffectFactories {
         return new Identifier("status_effect", string);
     }
 
-    @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ContentFactory<>(CCPacksMain.identifier("neutral"), Types.EFFECT,
+        register(new ContentFactory<>(identifier("neutral"), Types.EFFECT,
                 new SerializableData()
-                        .add("red", SerializableDataTypes.INT, 255)
-                        .add("green", SerializableDataTypes.INT, 255)
-                        .add("blue", SerializableDataTypes.INT, 255),
+                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            float[] color = Color.RGBtoHSB(data.getInt("red"), data.getInt("green"), data.getInt("blue"), null);
+                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectType.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));
 
-        register(new ContentFactory<>(CCPacksMain.identifier("beneficial"), Types.EFFECT,
+        register(new ContentFactory<>(identifier("beneficial"), Types.EFFECT,
                 new SerializableData()
-                        .add("red", SerializableDataTypes.INT, 255)
-                        .add("green", SerializableDataTypes.INT, 255)
-                        .add("blue", SerializableDataTypes.INT, 255),
+                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            float[] color = Color.RGBtoHSB(data.getInt("red"), data.getInt("green"), data.getInt("blue"), null);
+                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectType.BENEFICIAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));
 
-        register(new ContentFactory<>(CCPacksMain.identifier("harmful"), Types.EFFECT,
+        register(new ContentFactory<>(identifier("harmful"), Types.EFFECT,
                 new SerializableData()
-                        .add("red", SerializableDataTypes.INT, 255)
-                        .add("green", SerializableDataTypes.INT, 255)
-                        .add("blue", SerializableDataTypes.INT, 255),
+                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            float[] color = Color.RGBtoHSB(data.getInt("red"), data.getInt("green"), data.getInt("blue"), null);
+                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectType.HARMFUL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));
     }

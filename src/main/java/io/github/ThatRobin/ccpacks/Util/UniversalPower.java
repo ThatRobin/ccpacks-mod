@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.ThatRobin.ccpacks.serializableData.CCPackDataTypes;
+import io.github.ThatRobin.ccpacks.CCPackDataTypes;
 import io.github.apace100.apoli.power.MultiplePowerType;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
@@ -40,36 +40,35 @@ public class UniversalPower {
 
     @SuppressWarnings("unchecked")
     public static UniversalPower createFromData(Identifier id, SerializableData.Instance data) {
-        UniversalPower origin = new UniversalPower(id);
+        UniversalPower universalPower = new UniversalPower(id);
 
         ((List<Identifier>)data.get("powers")).forEach(powerId -> {
             try {
                 PowerType powerType = PowerTypeRegistry.get(powerId);
-                origin.add(powerType);
+                universalPower.add(powerType);
                 if(powerType instanceof MultiplePowerType) {
                     ImmutableList<Identifier> subPowers = ((MultiplePowerType)powerType).getSubPowers();
                     for(Identifier subPowerId : subPowers) {
-                        origin.add(PowerTypeRegistry.get(subPowerId));
+                        universalPower.add(PowerTypeRegistry.get(subPowerId));
                     }
                 }
             } catch(IllegalArgumentException e) {
                 CCPacksMain.LOGGER.error("Powerset \"" + id + "\" contained unregistered power: \"" + powerId + "\"");
             }
         });
-        if(data.get("entity_entry") != null) {
+        if(data.isPresent("entity_entry")) {
             ((List<EntityType>) data.get("entity_entry")).forEach(entityType -> {
                 try {
-                    CCPacksMain.LOGGER.info(entityType);
-                    origin.addEntity(entityType);
+                    universalPower.addEntity(entityType);
                 } catch (IllegalArgumentException e) {
                     CCPacksMain.LOGGER.error("Powerset \"" + id + "\" contained unregistered entity: \"" + entityType + "\"");
                 }
             });
         } else {
-            origin.addEntity(EntityType.PLAYER);
+            universalPower.addEntity(EntityType.PLAYER);
         }
 
-        return origin;
+        return universalPower;
     }
 
     public UniversalPower add(PowerType<?>... powerTypes) {

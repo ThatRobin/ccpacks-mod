@@ -4,7 +4,7 @@ import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Power.ActionOnProjectileLand;
 import io.github.ThatRobin.ccpacks.Power.StatBar;
 import io.github.ThatRobin.ccpacks.Util.StatBarHudRender;
-import io.github.ThatRobin.ccpacks.serializableData.CCPackDataTypes;
+import io.github.ThatRobin.ccpacks.CCPackDataTypes;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
@@ -26,7 +26,7 @@ public class PowerFactories {
 
         register(new PowerFactory<>(CCPacksMain.identifier("stat_bar"),
                 new SerializableData()
-                        .add("base_value", SerializableDataTypes.INT, 5)
+                        .add("start_value", SerializableDataTypes.INT, 20)
                         .add("hud_render", CCPackDataTypes.STAT_BAR_HUD_RENDER),
                 data ->
                         (type, player) -> {

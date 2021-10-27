@@ -73,9 +73,8 @@ public class ChooseChoiceScreen extends ChoiceDisplayScreen {
         }));
         addDrawableChild(new ButtonWidget(guiLeft + windowWidth / 2 - 50, guiTop + windowHeight + 5, 100, 20, new TranslatableText(CCPacksMain.MODID + ".gui.select"), b -> {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeString(getCurrentChoiceInternal().getIdentifier().toString());
-            buf.writeString(getCurrentLayerInternal().getIdentifier().toString());
-            CCPacksMain.LOGGER.info(getCurrentLayerInternal().getIdentifier().toString());
+            buf.writeIdentifier(getCurrentChoiceInternal().getIdentifier());
+            buf.writeIdentifier(getCurrentLayerInternal().getIdentifier());
             ClientPlayNetworking.send(CCPacksModPackets.CHOOSE_CHOICE, buf);
             openNextLayerScreen();
         }));

@@ -1,27 +1,25 @@
 package io.github.ThatRobin.ccpacks.Registries;
 
 import com.google.common.collect.Maps;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
-import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.fabric.api.resource.ModResourcePack;
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
-import net.minecraft.resource.*;
-import net.minecraft.tag.Tag;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Pair;
-import net.minecraft.util.profiler.Profiler;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -29,7 +27,7 @@ import java.util.zip.ZipFile;
 public class CCPacksRegistry {
 
     public Map<Identifier, JsonObject> map = Maps.newHashMap();
-    public static final Path DATAPACKS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("resourcepacks");
+    public static Path MODS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("mods");
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
     private final HashMap<Identifier, Integer> loadingPriorities = new HashMap<>();
@@ -37,12 +35,11 @@ public class CCPacksRegistry {
 
     public void registerResources() {
         try {
-            File[] fileArray = DATAPACKS_PATH.toFile().listFiles();
-            CCPacksMain.LOGGER.info("Types to Register:");
+            File[] fileArray = MODS_PATH.toFile().listFiles();
             if(fileArray != null) {
                 for (int i = 0; i < fileArray.length; i++) {
                     if (fileArray[i].isDirectory()) {
-                        readFromDir(fileArray[i], null);
+                        readFromDir(fileArray[i]);
                     } else if (fileArray[i].getName().endsWith(".zip")) {
                         readFromZip(fileArray[i], new ZipFile(fileArray[i]));
                     } else {
@@ -70,7 +67,8 @@ public class CCPacksRegistry {
                         e.printStackTrace();
                     }
                     String namespace = file.getNamespace();
-                    String path = file.getPath().replace("\\","/").split("/")[-1];
+                    int index = file.getPath().replace("\\","/").split("/").length;
+                    String path = (file.getPath().replace("\\","/").split("/")[index-1]).replace(".json","");
                     Identifier id2 = new Identifier(namespace, path);
                     map.put(id2, jsonObject);
                 }
@@ -80,10 +78,11 @@ public class CCPacksRegistry {
         });
     }
 
-    public void readFromDir(File base, ZipFile zipFile) throws IOException {
+    public void readFromDir(File base) throws IOException {
         File pack = new File(base, "data");
         if(pack.exists()) {
-            try (Stream<Path> paths = Files.walk(Paths.get(pack.getPath()))) {
+            try {
+                Stream<Path> paths = Files.walk(Paths.get(pack.getPath()));
                 paths.forEach((file) -> {
                     String string3 = file.toString();
                     boolean isFound = string3.indexOf("content") !=-1? true: false;
@@ -144,7 +143,6 @@ public class CCPacksRegistry {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    CCPacksMain.LOGGER.info(string3);
                     String namespace = string3.split("content")[0].split("data")[1].replace("\\","");
                     String path = string3.split(".json")[0];
                     Identifier id = new Identifier(namespace, path);

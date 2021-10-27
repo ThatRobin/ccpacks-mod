@@ -1,6 +1,5 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
-import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -18,9 +17,8 @@ public class KeybindFactories {
         return new Identifier("keybind", string);
     }
 
-    @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ContentFactory<>(CCPacksMain.identifier("apoli"), Types.ENCHANTMENT,
+        register(new ContentFactory<>(identifier("apoli"), Types.KEYBIND,
                 new SerializableData()
                         .add("name", SerializableDataTypes.STRING)
                         .add("category", SerializableDataTypes.STRING),

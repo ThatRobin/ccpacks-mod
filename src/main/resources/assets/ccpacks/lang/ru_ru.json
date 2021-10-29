@@ -1,0 +1,11 @@
+{
+  "pack.source.ccpacks": "CCPack Loader",
+  "ccpacks.gui.choice.title": "Что бы вы хотели выбрать?",
+  "ccpacks.gui.select": "Выбрать",
+  "write_data.enter_name": "Название:",
+  "write_data.enter_id": "Id:",
+  "write_data.enter_version": "Версия:",
+  "write_data.enter_author": "Автор:",
+  "write_data.enter_description": "Описание:",
+  "write_data.enter_license": "Лицензия:"
+}

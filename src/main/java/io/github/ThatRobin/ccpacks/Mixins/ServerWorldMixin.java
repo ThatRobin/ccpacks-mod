@@ -1,5 +1,6 @@
 package io.github.ThatRobin.ccpacks.Mixins;
 
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.Registries.UniversalPowerRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public class ServerWorldMixin {
             PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
             UniversalPowerRegistry.entries().forEach((up -> {
                 if(up.getValue().entityTypes.contains(entity.getType())) {
-                    up.getValue().powerTypes.forEach(powerType -> component.addPower(powerType, new Identifier("ccpacks", "universal_powers")));
+                    up.getValue().powerTypes.forEach(powerType -> component.addPower(powerType, CCPacksMain.identifier("universal_powers")));
                 }
             }));
         }

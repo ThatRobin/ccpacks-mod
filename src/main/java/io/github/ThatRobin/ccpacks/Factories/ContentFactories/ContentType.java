@@ -1,7 +1,11 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDItem;
+import io.github.ThatRobin.ccpacks.Util.GameruleHolder;
 import io.github.ThatRobin.ccpacks.Util.Portal;
+import io.github.ThatRobin.ccpacks.Util.TypeAttributeHolder;
 import io.github.apace100.apoli.power.PowerType;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
@@ -44,8 +48,8 @@ public class ContentType {
         this.descriptionTranslationKey = description;
     }
 
-    public Item createItem(ContentType contentType) {
-        return (Item) factory.apply(contentType, null).get();
+    public DDItem createItem(ContentType contentType) {
+        return (DDItem) (Item) factory.apply(contentType, null).get();
     }
 
     public Block createBlock(ContentType contentType) {
@@ -74,6 +78,14 @@ public class ContentType {
 
     public DefaultParticleType createParticle(ContentType contentType) {
         return (DefaultParticleType) factory.apply(contentType, null).get();
+    }
+
+    public TypeAttributeHolder createEntity(ContentType contentType) {
+        return (TypeAttributeHolder) factory.apply(contentType, null).get();
+    }
+
+    public GameruleHolder createGamerule(ContentType contentType) {
+        return (GameruleHolder) factory.apply(contentType, null).get();
     }
 
     public String getOrCreateNameTranslationKey() {

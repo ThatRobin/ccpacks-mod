@@ -17,6 +17,12 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
@@ -79,6 +85,51 @@ public class CCPackDataTypes {
                 dataInst.set("alpha", inst.getAlpha());
                 return dataInst;
             });
+
+    public static final SerializableDataType<DefaultAttributeContainer.Builder> ENTITY_ATTRIBUTES = SerializableDataType.compound(DefaultAttributeContainer.Builder.class,
+            new SerializableData()
+                    .add("generic.max_health", SerializableDataTypes.DOUBLE, 20.0D)
+                    .add("generic.follow_range", SerializableDataTypes.DOUBLE, 32.0D)
+                    .add("generic.knockback_resistance", SerializableDataTypes.DOUBLE, 0.0D)
+                    .add("generic.movement_speed", SerializableDataTypes.DOUBLE, 0.7D)
+                    .add("generic.attack_damage", SerializableDataTypes.DOUBLE, 0.4D)
+                    .add("generic.armor", SerializableDataTypes.DOUBLE, 0.0D)
+                    .add("generic.armor_toughness", SerializableDataTypes.DOUBLE, 0.0D)
+                    .add("generic.attack_knockback", SerializableDataTypes.DOUBLE, 0.0D),
+            (dataInst) -> {
+                DefaultAttributeContainer.Builder builder = MobEntity.createLivingAttributes();
+                dataInst.ifPresent("generic.max_health", (doubleVar) -> builder.add(EntityAttributes.GENERIC_MAX_HEALTH,(double)doubleVar));
+                dataInst.ifPresent("generic.follow_range", (doubleVar) -> builder.add(EntityAttributes.GENERIC_FOLLOW_RANGE,(double)doubleVar));
+                dataInst.ifPresent("generic.knockback_resistance", (doubleVar) -> builder.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,(double)doubleVar));
+                dataInst.ifPresent("generic.movement_speed", (doubleVar) -> builder.add(EntityAttributes.GENERIC_MOVEMENT_SPEED,(double)doubleVar));
+                dataInst.ifPresent("generic.attack_damage", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE,(double)doubleVar));
+                dataInst.ifPresent("generic.armor", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ARMOR,(double)doubleVar));
+                dataInst.ifPresent("generic.armor_toughness", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS,(double)doubleVar));
+                dataInst.ifPresent("generic.attack_knockback", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,(double)doubleVar));
+                return builder;
+            },
+            (data, inst) -> {
+                SerializableData.Instance dataInst = data.new Instance();
+                if(inst.build().has(EntityAttributes.GENERIC_MAX_HEALTH))
+                    dataInst.set("generic.max_health", inst.build().getBaseValue(EntityAttributes.GENERIC_MAX_HEALTH));
+                if(inst.build().has(EntityAttributes.GENERIC_FOLLOW_RANGE))
+                    dataInst.set("generic.follow_range", inst.build().getBaseValue(EntityAttributes.GENERIC_FOLLOW_RANGE));
+                if(inst.build().has(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE))
+                    dataInst.set("generic.knockback_resistance", inst.build().getBaseValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+                if(inst.build().has(EntityAttributes.GENERIC_MOVEMENT_SPEED))
+                    dataInst.set("generic.movement_speed", inst.build().getBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+                if(inst.build().has(EntityAttributes.GENERIC_ATTACK_DAMAGE))
+                    dataInst.set("generic.attack_damage", inst.build().getBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+                if(inst.build().has(EntityAttributes.GENERIC_ARMOR))
+                    dataInst.set("generic.armor", inst.build().getBaseValue(EntityAttributes.GENERIC_ARMOR));
+                if(inst.build().has(EntityAttributes.GENERIC_ARMOR_TOUGHNESS))
+                    dataInst.set("generic.armor_toughness", inst.build().getBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+                if(inst.build().has(EntityAttributes.GENERIC_ATTACK_KNOCKBACK))
+                    dataInst.set("generic.attack_knockback", inst.build().getBaseValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK));
+                return dataInst;
+            });
+
+    public static final SerializableDataType<SpawnGroup> SPAWN_GROUP = SerializableDataType.enumValue(SpawnGroup.class);
 
     public static final SerializableDataType<BlockSoundGroup> BLOCK_SOUND_GROUP = SerializableDataType.compound(BlockSoundGroup.class, new
                     SerializableData()

@@ -18,12 +18,20 @@ public class KeybindFactories {
     }
 
     public static void register() {
-        register(new ContentFactory<>(identifier("apoli"), Types.KEYBIND,
+        register(new ContentFactory<>(identifier("apoli"),
+                Types.KEYBIND,
                 new SerializableData()
-                        .add("name", SerializableDataTypes.STRING)
-                        .add("category", SerializableDataTypes.STRING),
+                        .add("name", SerializableDataTypes.STRING, null)
+                        .add("category", SerializableDataTypes.STRING, null),
                 data ->
-                        (contentType, content) -> (Supplier<KeyBinding>) () -> new KeyBinding("key.ccpacks." + data.getString("name"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + data.getString("category"))));
+                        (contentType, content) -> (Supplier<KeyBinding>) () -> {
+                            if (data.isPresent("name") && data.isPresent("category")) {
+                                return new KeyBinding("key.ccpacks." + data.getString("name"), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + data.getString("category"));
+                            } else {
+                                return new KeyBinding("key."+contentType.getIdentifier().getNamespace()+"."+contentType.getIdentifier().getPath(), InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + contentType.getIdentifier().getNamespace());
+                            }
+
+                        }));
     }
 
     private static void register(ContentFactory<Supplier<?>> serializer) {

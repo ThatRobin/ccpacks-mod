@@ -35,7 +35,7 @@ public class CCPacksModPacketC2S {
         minecraftServer.execute(() -> {
             ChoiceLayer layer = ChoiceLayers.getLayer(layerId);
             ChoiceComponent component = ModComponents.CHOICE.get(playerEntity);
-            if(!component.hasAllChoices() && !component.hasChoice(layer)) {
+            if(!component.hasAllChoices()) {
                 if(choiceId != null) {
                     if(layer.contains(choice)) {
                         component.setChoice(layer, choice);

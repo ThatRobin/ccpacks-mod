@@ -102,7 +102,6 @@ public class ZipPack {
     public void editEntry(boolean confirmedAction) {
         if (confirmedAction) {
             try {
-
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
                 Map<String, Object> submap = new HashMap<>();
                 map.put("schemaVersion", 1);
@@ -118,15 +117,13 @@ public class ZipPack {
                 map.put("version", selectedEntry.version);
                 map.put("description", selectedEntry.description);
                 map.put("license", selectedEntry.license);
-                map.put("pack_format", 7);
 
                 FileWriter writer = new FileWriter(this.file.getPath() + "/fabric.mod.json");
                 gson.toJson(map, writer);
                 writer.close();
                 compress(minecraftClient, titleScreen, this.file);
             } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
+                CCPacksMain.LOGGER.error(e.getMessage());
             }
         }
         minecraftClient.setScreen(titleScreen);

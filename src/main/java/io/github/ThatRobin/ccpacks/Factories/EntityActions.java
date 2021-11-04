@@ -40,8 +40,8 @@ public class EntityActions {
                     if(!entity.getEntityWorld().isClient()) {
                         if (entity instanceof PlayerEntity player) {
                             PacketByteBuf data2 = new PacketByteBuf(Unpooled.buffer());
-                            data2.writeIdentifier(data.getId("choice_layer"));
                             data2.writeBoolean(false);
+                            data2.writeIdentifier(data.getId("choice_layer"));
                             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, CCPacksModPackets.OPEN_CHOICE_SCREEN, data2);
                         }
                     }

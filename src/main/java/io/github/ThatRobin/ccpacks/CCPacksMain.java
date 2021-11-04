@@ -11,29 +11,50 @@ import io.github.ThatRobin.ccpacks.Commands.ItemActionCommand;
 import io.github.ThatRobin.ccpacks.Commands.SetCommand;
 import io.github.ThatRobin.ccpacks.Component.ItemHolderComponent;
 import io.github.ThatRobin.ccpacks.Component.ItemHolderComponentImpl;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Entities.DDAnimalEntity;
 import io.github.ThatRobin.ccpacks.Factories.ContentFactories.*;
 import io.github.ThatRobin.ccpacks.Factories.*;
+import io.github.ThatRobin.ccpacks.Factories.TaskFactories.TaskFactories;
 import io.github.ThatRobin.ccpacks.Networking.CCPacksModPacketC2S;
 import io.github.ThatRobin.ccpacks.Power.PowerIconManager;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistry;
+import io.github.ThatRobin.ccpacks.Registries.ContentManager;
+import io.github.ThatRobin.ccpacks.Registries.TaskManager;
+import io.github.ThatRobin.ccpacks.Util.DataLoader;
+import io.github.ThatRobin.ccpacks.Util.OnLoadResourceManager;
 import io.github.ThatRobin.ccpacks.Util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.impl.resource.loader.ModResourcePackUtil;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.bernie.example.EntityUtils;
+import software.bernie.geckolib3.GeckoLib;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
@@ -45,8 +66,17 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	public static PowerIconManager powerIconManager = new PowerIconManager();;
 
+	public static final ItemGroup ITEM_GROUP;
+
+	static {
+		ITEM_GROUP = FabricItemGroupBuilder.build(
+				new Identifier("tutorial", "general"),
+				() -> new ItemStack(Blocks.COBBLESTONE));
+	}
+
 	@Override
 	public void onInitialize() {
+		GeckoLib.initialize();
 		Choice.init();
 
 		NamespaceAlias.addAlias(MODID, "apoli");
@@ -58,8 +88,14 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		ItemConditions.register();
 		PowerFactories.register();
 
+		// Mob Behaviours
+
+		//TaskFactories.register();
+
+		// Custom Content
 		BlockFactories.register();
 		EnchantmentFactories.register();
+		//EntityFactories.register();
 		ItemFactories.register();
 		KeybindFactories.register();
 		ParticleFactories.register();
@@ -68,29 +104,15 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		SoundEventFactories.register();
 		StatusEffectFactories.register();
 
-		ccPacksRegistry.registerResources();
-
-		List<ModResourcePack> packs = new ArrayList<>();
-		ModResourcePackUtil.appendModResourcePacks(packs, ResourceType.SERVER_DATA, null);
-		packs.forEach(modResourcePack -> modResourcePack.getNamespaces(ResourceType.SERVER_DATA).forEach(s -> {
-			try {
-				ccPacksRegistry.registerMods(modResourcePack, modResourcePack.findResources(ResourceType.SERVER_DATA, s, "", 60, Objects::nonNull));
-			} catch (IOException e) {
-				LOGGER.error(e.getMessage());
-			}
-		}));
-
-		ccPacksRegistry.getMap().forEach(ContentTypes::new);
-		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-			CCPacksMain.ccPacksRegistry.getMap().forEach(ContentTypesClient::new);
-		}
-
 		CCPacksModPacketC2S.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
 			SetCommand.register(dispatcher);
 			ItemActionCommand.register(dispatcher);
 			ChoiceCommand.register(dispatcher);
 		});
+
+		OnLoadResourceManager.addSingleListener(new TaskManager());
+		OnLoadResourceManager.addSingleListener(new ContentManager());
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new UniversalPowerManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceManager());

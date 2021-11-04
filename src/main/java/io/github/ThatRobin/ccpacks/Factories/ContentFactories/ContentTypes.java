@@ -1,14 +1,24 @@
 package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.DDSound;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDItem;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
+import io.github.ThatRobin.ccpacks.Util.GameruleHolder;
 import io.github.ThatRobin.ccpacks.Util.Portal;
+import io.github.ThatRobin.ccpacks.Util.TypeAttributeHolder;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
+import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
@@ -16,12 +26,22 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootManager;
+import net.minecraft.loot.condition.LootConditionManager;
+import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameRules;
+import software.bernie.example.EntityUtils;
+import software.bernie.example.registry.EntityRegistry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -31,6 +51,8 @@ public class ContentTypes {
 
     public static Map<Identifier, EntityType> projecitles = Maps.newHashMap();
     public static Map<Identifier, DefaultParticleType> particles = Maps.newHashMap();
+    public static Map<Identifier, EntityType> entities = Maps.newHashMap();
+    public static Map<Identifier, GameruleHolder> gamerules = Maps.newHashMap();
 
     public ContentTypes(Identifier id, JsonElement je) {
         readPower(id, je, ContentType::new);
@@ -50,7 +72,7 @@ public class ContentTypes {
                 }
                 switch (contentFactory.get().getType()) {
                     case ITEM -> {
-                        Item item = type.createItem(type);
+                        DDItem item = type.createItem(type);
                         Registry.register(Registry.ITEM, id, item);
                     }
                     case BLOCK -> {
@@ -84,7 +106,22 @@ public class ContentTypes {
                     }
                     case PORTAL -> {
                         Portal portal = type.createPortal(type);
-                        CustomPortalApiRegistry.addPortal(portal.frameBlock, portal.ignitionSource, portal.dimID, (int) portal.colourHolder.getRed()*255, (int) portal.colourHolder.getRed()*255, (int) portal.colourHolder.getRed()*255);
+                        if (contentFactory.get().getSerializerId().equals(new Identifier("portal", "horizontal"))) {
+                            CustomPortalBuilder.beginPortal()
+                                    .frameBlock(portal.frameBlock)
+                                    .lightWithItem(Registry.ITEM.get(portal.ignitionSource))
+                                    .destDimID(portal.dimID)
+                                    .tintColor((int) (portal.colourHolder.getRed() * 255), (int) (portal.colourHolder.getGreen() * 255), (int) (portal.colourHolder.getBlue() * 255))
+                                    .flatPortal()
+                                    .registerPortal();
+                        } else {
+                            CustomPortalBuilder.beginPortal()
+                                    .frameBlock(portal.frameBlock)
+                                    .lightWithItem(Registry.ITEM.get(portal.ignitionSource))
+                                    .destDimID(portal.dimID)
+                                    .tintColor((int) (portal.colourHolder.getRed() * 255), (int) (portal.colourHolder.getGreen() * 255), (int) (portal.colourHolder.getBlue() * 255))
+                                    .registerPortal();
+                        }
                     }
                     case PROJECTILE -> {
                         EntityType projectile = type.createProjectile(type);
@@ -99,6 +136,17 @@ public class ContentTypes {
                         DefaultParticleType particle = type.createParticle(type);
                         particles.put(id, particle);
                         Registry.register(Registry.PARTICLE_TYPE, id, particle);
+                    }
+                    case ENTITY -> {
+                        TypeAttributeHolder typeAttributeHolder = type.createEntity(type);
+                        EntityType entityType = typeAttributeHolder.getEntityType().build();
+                        entities.put(id, entityType);
+                        Registry.register(Registry.ENTITY_TYPE, id, entityType);
+                        FabricDefaultAttributeRegistry.register(entityType, typeAttributeHolder.getBuilder());
+                    }
+                    case GAMERULE -> {
+                        GameruleHolder holder = type.createGamerule(type);
+                        gamerules.put(id, holder);
                     }
                 }
             }

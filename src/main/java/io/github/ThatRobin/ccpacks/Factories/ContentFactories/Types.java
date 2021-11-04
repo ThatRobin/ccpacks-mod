@@ -9,5 +9,7 @@ public enum Types {
     PORTAL,
     PROJECTILE,
     SOUND,
-    PARTICLE
+    PARTICLE,
+    ENTITY,
+    GAMERULE
 }

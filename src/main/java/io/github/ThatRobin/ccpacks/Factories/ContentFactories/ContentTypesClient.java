@@ -3,6 +3,7 @@ package io.github.ThatRobin.ccpacks.Factories.ContentFactories;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Entities.client.renderer.DDGeoRenderer;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
@@ -58,6 +59,9 @@ public class ContentTypesClient {
                 }
                 if(ContentTypes.projecitles.containsKey(id)) {
                     EntityRendererRegistry.INSTANCE.register(ContentTypes.projecitles.get(id), (context) -> new FlyingItemEntityRenderer(context));
+                }
+                if(ContentTypes.entities.containsKey(id)) {
+                    EntityRendererRegistry.INSTANCE.register(ContentTypes.entities.get(id), (context) -> new DDGeoRenderer(context));
                 }
             }
         } catch (Exception e) {

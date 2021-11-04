@@ -35,6 +35,7 @@ public class ItemFactories {
                 new SerializableData()
                         .add("item_group", CCPackDataTypes.ITEM_GROUP, ItemGroups.MISC)
                         .add("lore", CCPackDataTypes.STRINGS, null)
+                        .add("item_modifiers", SerializableDataTypes.IDENTIFIERS, null)
                         .add("fuel_tick", SerializableDataTypes.INT, 0)
                         .add("max_count", SerializableDataTypes.INT, 64),
                 data ->
@@ -42,7 +43,7 @@ public class ItemFactories {
                             FabricItemSettings settings = new FabricItemSettings();
                             ItemGroups group = (ItemGroups) data.get("item_group");
                             settings.group(group.group);
-                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings.maxCount(data.getInt("max_count")), (List<String>) data.get("lore"));
+                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings.maxCount(data.getInt("max_count")), (List<String>) data.get("lore"), (List<Identifier>) data.get("item_modifiers"));
                             data.ifPresent("fuel_tick", (tick) -> FuelRegistry.INSTANCE.add(EXAMPLE_ITEM.get(), (Integer) tick));
                             return EXAMPLE_ITEM;
                         }));

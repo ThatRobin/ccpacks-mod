@@ -39,6 +39,7 @@ public class ChoiceCommand {
                                         component.sync();
                                         PacketByteBuf data = new PacketByteBuf(Unpooled.buffer());
                                         data.writeBoolean(false);
+                                        data.writeIdentifier(l.getIdentifier());
                                         ServerSidePacketRegistry.INSTANCE.sendToPlayer(target, CCPacksModPackets.OPEN_CHOICE_SCREEN, data);
                                     });
 

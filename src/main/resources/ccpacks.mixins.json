@@ -12,6 +12,7 @@
     "ProjectileEntityMixin"
   ],
   "client": [
+    "ItemStackMixin",
     "InGameHudMixin",
     "TitleScreenMixin",
     "SplashTextResourceSupplierMixin"

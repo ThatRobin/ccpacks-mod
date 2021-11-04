@@ -7,11 +7,11 @@ import net.minecraft.util.Identifier;
 public class Portal {
 
     public Block frameBlock;
-    public PortalIgnitionSource ignitionSource;
+    public Identifier ignitionSource;
     public Identifier dimID;
     public ColourHolder colourHolder;
 
-    public Portal(Block frameBlock, PortalIgnitionSource ignitionSource, Identifier dimID, ColourHolder colourHolder) {
+    public Portal(Block frameBlock, Identifier ignitionSource, Identifier dimID, ColourHolder colourHolder) {
         this.frameBlock = frameBlock;
         this.ignitionSource = ignitionSource;
         this.dimID= dimID;

@@ -1,0 +1,10 @@
+{
+    "type": "entity:generic",
+    "attributes": {
+        "generic.max_health": 20,
+        "generic.movement_speed": 0.3
+    },
+    "tasks": [
+        "ccpacks:task"
+    ]
+}

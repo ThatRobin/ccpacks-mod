@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -15,15 +16,17 @@ import java.util.List;
 
 public class DDItem extends Item {
 
+    public List<Identifier> powers;
     private List<String> lore;
     private ColourHolder startColours;
     private ColourHolder endColours;
 
-    public DDItem(Settings settings, List<String> lore) {
+    public DDItem(Settings settings, List<String> lore, List<Identifier> powers) {
         super(settings);
         this.lore = lore;
         this.startColours = null;
         this.endColours = null;
+        this.powers = powers;
     }
 
     public DDItem(Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {

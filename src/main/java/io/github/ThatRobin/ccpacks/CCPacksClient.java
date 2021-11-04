@@ -5,6 +5,8 @@ import net.fabricmc.api.ClientModInitializer;
 
 public class CCPacksClient implements ClientModInitializer {
 
+
+
 	@Override
 	public void onInitializeClient() {
 		CCPacksModPacketS2C.register();

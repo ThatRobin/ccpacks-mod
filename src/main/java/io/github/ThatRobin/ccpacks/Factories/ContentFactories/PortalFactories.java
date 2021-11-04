@@ -26,11 +26,21 @@ public class PortalFactories {
         register(new ContentFactory<>(identifier("vertical"), Types.PORTAL,
                 new SerializableData()
                         .add("block", SerializableDataTypes.BLOCK, Blocks.ACACIA_LEAVES)
-                        .add("ignition_item", SerializableDataTypes.ITEM, Items.FLINT_AND_STEEL)
+                        .add("ignition_item", SerializableDataTypes.IDENTIFIER, new Identifier("flint_and_steel"))
                         .add("dimension", SerializableDataTypes.IDENTIFIER, new Identifier("the_end"))
                         .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
-                        (contentType, content) -> (Supplier<Portal>) () -> new Portal((Block) data.get("block"), PortalIgnitionSource.ItemUseSource((Item) data.get("ignition_item")), data.getId("dimension"), (ColourHolder) data.get("color"))));
+                        (contentType, content) -> (Supplier<Portal>) () -> new Portal((Block) data.get("block"), data.getId("ignition_item"), data.getId("dimension"), (ColourHolder) data.get("color"))));
+
+        register(new ContentFactory<>(identifier("horizontal"), Types.PORTAL,
+                new SerializableData()
+                        .add("block", SerializableDataTypes.BLOCK, Blocks.ACACIA_LEAVES)
+                        .add("ignition_item", SerializableDataTypes.IDENTIFIER, new Identifier("flint_and_steel"))
+                        .add("dimension", SerializableDataTypes.IDENTIFIER, new Identifier("the_end"))
+                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
+                data ->
+                        (contentType, content) -> (Supplier<Portal>) () -> new Portal((Block) data.get("block"), data.getId("ignition_item"), data.getId("dimension"), (ColourHolder) data.get("color"))));
+
 
     }
 

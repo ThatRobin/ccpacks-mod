@@ -37,9 +37,8 @@ public class CCPacksModPacketS2C {
         Identifier choiceLayer = packetByteBuf.readIdentifier();
         minecraftClient.execute(() -> {
             ArrayList<ChoiceLayer> layers = new ArrayList<>();
-            ChoiceComponent component = ModComponents.CHOICE.get(minecraftClient.player);
             ChoiceLayer layer = ChoiceLayers.getLayer(choiceLayer);
-            if(layer.isEnabled() && !component.hasChoice(layer)) {
+            if(layer.isEnabled()) {
                 layers.add(layer);
             }
             minecraftClient.setScreen(new ChooseChoiceScreen(layers,0, showDirtBackground));

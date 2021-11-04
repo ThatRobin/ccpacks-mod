@@ -3,10 +3,12 @@ package io.github.ThatRobin.ccpacks.Mixins;
 import io.github.ThatRobin.ccpacks.Power.ActionOnProjectileLand;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,9 +24,12 @@ public abstract class ProjectileEntityMixin {
     @Inject(method = "onCollision", at = @At(value = "HEAD"), cancellable = true)
     public void getTexture(HitResult hitResult, CallbackInfo ci) {
         PowerHolderComponent.withPower(this.getOwner(), ActionOnProjectileLand.class, null, actionOnProjectileLand -> {
-            BlockPos pos = new BlockPos(hitResult.getPos().x,hitResult.getPos().y,hitResult.getPos().z);
-            if(actionOnProjectileLand.doesApply(pos)) {
-                actionOnProjectileLand.executeActions(pos, Direction.UP);
+            EntityType projectile = actionOnProjectileLand.getProjectile();
+            if(((ProjectileEntity)(Object)this).getType() == projectile || projectile == null) {
+                BlockPos pos = new BlockPos(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+                if (actionOnProjectileLand.doesApply(pos)) {
+                    actionOnProjectileLand.executeActions(pos, Direction.UP);
+                }
             }
         });
     }

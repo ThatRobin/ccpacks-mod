@@ -72,7 +72,7 @@ public class ContentTypes {
                 }
                 switch (contentFactory.get().getType()) {
                     case ITEM -> {
-                        DDItem item = type.createItem(type);
+                        Item item = type.createItem(type);
                         Registry.register(Registry.ITEM, id, item);
                     }
                     case BLOCK -> {

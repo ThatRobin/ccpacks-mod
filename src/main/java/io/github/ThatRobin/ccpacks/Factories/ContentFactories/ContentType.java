@@ -48,8 +48,8 @@ public class ContentType {
         this.descriptionTranslationKey = description;
     }
 
-    public DDItem createItem(ContentType contentType) {
-        return (DDItem) (Item) factory.apply(contentType, null).get();
+    public Item createItem(ContentType contentType) {
+        return (Item) factory.apply(contentType, null).get();
     }
 
     public Block createBlock(ContentType contentType) {

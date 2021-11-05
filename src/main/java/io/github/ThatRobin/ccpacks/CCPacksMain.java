@@ -66,14 +66,6 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	public static PowerIconManager powerIconManager = new PowerIconManager();;
 
-	public static final ItemGroup ITEM_GROUP;
-
-	static {
-		ITEM_GROUP = FabricItemGroupBuilder.build(
-				new Identifier("tutorial", "general"),
-				() -> new ItemStack(Blocks.COBBLESTONE));
-	}
-
 	@Override
 	public void onInitialize() {
 		GeckoLib.initialize();

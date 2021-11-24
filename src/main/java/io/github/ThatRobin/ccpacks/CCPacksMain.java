@@ -1,5 +1,7 @@
 package io.github.ThatRobin.ccpacks;
 
+import dev.onyxstudios.cca.api.v3.block.BlockComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.block.BlockComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
@@ -8,17 +10,23 @@ import io.github.ThatRobin.ccpacks.Choice.ChoiceLayers;
 import io.github.ThatRobin.ccpacks.Choice.ChoiceManager;
 import io.github.ThatRobin.ccpacks.Commands.ChoiceCommand;
 import io.github.ThatRobin.ccpacks.Commands.ItemActionCommand;
+import io.github.ThatRobin.ccpacks.Commands.MechanicCommand;
 import io.github.ThatRobin.ccpacks.Commands.SetCommand;
+import io.github.ThatRobin.ccpacks.Component.BlockMechanicHolder;
+import io.github.ThatRobin.ccpacks.Component.BlockMechanicHolderImpl;
 import io.github.ThatRobin.ccpacks.Component.ItemHolderComponent;
 import io.github.ThatRobin.ccpacks.Component.ItemHolderComponentImpl;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlockEntity;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Entities.DDAnimalEntity;
 import io.github.ThatRobin.ccpacks.Factories.ContentFactories.*;
 import io.github.ThatRobin.ccpacks.Factories.*;
+import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicFactories;
 import io.github.ThatRobin.ccpacks.Factories.TaskFactories.TaskFactories;
 import io.github.ThatRobin.ccpacks.Networking.CCPacksModPacketC2S;
 import io.github.ThatRobin.ccpacks.Power.PowerIconManager;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistry;
 import io.github.ThatRobin.ccpacks.Registries.ContentManager;
+import io.github.ThatRobin.ccpacks.Registries.MechanicManager;
 import io.github.ThatRobin.ccpacks.Registries.TaskManager;
 import io.github.ThatRobin.ccpacks.Util.DataLoader;
 import io.github.ThatRobin.ccpacks.Util.OnLoadResourceManager;
@@ -78,7 +86,11 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		EntityConditions.register();
 		ItemActions.register();
 		ItemConditions.register();
+		BlockActions.register();
 		PowerFactories.register();
+
+
+		MechanicFactories.register();
 
 		// Mob Behaviours
 
@@ -98,6 +110,7 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 		CCPacksModPacketC2S.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+			MechanicCommand.register(dispatcher);
 			SetCommand.register(dispatcher);
 			ItemActionCommand.register(dispatcher);
 			ChoiceCommand.register(dispatcher);
@@ -106,6 +119,8 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		OnLoadResourceManager.addSingleListener(new TaskManager());
 		OnLoadResourceManager.addSingleListener(new ContentManager());
 
+		//ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new CollisionManager());
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new MechanicManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new UniversalPowerManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceLayers());
@@ -122,4 +137,5 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 				.respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY)
 				.end(ItemHolderComponentImpl::new);
 	}
+
 }

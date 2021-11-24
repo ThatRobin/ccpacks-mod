@@ -70,6 +70,9 @@ dependencies {
 	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 
+	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-block:${project.cca_version}"
+	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-block:${project.cca_version}"
+
 	modImplementation "com.github.apace100:calio:${project.calio_version}"
 	include "com.github.apace100:calio:${project.calio_version}"
 

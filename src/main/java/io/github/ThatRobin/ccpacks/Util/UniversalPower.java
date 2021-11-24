@@ -45,12 +45,13 @@ public class UniversalPower {
         ((List<Identifier>)data.get("powers")).forEach(powerId -> {
             try {
                 PowerType powerType = PowerTypeRegistry.get(powerId);
-                universalPower.add(powerType);
                 if(powerType instanceof MultiplePowerType) {
                     ImmutableList<Identifier> subPowers = ((MultiplePowerType)powerType).getSubPowers();
                     for(Identifier subPowerId : subPowers) {
                         universalPower.add(PowerTypeRegistry.get(subPowerId));
                     }
+                } else {
+                    universalPower.add(powerType);
                 }
             } catch(IllegalArgumentException e) {
                 CCPacksMain.LOGGER.error("Powerset \"" + id + "\" contained unregistered power: \"" + powerId + "\"");

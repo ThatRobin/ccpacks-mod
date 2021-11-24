@@ -1,19 +1,24 @@
 package io.github.ThatRobin.ccpacks.Component;
 
+import dev.onyxstudios.cca.api.v3.block.BlockComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.block.BlockComponentInitializer;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlockEntity;
 import net.minecraft.util.Identifier;
 
-public class ModComponents implements EntityComponentInitializer {
+public class ModComponents implements EntityComponentInitializer, BlockComponentInitializer {
 
     public static final ComponentKey<ChoiceComponent> CHOICE;
+    public static final ComponentKey<BlockMechanicHolder> MECHANIC;
 
     static {
         CHOICE = ComponentRegistry.getOrCreate(new Identifier(CCPacksMain.MODID, "choice"), ChoiceComponent.class);
+        MECHANIC = ComponentRegistry.getOrCreate(new Identifier(CCPacksMain.MODID, "mechanics"), BlockMechanicHolder.class);
     }
 
     @Override
@@ -21,4 +26,8 @@ public class ModComponents implements EntityComponentInitializer {
         registry.registerForPlayers(CHOICE, PlayerChoiceComponent::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 
+    @Override
+    public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
+        registry.registerFor(DDBlockEntity.class, MECHANIC ,BlockMechanicHolderImpl::new);
+    }
 }

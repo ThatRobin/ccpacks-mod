@@ -4,22 +4,30 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.types.Type;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlock;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlockEntity;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.DDSound;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDItem;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
 import io.github.ThatRobin.ccpacks.Util.GameruleHolder;
 import io.github.ThatRobin.ccpacks.Util.Portal;
 import io.github.ThatRobin.ccpacks.Util.TypeAttributeHolder;
+import io.github.apace100.calio.data.SerializableData;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
@@ -35,7 +43,9 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import software.bernie.example.EntityUtils;
@@ -53,6 +63,7 @@ public class ContentTypes {
     public static Map<Identifier, DefaultParticleType> particles = Maps.newHashMap();
     public static Map<Identifier, EntityType> entities = Maps.newHashMap();
     public static Map<Identifier, GameruleHolder> gamerules = Maps.newHashMap();
+    public static Map<Identifier, Pair<Block, String>> blocks = Maps.newHashMap();
 
     public ContentTypes(Identifier id, JsonElement je) {
         readPower(id, je, ContentType::new);
@@ -85,6 +96,11 @@ public class ContentTypes {
                         }
                         if (JsonHelper.hasNumber(jo, "fuel_tick")) {
                             fuel_tick = JsonHelper.getInt(jo, "fuel_tick");
+                        }
+                        if (JsonHelper.hasJsonObject(jo, "block_entity")) {
+                            BlockEntityType<DDBlockEntity> DEMO_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create((pos, state) -> new DDBlockEntity(id, pos, state), block).build(null);
+                            ((DDBlock)block).type = DEMO_BLOCK_ENTITY;
+                            Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
                         }
                         if (make_item) {
                             FabricItemSettings settings = new FabricItemSettings();

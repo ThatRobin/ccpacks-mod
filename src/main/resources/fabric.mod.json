@@ -19,6 +19,9 @@
       "io.github.ThatRobin.ccpacks.CCPacksMain",
       "io.github.ThatRobin.ccpacks.Component.ModComponents"
     ],
+    "cardinal-components-block": [
+      "io.github.ThatRobin.ccpacks.Component.ModComponents"
+    ],
     "client": [
       "io.github.ThatRobin.ccpacks.CCPacksClient"
     ]
@@ -29,7 +32,8 @@
   "custom": {
     "cardinal-components": [
       "ccpacks:saved_items",
-      "ccpacks:choice"
+      "ccpacks:choice",
+      "ccpacks:mechanics"
     ],
     "modmenu": {
       "badges": [

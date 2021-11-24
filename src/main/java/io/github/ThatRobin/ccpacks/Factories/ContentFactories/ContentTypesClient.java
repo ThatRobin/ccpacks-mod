@@ -7,17 +7,22 @@ import io.github.ThatRobin.ccpacks.DataDrivenClasses.Entities.client.renderer.DD
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Particles.DDGlowParticle;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Particles.DDParticle;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
+import io.github.ThatRobin.ccpacks.Util.RenderLayerTypes;
 import io.github.apace100.apoli.ApoliClient;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.minecraft.block.Block;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Pair;
 
 import java.util.Optional;
 import java.util.function.BiFunction;

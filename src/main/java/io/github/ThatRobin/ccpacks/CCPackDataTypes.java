@@ -1,20 +1,29 @@
 package io.github.ThatRobin.ccpacks;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
-import io.github.ThatRobin.ccpacks.Util.ColourHolder;
-import io.github.ThatRobin.ccpacks.Util.ItemGroups;
-import io.github.ThatRobin.ccpacks.Util.StatBarHudRender;
-import io.github.ThatRobin.ccpacks.Util.ToolTypes;
+import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicRegistry;
+import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicType;
+import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicTypeReference;
+import io.github.ThatRobin.ccpacks.Util.*;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeReference;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.Calio;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
+import net.minecraft.block.enums.WallShape;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
@@ -25,16 +34,29 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class CCPackDataTypes {
+
+    public static final SerializableDataType<MechanicTypeReference> MECHANIC_TYPE = SerializableDataType.wrap(
+            MechanicTypeReference.class, SerializableDataTypes.IDENTIFIER,
+            MechanicType::getIdentifier, MechanicTypeReference::new);
+
+    public static final SerializableDataType<List<MechanicTypeReference>> MECHANIC_TYPES =
+            SerializableDataType.list(CCPackDataTypes.MECHANIC_TYPE);
 
     public static final SerializableDataType<List<String>> STRINGS =
             SerializableDataType.list(SerializableDataTypes.STRING);
@@ -42,6 +64,32 @@ public class CCPackDataTypes {
     public static final SerializableDataType<ToolTypes> TOOL_TYPES = SerializableDataType.enumValue(ToolTypes.class);
 
     public static final SerializableDataType<ItemGroups> ITEM_GROUP = SerializableDataType.enumValue(ItemGroups.class);
+
+    public static final SerializableDataType<RenderLayerTypes> RENDER_LAYER = SerializableDataType.enumValue(RenderLayerTypes.class);
+
+    public static final SerializableDataType<VoxelInfo> BLOCK_STATE = SerializableDataType.compound(VoxelInfo.class,
+            new SerializableData()
+                    .add("name", SerializableDataTypes.STRING)
+                    .add("base_value", SerializableDataTypes.BOOLEAN, false)
+                    .add("from", SerializableDataType.list(SerializableDataTypes.FLOAT), null)
+                    .add("to", SerializableDataType.list(SerializableDataTypes.FLOAT), null),
+            (dataInst) -> {
+                VoxelInfo info = new VoxelInfo();
+                info.from = (List<Float>)dataInst.get("from");
+                info.to = (List<Float>)dataInst.get("to");
+                info.property = BooleanProperty.of(dataInst.getString("name"));
+                info.base = dataInst.getBoolean("base_value");
+                return info;
+            },
+            (data, inst) -> {
+                SerializableData.Instance dataInst = data.new Instance();
+                dataInst.set("from", inst.from);
+                dataInst.set("to", inst.to);
+                return dataInst;
+            });
+
+    public static final SerializableDataType<List<VoxelInfo>> BLOCK_STATES =
+            SerializableDataType.list(CCPackDataTypes.BLOCK_STATE);
 
     public static final SerializableDataType<StatBarHudRender> STAT_BAR_HUD_RENDER = SerializableDataType.compound(StatBarHudRender.class, new
                     SerializableData()
@@ -162,34 +210,31 @@ public class CCPackDataTypes {
 
     public static final SerializableDataType<Material> MATERIAL = SerializableDataType.compound(Material.class,
             new SerializableData()
-                    .add("allow_light", SerializableDataTypes.BOOLEAN, false)
-                    .add("allow_movement", SerializableDataTypes.BOOLEAN, false)
-                    .add("blocks_pistons", SerializableDataTypes.BOOLEAN, false)
-                    .add("burnable", SerializableDataTypes.BOOLEAN, false)
-                    .add("destroyed_by_piston", SerializableDataTypes.BOOLEAN, false)
                     .add("liquid", SerializableDataTypes.BOOLEAN, false)
-                    .add("not_solid", SerializableDataTypes.BOOLEAN, false)
-                    .add("replaceable", SerializableDataTypes.BOOLEAN, false),
+                    .add("solid", SerializableDataTypes.BOOLEAN, true)
+                    .add("blocks_movement", SerializableDataTypes.BOOLEAN, true)
+                    .add("blocks_light", SerializableDataTypes.BOOLEAN, true)
+                    .add("burnable", SerializableDataTypes.BOOLEAN, false)
+                    .add("piston_behaviour", SerializableDataType.enumValue(PistonBehavior.class), PistonBehavior.NORMAL),
             (dataInst) -> {
-                FabricMaterialBuilder mat = new FabricMaterialBuilder(MapColor.BLACK);
-                dataInst.ifPresent("allow_light", (d) -> mat.lightPassesThrough());
-                dataInst.ifPresent("allow_movement", (d) -> mat.allowsMovement());
-                dataInst.ifPresent("blocks_pistons", (d) -> mat.blocksPistons());
-                dataInst.ifPresent("burnable", (d) -> mat.burnable());
-                dataInst.ifPresent("destroyed_by_piston", (d) -> mat.destroyedByPiston());
-                dataInst.ifPresent("liquid", (d) -> mat.liquid());
-                dataInst.ifPresent("not_solid", (d) -> mat.notSolid());
-                dataInst.ifPresent("replaceable", (d) -> mat.replaceable());
-                return mat.build();
+                Material mat = new Material(MapColor.BLACK,
+                        dataInst.getBoolean("liquid"),
+                        dataInst.getBoolean("solid"),
+                        dataInst.getBoolean("blocks_movement"),
+                        dataInst.getBoolean("blocks_light"),
+                        false,
+                        dataInst.getBoolean("burnable"),
+                        (PistonBehavior) dataInst.get("piston_behaviour"));
+                return mat;
             },
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
-                dataInst.set("allow_light", !inst.blocksLight());
-                dataInst.set("allow_movement", !inst.blocksMovement());
-                dataInst.set("burnable", inst.isBurnable());
                 dataInst.set("liquid", inst.isLiquid());
-                dataInst.set("not_solid", !inst.isSolid());
-                dataInst.set("replaceable", inst.isReplaceable());
+                dataInst.set("solid", inst.isSolid());
+                dataInst.set("blocks_movement", inst.blocksMovement());
+                dataInst.set("blocks_light", inst.blocksLight());
+                dataInst.set("burnable", inst.isBurnable());
+                dataInst.set("piston_behaviour", inst.getPistonBehavior());
                 return dataInst;
             });
 

@@ -4,6 +4,7 @@
   "package": "io.github.ThatRobin.ccpacks.Mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "BlockAccessorMixin",
     "AccessorMixin",
     "PlayerManagerMixin",
     "FileResourcePackProviderMixin",

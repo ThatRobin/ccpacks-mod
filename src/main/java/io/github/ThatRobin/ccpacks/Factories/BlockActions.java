@@ -61,7 +61,6 @@ public class BlockActions {
                                     compound.putInt(data.getString("name"), data.getInt("change"));
                                     mechanic.setNbt(compound);
                                 }
-
                             }
                             component.sync();
                         }
@@ -78,7 +77,6 @@ public class BlockActions {
                         ddBlockEntity.getCachedState().getProperties().forEach(property -> {
                             if(property.getName().equals(data.getString("property"))) {
                                 if(data.isPresent("value") && (Object)state.get(property) instanceof Boolean bool) {
-                                    CCPacksMain.LOGGER.info("property is boolean");
                                     if(bool) {
                                         block.getLeft().setBlockState(block.getMiddle(), state.with((Property<Boolean>) property, data.getBoolean("value")));
                                     }

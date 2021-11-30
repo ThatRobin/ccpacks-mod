@@ -15,8 +15,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.server.command.TitleCommand;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -34,6 +37,7 @@ public class ItemFactories {
         register(new ContentFactory<>(identifier("generic"), Types.ITEM,
                 new SerializableData()
                         .add("item_group", CCPackDataTypes.ITEM_GROUP, ItemGroups.MISC)
+                        .add("name", SerializableDataTypes.TEXT, null)
                         .add("lore", CCPackDataTypes.STRINGS, null)
                         .add("item_modifiers", SerializableDataTypes.IDENTIFIERS, null)
                         .add("fuel_tick", SerializableDataTypes.INT, 0)
@@ -43,7 +47,7 @@ public class ItemFactories {
                             FabricItemSettings settings = new FabricItemSettings();
                             ItemGroups group = (ItemGroups) data.get("item_group");
                             settings.group(group.group);
-                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings.maxCount(data.getInt("max_count")), (List<String>) data.get("lore"), (List<Identifier>) data.get("item_modifiers"));
+                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings.maxCount(data.getInt("max_count")), (LiteralText) (Text)data.get("name"), (List<String>) data.get("lore"), (List<Identifier>) data.get("item_modifiers"));
                             data.ifPresent("fuel_tick", (tick) -> FuelRegistry.INSTANCE.add(EXAMPLE_ITEM.get(), (Integer) tick));
                             return EXAMPLE_ITEM;
                         }));
@@ -51,6 +55,7 @@ public class ItemFactories {
         register(new ContentFactory<>(identifier("durable"), Types.ITEM,
                 new SerializableData()
                         .add("item_group", CCPackDataTypes.ITEM_GROUP, ItemGroups.MISC)
+                        .add("name", SerializableDataTypes.TEXT, null)
                         .add("lore", CCPackDataTypes.STRINGS, null)
                         .add("durability", SerializableDataTypes.INT, 100)
                         .add("fuel_tick", SerializableDataTypes.INT, 0)
@@ -63,7 +68,7 @@ public class ItemFactories {
                             data.ifPresent("durability", settings::maxDamage);
                             ItemGroups group = (ItemGroups) data.get("item_group");
                             settings.group(group.group);
-                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings, (List<String>) data.get("lore"), (ColourHolder) data.get("start_color"), (ColourHolder) data.get("end_color"));
+                            Supplier<Item> EXAMPLE_ITEM = () -> new DDItem(settings, (LiteralText) (Text)data.get("name"), (List<String>) data.get("lore"), (ColourHolder) data.get("start_color"), (ColourHolder) data.get("end_color"));
                             data.<Integer>ifPresent("fuel_tick", (tick) -> FuelRegistry.INSTANCE.add(EXAMPLE_ITEM.get(), tick));
                             return EXAMPLE_ITEM;
                         }));

@@ -60,10 +60,7 @@ import software.bernie.example.EntityUtils;
 import software.bernie.geckolib3.GeckoLib;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
@@ -81,12 +78,12 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 		NamespaceAlias.addAlias(MODID, "apoli");
 		NamespaceAlias.addAlias("origins", "apoli");
-
 		EntityActions.register();
 		EntityConditions.register();
 		ItemActions.register();
 		ItemConditions.register();
 		BlockActions.register();
+		BlockConditions.register();
 		PowerFactories.register();
 
 

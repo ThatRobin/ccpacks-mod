@@ -3,6 +3,9 @@ package io.github.ThatRobin.ccpacks;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlock;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDBlockItem;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDItem;
 import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicRegistry;
 import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicType;
 import io.github.ThatRobin.ccpacks.Factories.MechanicFactories.MechanicTypeReference;
@@ -17,7 +20,9 @@ import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MapColor;
@@ -32,6 +37,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.item.Item;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.BooleanProperty;
@@ -39,6 +45,8 @@ import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -48,6 +56,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class CCPackDataTypes {
 
@@ -58,6 +67,9 @@ public class CCPackDataTypes {
     public static final SerializableDataType<List<MechanicTypeReference>> MECHANIC_TYPES =
             SerializableDataType.list(CCPackDataTypes.MECHANIC_TYPE);
 
+
+
+
     public static final SerializableDataType<List<String>> STRINGS =
             SerializableDataType.list(SerializableDataTypes.STRING);
 
@@ -66,6 +78,26 @@ public class CCPackDataTypes {
     public static final SerializableDataType<ItemGroups> ITEM_GROUP = SerializableDataType.enumValue(ItemGroups.class);
 
     public static final SerializableDataType<RenderLayerTypes> RENDER_LAYER = SerializableDataType.enumValue(RenderLayerTypes.class);
+
+    public static final SerializableDataType<BlockItemHolder> ITEM = SerializableDataType.compound(BlockItemHolder.class,
+            new SerializableData()
+                    .add("item_group", CCPackDataTypes.ITEM_GROUP, ItemGroups.MISC)
+                    .add("name", SerializableDataTypes.TEXT, null)
+                    .add("lore", CCPackDataTypes.STRINGS, null)
+                    .add("item_modifiers", SerializableDataTypes.IDENTIFIERS, null)
+                    .add("fuel_tick", SerializableDataTypes.INT, 0)
+                    .add("max_count", SerializableDataTypes.INT, 64),
+            (data) -> {
+                FabricItemSettings settings = new FabricItemSettings();
+                ItemGroups group = (ItemGroups) data.get("item_group");
+                settings.group(group.group);
+                BlockItemHolder EXAMPLE_ITEM = new BlockItemHolder(settings.maxCount(data.getInt("max_count")), (LiteralText) (Text)data.get("name"), (List<String>) data.get("lore"), (List<Identifier>) data.get("item_modifiers"), data.getInt("fuel_tick"));
+                return EXAMPLE_ITEM;
+            },
+            (data, inst) -> {
+                SerializableData.Instance dataInst = data.new Instance();
+                return dataInst;
+            });
 
     public static final SerializableDataType<VoxelInfo> BLOCK_STATE = SerializableDataType.compound(VoxelInfo.class,
             new SerializableData()

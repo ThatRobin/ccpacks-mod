@@ -39,15 +39,15 @@ public class DDTickMechanic extends Mechanic {
     }
 
     public void tick(Triple<World, BlockPos, Direction> data, int totalTicks){
-        if(totalTicks % this.interval == 1) {
-            if(this.block_condition != null) {
-                if(this.block_condition.test(new CachedBlockPosition(data.getLeft(), data.getMiddle(), false)) == false) {
-                    CCPacksMain.LOGGER.info("your condition is failing");
-                    return;
-                }
-            }
+        if(totalTicks % this.interval == 0) {
             if (this.action != null) {
-                this.action.accept(data);
+                if (this.block_condition != null) {
+                    if (this.block_condition.test(new CachedBlockPosition(data.getLeft(), data.getMiddle(), false))) {
+                        this.action.accept(data);
+                    }
+                } else {
+                    this.action.accept(data);
+                }
             }
         }
     }

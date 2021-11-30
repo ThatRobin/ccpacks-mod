@@ -27,8 +27,6 @@ import java.util.Map;
 public class DDBlockEntity extends BlockEntity {
 
     int totalTicks;
-    public Map<String, Integer> ints = Map.of();
-    List<String> value = Lists.newArrayList();
 
     public DDBlockEntity(Identifier id, BlockPos pos, BlockState state) {
         super(Registry.BLOCK_ENTITY_TYPE.get(id), pos, state);

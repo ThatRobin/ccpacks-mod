@@ -95,14 +95,6 @@ dependencies {
 	modImplementation "software.bernie.geckolib:geckolib-fabric-1.17:3.0.16:dev"
 	include "software.bernie.geckolib:geckolib-fabric-1.17:3.0.16:dev"
 
-	modImplementation ("de.siphalor:nbtcrafting-1.17:2.1.0+mc1.17.1") {
-		exclude(group: "de.siphalor")
-	}
-	include ("de.siphalor:nbtcrafting-1.17:2.1.0+mc1.17.1"){
-		exclude(group: "de.siphalor")
-	}
-
-
 }
 
 processResources {

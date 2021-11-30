@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -17,20 +18,23 @@ import java.util.List;
 public class DDItem extends Item {
 
     public List<Identifier> powers;
-    private List<String> lore;
+    public List<String> lore;
     private ColourHolder startColours;
     private ColourHolder endColours;
+    private LiteralText name;
 
-    public DDItem(Settings settings, List<String> lore, List<Identifier> powers) {
+    public DDItem(Settings settings, LiteralText name, List<String> lore, List<Identifier> powers) {
         super(settings);
+        this.name = name;
         this.lore = lore;
         this.startColours = null;
         this.endColours = null;
         this.powers = powers;
     }
 
-    public DDItem(Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
+    public DDItem(Settings settings, LiteralText name, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
         super(settings);
+        this.name = name;
         this.lore = lore;
         this.startColours = startColours;
         this.endColours = endColours;
@@ -46,6 +50,23 @@ public class DDItem extends Item {
             }
         }
     }
+
+    @Override
+    public Text getName() {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey());
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey(stack));
+    }
+
 
     @Override
     public int getItemBarColor(ItemStack stack) {

@@ -67,7 +67,7 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
         for(Map.Entry<MechanicType<?>, Mechanic> mechanicEntry : mechanics.entrySet()) {
             NbtCompound powerTag = new NbtCompound();
             powerTag.putString("Type", MechanicRegistry.getId(mechanicEntry.getKey()).toString());
-            powerTag.put("Data", mechanicEntry.getValue().element);
+            powerTag.put("Data", mechanicEntry.getValue().getNbt());
             powerList.add(powerTag);
         }
         tag.put("Mechanics", powerList);

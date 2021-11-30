@@ -5,9 +5,11 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Lifecycle;
 import io.github.ThatRobin.ccpacks.CCPacksMain;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlock;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDBlockEntity;
+import io.github.ThatRobin.ccpacks.DataDrivenClasses.Blocks.DDCableBlock;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.DDSound;
 import io.github.ThatRobin.ccpacks.DataDrivenClasses.Items.DDItem;
 import io.github.ThatRobin.ccpacks.Registries.CCPacksRegistries;
@@ -30,11 +32,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunction;
@@ -46,7 +46,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.GameRules;
 import software.bernie.example.EntityUtils;
 import software.bernie.example.registry.EntityRegistry;
@@ -54,6 +57,7 @@ import software.bernie.example.registry.EntityRegistry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -89,27 +93,15 @@ public class ContentTypes {
                     case BLOCK -> {
                         Block block = type.createBlock(type);
                         Registry.register(Registry.BLOCK, id, block);
-                        boolean make_item = true;
-                        int fuel_tick = 0;
-                        if (JsonHelper.hasBoolean(jo, "make_block_item")) {
-                            make_item = JsonHelper.getBoolean(jo, "make_block_item");
-                        }
-                        if (JsonHelper.hasNumber(jo, "fuel_tick")) {
-                            fuel_tick = JsonHelper.getInt(jo, "fuel_tick");
-                        }
                         if (JsonHelper.hasJsonObject(jo, "block_entity")) {
                             BlockEntityType<DDBlockEntity> DEMO_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create((pos, state) -> new DDBlockEntity(id, pos, state), block).build(null);
-                            ((DDBlock)block).type = DEMO_BLOCK_ENTITY;
-                            Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
-                        }
-                        if (make_item) {
-                            FabricItemSettings settings = new FabricItemSettings();
-                            settings.group(ItemGroup.BUILDING_BLOCKS);
-                            Item item = new BlockItem(block, settings);
-                            Registry.register(Registry.ITEM, id, item);
-                            if(fuel_tick > 0) {
-                                FuelRegistry.INSTANCE.add(item, fuel_tick);
+                            if(block instanceof DDBlock ddBlock) {
+                                ddBlock.type = DEMO_BLOCK_ENTITY;
                             }
+                            if(block instanceof DDCableBlock ddCableBlock) {
+                                ddCableBlock.type = DEMO_BLOCK_ENTITY;
+                            }
+                            Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
                         }
                     }
                     case ENCHANTMENT -> {

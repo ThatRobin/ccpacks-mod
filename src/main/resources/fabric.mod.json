@@ -13,17 +13,17 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.ThatRobin.ccpacks.CCPacksMain"
+      "io.github.thatrobin.ccpacks.CCPacksMain"
     ],
     "cardinal-components-entity": [
-      "io.github.ThatRobin.ccpacks.CCPacksMain",
-      "io.github.ThatRobin.ccpacks.Component.ModComponents"
+      "io.github.thatrobin.ccpacks.CCPacksMain",
+      "io.github.thatrobin.ccpacks.component.ModComponents"
     ],
     "cardinal-components-block": [
-      "io.github.ThatRobin.ccpacks.Component.ModComponents"
+      "io.github.thatrobin.ccpacks.component.ModComponents"
     ],
     "client": [
-      "io.github.ThatRobin.ccpacks.CCPacksClient"
+      "io.github.thatrobin.ccpacks.CCPacksClient"
     ]
   },
   "mixins": [
@@ -42,8 +42,8 @@
     }
   },
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.12.6",
     "fabric": "*",
-    "minecraft": "1.17.x"
+    "minecraft": "1.18"
   }
 }

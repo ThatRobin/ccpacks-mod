@@ -24,6 +24,10 @@ public class Mechanic {
     public void fromTag(NbtElement tag) {
     }
 
+    public NbtElement toTag() {
+        return new NbtCompound();
+    }
+
     public MechanicType<?> getType() {
         return type;
     }

@@ -16,9 +16,9 @@ import java.util.List;
 
 public class DDAxeItem extends AxeItem {
 
-    private List<String> lore;
-    private ColourHolder startColours;
-    private ColourHolder endColours;
+    private final List<String> lore;
+    private final ColourHolder startColours;
+    private final ColourHolder endColours;
 
     public DDAxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
         super(material, attackDamage, attackSpeed, settings);
@@ -31,8 +31,8 @@ public class DDAxeItem extends AxeItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }

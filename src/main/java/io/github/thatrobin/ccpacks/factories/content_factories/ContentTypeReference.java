@@ -22,11 +22,11 @@ public class ContentTypeReference extends ContentType {
         return referencedPowerType.getFactory();
     }
 
-    public ContentType getReferencedPowerType() {
+    public void getReferencedPowerType() {
         if(isReferenceInvalid()) {
             if(cooldown > 0) {
                 cooldown--;
-                return null;
+                return;
             }
             try {
                 referencedPowerType = null;
@@ -35,7 +35,6 @@ public class ContentTypeReference extends ContentType {
                 cooldown = 600;
             }
         }
-        return referencedPowerType;
     }
 
     private boolean isReferenceInvalid() {

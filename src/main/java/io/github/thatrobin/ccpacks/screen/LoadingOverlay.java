@@ -29,9 +29,7 @@ public class LoadingOverlay extends Overlay {
     static final Identifier LOGO = CCPacksMain.identifier("textures/gui/title/icon.png");
     private static final int CCPACKS_BLUE = BackgroundHelper.ColorMixer.getArgb(255, 25, 125, 143);
     private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
-    private static final IntSupplier BRAND_ARGB = () -> {
-        return MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : CCPACKS_BLUE;
-    };
+    private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : CCPACKS_BLUE;
     private final MinecraftClient client;
     private final boolean reloading;
     private float progress;
@@ -78,7 +76,7 @@ public class LoadingOverlay extends Overlay {
                 this.client.currentScreen.render(matrices, mouseX, mouseY, delta);
             }
 
-            m = MathHelper.ceil(MathHelper.clamp((double)g, 0.15D, 1.0D) * 255.0D);
+            m = MathHelper.ceil(MathHelper.clamp(g, 0.15D, 1.0D) * 255.0D);
             fill(matrices, 0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), m));
             s = MathHelper.clamp(g, 0.0F, 1.0F);
         } else {
@@ -93,7 +91,7 @@ public class LoadingOverlay extends Overlay {
 
         m = (int)((double)this.client.getWindow().getScaledWidth() * 0.5D);
         int u = (int)((double)this.client.getWindow().getScaledHeight() * 0.5D);
-        double d = Math.min((double)this.client.getWindow().getScaledWidth() * 0.75D, (double)this.client.getWindow().getScaledHeight()) * 0.25D;
+        double d = Math.min((double)this.client.getWindow().getScaledWidth() * 0.75D, this.client.getWindow().getScaledHeight()) * 0.25D;
         int v = (int)(d * 0.5D);
         double e = d * 4.0D;
         int w = (int)(e * 0.5D);
@@ -120,7 +118,7 @@ public class LoadingOverlay extends Overlay {
         }
 
         if (progress >= 99) {
-            this.client.setOverlay((Overlay)null);
+            this.client.setOverlay(null);
         }
 
         if (this.reloading) {
@@ -179,9 +177,7 @@ public class LoadingOverlay extends Overlay {
                     throw var8;
                 }
 
-                if (inputStream != null) {
-                    inputStream.close();
-                }
+                inputStream.close();
 
                 return var5;
             } catch (IOException var9) {

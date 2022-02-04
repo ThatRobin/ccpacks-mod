@@ -25,11 +25,6 @@ public class DDFallMechanic extends Mechanic {
     }
 
     @Override
-    public void fromTag(NbtElement tag) {
-
-    }
-
-    @Override
     public void executeBlockAction(Triple<World, BlockPos, Direction> data){
         if (this.block_action == null)
             return;

@@ -36,16 +36,10 @@ public class MechanicFactory<P extends Mechanic> {
                 this.dataInstance = data;
             }
 
-            public void write(PacketByteBuf buf) {
-                buf.writeIdentifier(id);
-                data.write(buf, dataInstance);
-            }
-
             @Override
             public P apply(MechanicType<P> mechanicType, BlockEntity blockEntity) {
                 BiFunction<MechanicType<P>, BlockEntity, P> mechanicFactory = factoryConstructor.apply(dataInstance);
-                P p = mechanicFactory.apply(mechanicType, blockEntity);
-                return p;
+                return mechanicFactory.apply(mechanicType, blockEntity);
             }
         }
 

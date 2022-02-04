@@ -15,9 +15,9 @@ import java.util.List;
 
 public class DDTrinketItem extends TrinketItem {
 
-    private List<String> lore;
-    private ColourHolder startColours;
-    private ColourHolder endColours;
+    private final List<String> lore;
+    private final ColourHolder startColours;
+    private final ColourHolder endColours;
 
     public DDTrinketItem(Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
         super(settings);
@@ -30,8 +30,8 @@ public class DDTrinketItem extends TrinketItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }

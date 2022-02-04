@@ -32,14 +32,12 @@ import java.util.List;
 public class DDArmorItem extends ArmorItem implements PowerGrantingItem, IAnimatable {
 
     private final AnimationFactory factory = new AnimationFactory(this);
-    private List<String> lore;
-    private List<StackPowerExpansion> item_powers;
-    private EquipmentSlot slot;
+    private final List<String> lore;
+    private final List<StackPowerExpansion> item_powers;
 
     public DDArmorItem(ArmorMaterial material, EquipmentSlot slot, Settings settings, List<String> lore, List<StackPowerExpansion> item_powers) {
         super(material, slot, settings);
         this.lore = lore;
-        this.slot = slot;
         this.item_powers = item_powers;
     }
 
@@ -95,19 +93,7 @@ public class DDArmorItem extends ArmorItem implements PowerGrantingItem, IAnimat
 
         // The entity is a player, so we want to only play if the player is wearing the
         // full set of armor
-        else if (livingEntity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) livingEntity;
-
-            // Get all the equipment, aka the armor, currently held item, and offhand item
-            List<Item> equipmentList = new ArrayList<>();
-            player.getItemsEquipped().forEach((x) -> equipmentList.add(x.getItem()));
-
-            // elements 2 to 6 are the armor so we take the sublist. Armorlist now only
-            // contains the 4 armor slots
-            List<Item> armorList = equipmentList.subList(2, 6);
-
-            // Make sure the player is wearing all the armor. If they are, continue playing
-            // the animation, otherwise stop
+        else if (livingEntity instanceof PlayerEntity player) {
             return PlayState.CONTINUE;
         }
         return PlayState.STOP;

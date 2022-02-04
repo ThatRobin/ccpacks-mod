@@ -6,8 +6,8 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class JsonArmorModel extends AnimatedGeoModel<DDArmorItem> {
 
-    private String name;
-    private Identifier id;
+    private final String name;
+    private final Identifier id;
 
     public JsonArmorModel (Identifier id, String name) {
         this.name = name;

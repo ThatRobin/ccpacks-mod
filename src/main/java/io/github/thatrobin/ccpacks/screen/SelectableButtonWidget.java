@@ -20,7 +20,7 @@ public class SelectableButtonWidget extends ButtonWidget {
     private final int textureHeight;
     private final ItemStack itemIcon;
 
-    private ItemRenderer itemRenderer;
+    private final ItemRenderer itemRenderer;
 
     public Choice choice;
 

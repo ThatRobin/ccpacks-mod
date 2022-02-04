@@ -21,10 +21,10 @@ import java.util.List;
 public class ChooseChoiceScreen extends ChoiceDisplayScreen {
 
     private final ArrayList<ChoiceLayer> layerList;
-    private int currentLayerIndex;
+    private final int currentLayerIndex;
     private int currentChoice = 0;
     private final List<Choice> ChoiceSelection;
-    private int maxSelection;
+    private final int maxSelection;
 
     public ChooseChoiceScreen(ArrayList<ChoiceLayer> layerList, int currentLayerIndex, boolean showDirtBackground) {
         super(new TranslatableText(CCPacksMain.MODID + ".screen.choose_Choice"), showDirtBackground);

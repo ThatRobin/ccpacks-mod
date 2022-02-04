@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class UniversalPowerRegistry {
 
-    private static HashMap<Identifier, UniversalPower> idToUP = new HashMap<>();
+    private static final HashMap<Identifier, UniversalPower> idToUP = new HashMap<>();
 
     public static UniversalPower register(Identifier id, UniversalPower power) {
         if(idToUP.containsKey(id)) {
@@ -30,8 +30,7 @@ public class UniversalPowerRegistry {
         if(!idToUP.containsKey(id)) {
             throw new IllegalArgumentException("Could not get power from id '" + id.toString() + "', as it was not registered!");
         }
-        UniversalPower power = idToUP.get(id);
-        return power;
+        return idToUP.get(id);
     }
 
     public static boolean contains(Identifier id) {

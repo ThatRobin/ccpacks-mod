@@ -17,7 +17,7 @@ public class DDBlockItem extends BlockItem {
 
     public List<Identifier> powers;
     public List<String> lore;
-    private LiteralText name;
+    private final LiteralText name;
 
     public DDBlockItem(Block block, Settings settings, LiteralText name, List<String> lore, List<Identifier> powers) {
         super(block, settings);
@@ -30,8 +30,8 @@ public class DDBlockItem extends BlockItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }
@@ -51,11 +51,6 @@ public class DDBlockItem extends BlockItem {
             return name;
         }
         return new TranslatableText(this.getTranslationKey(stack));
-    }
-
-    private float lerp(float a, float b, float f)
-    {
-        return (float)(a * (1.0 - f)) + (b * f);
     }
 
 }

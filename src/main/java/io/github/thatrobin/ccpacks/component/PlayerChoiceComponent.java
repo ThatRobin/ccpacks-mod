@@ -13,15 +13,16 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerChoiceComponent implements ChoiceComponent {
 
-    private PlayerEntity player;
-    private HashMap<ChoiceLayer, Choice> choices = new HashMap<>();
-    private ConcurrentHashMap<PowerType<?>, Power> powers = new ConcurrentHashMap<>();
+    private final PlayerEntity player;
+    private final HashMap<ChoiceLayer, Choice> choices = new HashMap<>();
+    private final ConcurrentHashMap<PowerType<?>, Power> powers = new ConcurrentHashMap<>();
 
     private boolean hadChoiceBefore = false;
 
@@ -31,9 +32,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     @Override
     public boolean hasAllChoices() {
-        return ChoiceLayers.getLayers().stream().allMatch(layer -> {
-            return !layer.isEnabled() || (choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY);
-        });
+        return ChoiceLayers.getLayers().stream().allMatch(layer -> !layer.isEnabled() || (choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY));
     }
 
     @Override
@@ -43,7 +42,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     @Override
     public boolean hasChoice(ChoiceLayer layer) {
-        return choices != null && choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY;
+        return choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY;
     }
 
     @Override
@@ -112,7 +111,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound compoundTag) {
+    public void readFromNbt(@NotNull NbtCompound compoundTag) {
         this.fromTag(compoundTag, true);
     }
 
@@ -120,15 +119,13 @@ public class PlayerChoiceComponent implements ChoiceComponent {
         if(player == null) {
             CCPacksMain.LOGGER.error("Player was null in `fromTag`! This is a bug!");
         }
-        if(this.choices != null) {
-            if(callPowerOnAdd) {
-                for (Power power: powers.values()) {
-                    power.onRemoved();
-                    power.onLost();
-                }
+        if(callPowerOnAdd) {
+            for (Power power: powers.values()) {
+                power.onRemoved();
+                power.onLost();
             }
-            powers.clear();
         }
+        powers.clear();
 
         this.choices.clear();
 
@@ -137,6 +134,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
                 ChoiceLayer defaultChoiceLayer = ChoiceLayers.getLayer(new Identifier(CCPacksMain.MODID, "choice"));
                 this.choices.put(defaultChoiceLayer, ChoiceRegistry.get(Identifier.tryParse(compoundTag.getString("Choice"))));
             } catch(IllegalArgumentException e) {
+                assert player != null;
                 CCPacksMain.LOGGER.warn("Player " + player.getDisplayName().asString() + " had old choice which could not be migrated: " + compoundTag.getString("Choice"));
             }
         } else {
@@ -149,7 +147,9 @@ public class PlayerChoiceComponent implements ChoiceComponent {
                     try {
                         layer = ChoiceLayers.getLayer(layerId);
                     } catch(IllegalArgumentException e) {
-                        CCPacksMain.LOGGER.warn("Could not find choice layer with id " + layerId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                        assert layerId != null;
+                        assert player != null;
+                        CCPacksMain.LOGGER.warn("Could not find choice layer with id " + layerId + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
                     }
                     if(layer != null) {
                         Identifier choiceId = Identifier.tryParse(layerTag.getString("Choice"));
@@ -157,10 +157,13 @@ public class PlayerChoiceComponent implements ChoiceComponent {
                         try {
                             choice = ChoiceRegistry.get(choiceId);
                         } catch(IllegalArgumentException e) {
-                            CCPacksMain.LOGGER.warn("Could not find choice with id " + choiceId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                            assert choiceId != null;
+                            assert player != null;
+                            CCPacksMain.LOGGER.warn("Could not find choice with id " + choiceId + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
                         }
                         if(choice != null) {
                             if(!layer.contains(choice)) {
+                                assert player != null;
                                 CCPacksMain.LOGGER.warn("Choice with id " + choice.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + " and is not special, but was found on " + player.getDisplayName().asString() + ", setting to EMPTY.");
                                 choice = Choice.EMPTY;
                             }
@@ -172,7 +175,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
         }
         this.hadChoiceBefore = compoundTag.getBoolean("HadChoiceBefore");
         NbtList powerList = (NbtList)compoundTag.get("Powers");
-        for(int i = 0; i < powerList.size(); i++) {
+        for(int i = 0; i < Objects.requireNonNull(powerList).size(); i++) {
             NbtCompound powerTag = powerList.getCompound(i);
             Identifier powerTypeId = Identifier.tryParse(powerTag.getString("Type"));
             try {
@@ -185,6 +188,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
                     } catch(ClassCastException e) {
                         // Occurs when power was overriden by data pack since last world load
                         // to be a power type which uses different data class.
+                        assert player != null;
                         CCPacksMain.LOGGER.warn("Data type of \"" + powerTypeId + "\" changed, skipping data for that power on player " + player.getName().asString());
                     }
                     this.powers.put(type, power);
@@ -205,7 +209,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
     }
 
     @Override
-    public void writeToNbt(NbtCompound compoundTag) {
+    public void writeToNbt(@NotNull NbtCompound compoundTag) {
         NbtList choiceLayerList = new NbtList();
         for(Map.Entry<ChoiceLayer, Choice> entry : choices.entrySet()) {
             NbtCompound layerTag = new NbtCompound();

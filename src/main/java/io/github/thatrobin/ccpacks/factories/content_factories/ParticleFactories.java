@@ -29,7 +29,7 @@ public class ParticleFactories {
                         .add("collides_with_world", SerializableDataTypes.BOOLEAN, false),
                 data ->
                         (contentType, content) -> {
-                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            ColourHolder colourHolder = data.get("color");
                             DDParticle.red = colourHolder.getRed();
                             DDParticle.green = colourHolder.getGreen();
                             DDParticle.blue = colourHolder.getBlue();
@@ -51,7 +51,7 @@ public class ParticleFactories {
                         .add("alpha", SerializableDataTypes.FLOAT, 1f),
                 data ->
                         (contentType, content) -> {
-                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            ColourHolder colourHolder = data.get("color");
                             DDParticle.red = colourHolder.getRed();
                             DDParticle.green = colourHolder.getGreen();
                             DDParticle.blue = colourHolder.getBlue();

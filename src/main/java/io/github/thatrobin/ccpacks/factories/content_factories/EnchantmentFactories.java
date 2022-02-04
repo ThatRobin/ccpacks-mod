@@ -28,9 +28,7 @@ public class EnchantmentFactories {
                         .add("rarity", SerializableDataType.enumValue(Enchantment.Rarity.class), Enchantment.Rarity.VERY_RARE)
                         .add("blacklist", SerializableDataType.list(SerializableDataTypes.ENCHANTMENT), null),
                 data ->
-                        (contentType, content) -> {
-                            return (Supplier<Enchantment>) () -> new DDEnchantment((Enchantment.Rarity)data.get("rarity"), (EnchantmentTarget) data.get("target"), null, data.getInt("max_level"), false, data.getBoolean("treasure"), (List<Enchantment>) data.get("blacklist"));
-                        }));
+                        (contentType, content) -> (Supplier<Enchantment>) () -> new DDEnchantment(data.get("rarity"), data.get("target"), null, data.getInt("max_level"), false, data.getBoolean("treasure"), data.get("blacklist"))));
 
         register(new ContentFactory<>(identifier("curse"), Types.ENCHANTMENT,
                 new SerializableData()
@@ -40,9 +38,7 @@ public class EnchantmentFactories {
                         .add("rarity", SerializableDataType.enumValue(Enchantment.Rarity.class), Enchantment.Rarity.VERY_RARE)
                         .add("blacklist", SerializableDataTypes.ENCHANTMENT, null),
                 data ->
-                        (contentType, content) -> {
-                            return (Supplier<Enchantment>) () -> new DDEnchantment((Enchantment.Rarity)data.get("rarity"), (EnchantmentTarget) data.get("target"), null, data.getInt("max_level"), true, data.getBoolean("treasure"), (List<Enchantment>) data.get("blacklist"));
-                        }));
+                        (contentType, content) -> (Supplier<Enchantment>) () -> new DDEnchantment(data.get("rarity"), data.get("target"), null, data.getInt("max_level"), true, data.getBoolean("treasure"), data.get("blacklist"))));
     }
 
     private static void register(ContentFactory<Supplier<?>> serializer) {

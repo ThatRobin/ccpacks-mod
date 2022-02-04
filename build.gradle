@@ -3,10 +3,6 @@ plugins {
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
@@ -56,6 +52,10 @@ repositories {
 		name "Siphalor's Maven"
 		url "https://maven.siphalor.de"
 	}
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/ccpacks.accesswidener")
 }
 
 dependencies {

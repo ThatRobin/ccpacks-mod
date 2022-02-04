@@ -19,9 +19,9 @@ public class DDItem extends Item {
 
     public List<Identifier> powers;
     public List<String> lore;
-    private ColourHolder startColours;
-    private ColourHolder endColours;
-    private LiteralText name;
+    private final ColourHolder startColours;
+    private final ColourHolder endColours;
+    private final LiteralText name;
 
     public DDItem(Settings settings, LiteralText name, List<String> lore, List<Identifier> powers) {
         super(settings);
@@ -44,8 +44,8 @@ public class DDItem extends Item {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }

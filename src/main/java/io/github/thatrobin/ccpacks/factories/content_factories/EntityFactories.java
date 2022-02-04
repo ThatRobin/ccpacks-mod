@@ -32,10 +32,9 @@ public class EntityFactories {
                         .add("height", SerializableDataTypes.FLOAT, 1f),
                 data ->
                         (contentType, content) -> {
-                            List<Identifier> tasks = (List<Identifier>)data.get("tasks");
-                            FabricEntityTypeBuilder entity = FabricEntityTypeBuilder.create((SpawnGroup) data.get("spawn_group"), DDAnimalEntity::new).dimensions(new EntityDimensions(data.getFloat("width"), data.getFloat("height"), true));
+                            FabricEntityTypeBuilder<DDAnimalEntity> entity = FabricEntityTypeBuilder.create(data.get("spawn_group"), DDAnimalEntity::new).dimensions(new EntityDimensions(data.getFloat("width"), data.getFloat("height"), true));
                             GoalMap.goals.clear();
-                            TypeAttributeHolder holder = new TypeAttributeHolder(entity, (DefaultAttributeContainer.Builder)data.get("attributes"));
+                            TypeAttributeHolder holder = new TypeAttributeHolder(entity, data.get("attributes"));
                             return () -> holder;
         }));
 

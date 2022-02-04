@@ -18,9 +18,9 @@ import java.util.List;
 public class DDSwordItem extends SwordItem {
 
     //public CMDInfo model = ResourcePackUtils.requestCustomModelData(Items.WOODEN_SWORD, new Identifier("schools_of_magic", "item/hexblade_relic"));
-    private List<String> lore;
-    private ColourHolder startColours;
-    private ColourHolder endColours;
+    private final List<String> lore;
+    private final ColourHolder startColours;
+    private final ColourHolder endColours;
 
     public DDSwordItem(ToolMaterial toolMaterial, int attackDamage, float attackSpeed, Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours) {
         super(toolMaterial, attackDamage, attackSpeed, settings);
@@ -33,8 +33,8 @@ public class DDSwordItem extends SwordItem {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }
@@ -66,13 +66,4 @@ public class DDSwordItem extends SwordItem {
         return (float)(a * (1.0 - f)) + (b * f);
     }
 
-    //@Override
-    //public Item getVirtualItem() {
-    //    return this.model.item();
-    //}
-
-    //@Override
-    //public int getCustomModelData(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-    //    return model.value();
-    //}
 }

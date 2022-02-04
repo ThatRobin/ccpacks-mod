@@ -37,9 +37,7 @@ public class DDAnimalEntity extends AnimalEntity implements IAnimatable {
 
     @Override
     protected void initGoals() {
-        GoalMap.goals.forEach(identifierTaskTypeEntry -> {
-            this.goalSelector.add(0, new WanderAroundFarGoal(this, 1.0D));
-        });
+        GoalMap.goals.forEach(identifierTaskTypeEntry -> this.goalSelector.add(0, new WanderAroundFarGoal(this, 1.0D)));
     }
 
     @Override
@@ -57,7 +55,7 @@ public class DDAnimalEntity extends AnimalEntity implements IAnimatable {
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<DDAnimalEntity>(this, "controller", 0, this::predicate));
+        data.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
     }
 
     @Override

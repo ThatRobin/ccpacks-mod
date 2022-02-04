@@ -1,35 +1,30 @@
 package io.github.thatrobin.ccpacks;
 
 import com.google.gson.JsonParseException;
-import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
-import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
-import io.github.thatrobin.ccpacks.util.*;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.Calio;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
+import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
+import io.github.thatrobin.ccpacks.util.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -68,7 +63,7 @@ public class CCPackDataTypes {
                     .add("slot", SerializableDataTypes.EQUIPMENT_SLOT, EquipmentSlot.MAINHAND)
                     .add("hidden", SerializableDataTypes.BOOLEAN, false)
                     .add("negative", SerializableDataTypes.BOOLEAN, false),
-            (dataInst) -> new StackPowerExpansion(dataInst.getId("power"), dataInst.getBoolean("hidden"), dataInst.getBoolean("negative"), (EquipmentSlot) dataInst.get("slot")),
+            (dataInst) -> new StackPowerExpansion(dataInst.getId("power"), dataInst.getBoolean("hidden"), dataInst.getBoolean("negative"), dataInst.get("slot")),
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
                 dataInst.set("power", inst.powerId);
@@ -100,26 +95,18 @@ public class CCPackDataTypes {
                     .add("max_count", SerializableDataTypes.INT, 64),
             (data) -> {
                 FabricItemSettings settings = new FabricItemSettings();
-                ItemGroups group = (ItemGroups) data.get("item_group");
+                ItemGroups group = data.get("item_group");
                 settings.group(group.group);
-                BlockItemHolder EXAMPLE_ITEM = new BlockItemHolder(settings.maxCount(data.getInt("max_count")), (LiteralText) (Text)data.get("name"), (List<String>) data.get("lore"), (List<Identifier>) data.get("item_modifiers"), data.getInt("fuel_tick"));
-                return EXAMPLE_ITEM;
+                return new BlockItemHolder(settings.maxCount(data.getInt("max_count")), data.get("name"), data.get("lore"), data.get("item_modifiers"), data.getInt("fuel_tick"));
             },
-            (data, inst) -> {
-                SerializableData.Instance dataInst = data.new Instance();
-                return dataInst;
-            });
+            (data, inst) -> data.new Instance());
 
     public static final SerializableDataType<VoxelInfo> BLOCK_STATE = SerializableDataType.compound(VoxelInfo.class,
             new SerializableData()
                     .add("name", SerializableDataTypes.STRING)
-                    .add("base_value", SerializableDataTypes.BOOLEAN, false)
-                    .add("from", SerializableDataType.list(SerializableDataTypes.FLOAT), null)
-                    .add("to", SerializableDataType.list(SerializableDataTypes.FLOAT), null),
+                    .add("base_value", SerializableDataTypes.BOOLEAN, false),
             (dataInst) -> {
                 VoxelInfo info = new VoxelInfo();
-                info.from = (List<Float>)dataInst.get("from");
-                info.to = (List<Float>)dataInst.get("to");
                 info.property = BooleanProperty.of(dataInst.getString("name"));
                 info.base = dataInst.getBoolean("base_value");
                 return info;
@@ -128,8 +115,6 @@ public class CCPackDataTypes {
                 SerializableData.Instance dataInst = data.new Instance();
                 dataInst.set("name", inst.property.getName());
                 dataInst.set("base_value", inst.base);
-                dataInst.set("from", inst.from);
-                dataInst.set("to", inst.to);
                 return dataInst;
             });
 
@@ -147,7 +132,7 @@ public class CCPackDataTypes {
                     dataInst.getBoolean("should_render"),
                     dataInst.getInt("bar_index"),
                     dataInst.getId("sprite_location"),
-                    (ConditionFactory<LivingEntity>.Instance)dataInst.get("condition"),
+                    dataInst.get("condition"),
                     dataInst.getString("side")),
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
@@ -236,11 +221,11 @@ public class CCPackDataTypes {
             (dataInst) -> new BlockSoundGroup(
                     dataInst.getInt("pitch"),
                     dataInst.getInt("volume"),
-                    (SoundEvent) dataInst.get("break_sound"),
-                    (SoundEvent) dataInst.get("step_sound"),
-                    (SoundEvent) dataInst.get("place_sound"),
-                    (SoundEvent) dataInst.get("hit_sound"),
-                    (SoundEvent) dataInst.get("fall_sound")),
+                    dataInst.get("break_sound"),
+                    dataInst.get("step_sound"),
+                    dataInst.get("place_sound"),
+                    dataInst.get("hit_sound"),
+                    dataInst.get("fall_sound")),
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
                 dataInst.set("pitch", inst.getPitch());
@@ -261,17 +246,14 @@ public class CCPackDataTypes {
                     .add("blocks_light", SerializableDataTypes.BOOLEAN, true)
                     .add("burnable", SerializableDataTypes.BOOLEAN, false)
                     .add("piston_behaviour", SerializableDataType.enumValue(PistonBehavior.class), PistonBehavior.NORMAL),
-            (dataInst) -> {
-                Material mat = new Material(MapColor.BLACK,
-                        dataInst.getBoolean("liquid"),
-                        dataInst.getBoolean("solid"),
-                        dataInst.getBoolean("blocks_movement"),
-                        dataInst.getBoolean("blocks_light"),
-                        false,
-                        dataInst.getBoolean("burnable"),
-                        (PistonBehavior) dataInst.get("piston_behaviour"));
-                return mat;
-            },
+            (dataInst) -> new Material(MapColor.BLACK,
+                    dataInst.getBoolean("liquid"),
+                    dataInst.getBoolean("solid"),
+                    dataInst.getBoolean("blocks_movement"),
+                    dataInst.getBoolean("blocks_light"),
+                    false,
+                    dataInst.getBoolean("burnable"),
+                    dataInst.get("piston_behaviour")),
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
                 dataInst.set("liquid", inst.isLiquid());
@@ -283,7 +265,7 @@ public class CCPackDataTypes {
                 return dataInst;
             });
 
-    public static final SerializableDataType<List<EntityType>> ENTITY_ENTRY = SerializableDataType.compound(ClassUtil.castClass(List.class),
+    public static final SerializableDataType<List<EntityType<?>>> ENTITY_ENTRY = SerializableDataType.compound(ClassUtil.castClass(List.class),
             new SerializableData()
                     .add("entity", SerializableDataTypes.ENTITY_TYPE, null)
                     .add("tag", SerializableDataTypes.ENTITY_TAG, null),
@@ -294,7 +276,7 @@ public class CCPackDataTypes {
                     throw new JsonParseException("An ingredient entry is either a tag or an entity, " + (tagPresent ? "not both" : "one has to be provided."));
                 }
                 if(tagPresent) {
-                    Tag<EntityType> tag = (Tag<EntityType>)dataInstance.get("tag");
+                    Tag<EntityType<?>> tag = dataInstance.get("tag");
                     return List.copyOf(tag.values());
                 } else {
                     return List.of((EntityType<? extends net.minecraft.entity.Entity>)dataInstance.get("entity"));

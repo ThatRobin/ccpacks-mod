@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class ContentRegistry {
-    private static HashMap<Identifier, ContentType> idToContent = new HashMap<>();
+    private static final HashMap<Identifier, ContentType> idToContent = new HashMap<>();
 
     public static ContentType register(Identifier id, ContentType contentType) {
         if(idToContent.containsKey(id)) {
@@ -15,14 +15,6 @@ public class ContentRegistry {
         }
         idToContent.put(id, contentType);
         return contentType;
-    }
-
-    protected static ContentType update(Identifier id, ContentType contentType) {
-        if(idToContent.containsKey(id)) {
-            ContentType old = idToContent.get(id);
-            idToContent.remove(id);
-        }
-        return register(id, contentType);
     }
 
     public static int size() {
@@ -37,16 +29,11 @@ public class ContentRegistry {
         return idToContent.entrySet();
     }
 
-    public static Iterable<ContentType> values() {
-        return idToContent.values();
-    }
-
     public static ContentType get(Identifier id) {
         if(!idToContent.containsKey(id)) {
             throw new IllegalArgumentException("Could not get content type from id '" + id.toString() + "', as it was not registered!");
         }
-        ContentType contentType = idToContent.get(id);
-        return contentType;
+        return idToContent.get(id);
     }
 
     public static Identifier getId(ContentType powerType) {

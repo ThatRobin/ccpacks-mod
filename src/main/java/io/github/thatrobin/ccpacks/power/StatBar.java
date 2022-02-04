@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 
 public class StatBar extends VariableIntPower {
 
-    private StatBarHudRender hudRender;
+    private final StatBarHudRender hudRender;
 
     public StatBar(PowerType<?> type, LivingEntity entity, StatBarHudRender hudRender) {
         super(type, entity,20,0,20);

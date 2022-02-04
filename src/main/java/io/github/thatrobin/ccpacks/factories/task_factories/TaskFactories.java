@@ -16,13 +16,10 @@ public class TaskFactories {
         register(new TaskFactory<>(identifier("attack"),
                 new SerializableData(),
                 data ->
-                        (identifier, factory) -> {
-                            DDAttackGoal attackGoal = new DDAttackGoal(identifier, factory);
-                            return attackGoal;
-                        }));
+                        DDAttackGoal::new));
     }
 
-    private static void register(TaskFactory serializer) {
+    private static void register(TaskFactory<?> serializer) {
         Registry.register(CCPacksRegistries.TASK_FACTORY, serializer.getSerializerId(), serializer);
     }
 

@@ -1,11 +1,10 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.mechanics;
 
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
 import io.github.thatrobin.ccpacks.util.Mechanic;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -20,11 +19,6 @@ public class DDStepMechanic extends Mechanic {
         super(mechanicType, blockEntity);
         this.block_action = block_action;
         this.entity_action = entity_action;
-    }
-
-    @Override
-    public void fromTag(NbtElement tag) {
-
     }
 
     @Override

@@ -49,7 +49,7 @@ public class ActionOnProjectileLand extends Power {
         }
     }
 
-    public EntityType getProjectile() {
+    public EntityType<?> getProjectile() {
         return Registry.ENTITY_TYPE.get(projectile);
     }
 }

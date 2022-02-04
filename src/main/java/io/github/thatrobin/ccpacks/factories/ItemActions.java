@@ -16,9 +16,7 @@ public class ItemActions {
     public static void register() {
         register(new ActionFactory<>(CCPacksMain.identifier("change_name"), new SerializableData()
                 .add("name", SerializableDataTypes.STRING),
-                (data, stack) -> {
-                    stack.getRight().setCustomName(new TranslatableText(data.getString("name")));
-                }));
+                (data, stack) -> stack.getRight().setCustomName(new TranslatableText(data.getString("name")))));
     }
 
     private static void register(ActionFactory<Pair<World, ItemStack>> actionFactory) {

@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +64,7 @@ public class ItemHolderComponentImpl implements ItemHolderComponent {
     }
 
     @Override
-    public void readFromNbt(NbtCompound compoundTag) {
+    public void readFromNbt(@NotNull NbtCompound compoundTag) {
         this.fromTag(compoundTag);
     }
 
@@ -77,7 +78,7 @@ public class ItemHolderComponentImpl implements ItemHolderComponent {
                 for (int i = 0; i < powerList.size(); i++) {
                     NbtCompound powerTag = powerList.getCompound(i);
                     NbtCompound data = powerTag.getCompound("Stack");
-                    ItemStack stack = ItemStack.fromNbt(data);
+                    ItemStack.fromNbt(data);
                 }
             }
         } catch(Exception e) {

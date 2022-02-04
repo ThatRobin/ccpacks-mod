@@ -28,7 +28,7 @@ public interface BlockMechanicHolder extends AutoSyncedComponent, ServerTickingC
 
     <T extends Mechanic> T getMechanic(Identifier id);
 
-    <T extends Mechanic> T getMechanic(MechanicType mechanicType);
+    <T extends Mechanic> T getMechanic(MechanicType<?> mechanicType);
 
     List<Mechanic> getMechanics();
 

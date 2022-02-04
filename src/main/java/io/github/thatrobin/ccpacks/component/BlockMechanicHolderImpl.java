@@ -6,8 +6,11 @@ import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicRegistry
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
 import io.github.thatrobin.ccpacks.util.Mechanic;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockMechanicHolderImpl implements BlockMechanicHolder {
 
-    private DDBlockEntity ddBlockEntity;
+    private final DDBlockEntity ddBlockEntity;
     private final ConcurrentHashMap<MechanicType<?>, Mechanic> mechanics = new ConcurrentHashMap<>();
 
     public BlockMechanicHolderImpl(DDBlockEntity ddBlockEntity) {
@@ -28,7 +31,7 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(@NotNull NbtCompound tag) {
         this.fromTag(tag);
     }
 
@@ -59,12 +62,14 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(@NotNull NbtCompound tag) {
         NbtList powerList = new NbtList();
         for(Map.Entry<MechanicType<?>, Mechanic> mechanicEntry : mechanics.entrySet()) {
+            Mechanic mechanic = mechanicEntry.getValue();
+            MechanicType<?> mechanicType = mechanicEntry.getKey();
             NbtCompound powerTag = new NbtCompound();
-            powerTag.putString("Type", MechanicRegistry.getId(mechanicEntry.getKey()).toString());
-            powerTag.put("Data", mechanicEntry.getValue().getNbt());
+            powerTag.putString("Type", MechanicRegistry.getId(mechanicType).toString());
+            powerTag.put("Data", mechanic.toTag());
             powerList.add(powerTag);
         }
         tag.put("Mechanics", powerList);
@@ -72,19 +77,19 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
 
 
     @Override
-    public void removeMechanic(MechanicType mechanicType) {
+    public void removeMechanic(MechanicType<?> mechanicType) {
         mechanics.remove(mechanicType);
     }
 
     @Override
     public int removeAllMechanics() {
         mechanics.clear();
-        return mechanics.size();
+        return 0;
     }
 
     @Override
-    public boolean addMechanic(MechanicType mechanicType) {
-        if(mechanicType instanceof MechanicTypeReference<?> mechanicTypeReference) {
+    public boolean addMechanic(MechanicType<?> mechanicType) {
+        if(mechanicType instanceof MechanicTypeReference mechanicTypeReference) {
             mechanicType = mechanicTypeReference.getReferencedPowerType();
         }
         Mechanic mechanic = mechanicType.create(ddBlockEntity);
@@ -93,7 +98,7 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
     }
 
     @Override
-    public boolean hasMechanic(MechanicType mechanicType) {
+    public boolean hasMechanic(MechanicType<?> mechanicType) {
         return mechanics.containsKey(mechanicType);
     }
 
@@ -117,7 +122,7 @@ public class BlockMechanicHolderImpl implements BlockMechanicHolder {
     }
 
     @Override
-    public <T extends Mechanic> T getMechanic(MechanicType mechanicType) {
+    public <T extends Mechanic> T getMechanic(MechanicType<?> mechanicType) {
         if(mechanics.get(mechanicType) != null){
             return (T)mechanics.get(mechanicType);
         }

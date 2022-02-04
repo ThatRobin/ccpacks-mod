@@ -41,7 +41,7 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	public static CCPacksRegistry ccPacksRegistry = new CCPacksRegistry();
 
-	public static PowerIconManager powerIconManager = new PowerIconManager();;
+	public static PowerIconManager powerIconManager = new PowerIconManager();
 
 	@Override
 	public void onInitialize() {

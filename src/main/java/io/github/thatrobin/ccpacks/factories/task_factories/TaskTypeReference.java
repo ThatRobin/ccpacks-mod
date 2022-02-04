@@ -20,11 +20,11 @@ public class TaskTypeReference extends TaskType {
         return referencedPowerType.getFactory();
     }
 
-    public TaskType getReferencedPowerType() {
+    public void getReferencedPowerType() {
         if(isReferenceInvalid()) {
             if(cooldown > 0) {
                 cooldown--;
-                return null;
+                return;
             }
             try {
                 referencedPowerType = null;
@@ -33,7 +33,6 @@ public class TaskTypeReference extends TaskType {
                 cooldown = 600;
             }
         }
-        return referencedPowerType;
     }
 
     private boolean isReferenceInvalid() {

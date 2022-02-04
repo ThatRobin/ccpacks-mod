@@ -1,13 +1,12 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.mechanics;
 
-import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
-import io.github.thatrobin.ccpacks.util.Mechanic;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
+import io.github.thatrobin.ccpacks.util.Mechanic;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -24,10 +23,6 @@ public class DDUseMechanic extends Mechanic {
         this.block_action = block_action;
         this.entity_action = entity_action;
         this.block_condition = block_condition;
-    }
-
-    @Override
-    public void fromTag(NbtElement tag) {
     }
 
     @Override

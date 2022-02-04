@@ -4,13 +4,13 @@
   "package": "io.github.thatrobin.ccpacks.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BlockAccessorMixin",
     "AccessorMixin",
     "PlayerManagerMixin",
     "FileResourcePackProviderMixin",
     "ServerWorldMixin",
     "MinecraftServerMixin",
-    "ProjectileEntityMixin"
+    "ProjectileEntityMixin",
+    "StateManagerMixin"
   ],
   "client": [
     "InGameHudMixin",

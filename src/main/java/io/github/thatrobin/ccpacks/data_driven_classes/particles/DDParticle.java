@@ -21,7 +21,6 @@ public class DDParticle extends SpriteBillboardParticle {
         super(clientWorld, d, e, f, g, h, i);
         this.scale = size;
         this.maxAge = max_age; //ticks
-        int maxHeight = 1;
         this.collidesWithWorld = collides_with_world;
         this.setSpriteForAge(spriteProvider);
         this.colorAlpha = alpha;

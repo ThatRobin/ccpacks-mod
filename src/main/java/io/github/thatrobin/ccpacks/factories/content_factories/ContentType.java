@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 
 public class ContentType {
 
-    private Identifier identifier;
-    private ContentFactory<Supplier<?>>.Instance factory;
+    private final Identifier identifier;
+    private final ContentFactory<Supplier<?>>.Instance factory;
 
     private String nameTranslationKey;
     private String descriptionTranslationKey;
@@ -35,15 +35,6 @@ public class ContentType {
 
     public ContentFactory<Supplier<?>>.Instance getFactory() {
         return factory;
-    }
-
-    public ContentType setHidden() {
-        return this;
-    }
-
-    public void setTranslationKeys(String name, String description) {
-        this.nameTranslationKey = name;
-        this.descriptionTranslationKey = description;
     }
 
     public Item createItem(ContentType contentType) {
@@ -70,8 +61,8 @@ public class ContentType {
         return (Portal) factory.apply(contentType, null).get();
     }
 
-    public EntityType createProjectile(ContentType contentType) {
-        return (EntityType) factory.apply(contentType, null).get();
+    public EntityType<?> createProjectile(ContentType contentType) {
+        return (EntityType<?>) factory.apply(contentType, null).get();
     }
 
     public DefaultParticleType createParticle(ContentType contentType) {
@@ -123,7 +114,7 @@ public class ContentType {
         if(!(obj instanceof PowerType)) {
             return false;
         }
-        Identifier id = ((PowerType)obj).getIdentifier();
+        Identifier id = ((PowerType<?>)obj).getIdentifier();
         return identifier.equals(id);
     }
 }

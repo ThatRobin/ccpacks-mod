@@ -8,11 +8,9 @@ import java.util.*;
 
 public class DataLoader {
 
-    private final Gson gson;
     public final String dataType;
 
     public DataLoader(Gson gson, String dataType) {
-        this.gson = gson;
         this.dataType = dataType;
     }
 

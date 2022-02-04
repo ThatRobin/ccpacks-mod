@@ -41,6 +41,7 @@
       ]
     }
   },
+  "accessWidener": "ccpacks.accesswidener",
   "depends": {
     "fabricloader": ">=0.12.6",
     "fabric": "*",

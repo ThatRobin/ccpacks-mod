@@ -35,12 +35,10 @@ public class DDBlockEntity extends BlockEntity {
         super.readNbt(tag);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, DDBlockEntity be) {
+    public static void tick(World world, BlockPos pos, DDBlockEntity be) {
         be.totalTicks++;
-        Triple data = Triple.of(world, pos, Direction.UP);
-        BlockMechanicHolder.KEY.get(be).getMechanics(DDTickMechanic.class).forEach(tickMechanic -> {
-            tickMechanic.tick(data, be.totalTicks);
-        });
+        Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
+        BlockMechanicHolder.KEY.get(be).getMechanics(DDTickMechanic.class).forEach(tickMechanic -> tickMechanic.tick(data, be.totalTicks));
     }
 
 }

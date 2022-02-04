@@ -9,13 +9,13 @@ import net.minecraft.util.registry.Registry;
 
 public class DDArmorMaterial implements ArmorMaterial {
 
-    private Identifier repairItem;
-    private int durability;
-    private int protection;
-    private int enchantability;
-    private int toughness;
-    private int knockbackRes;
-    private String name;
+    private final Identifier repairItem;
+    private final int durability;
+    private final int protection;
+    private final int enchantability;
+    private final int toughness;
+    private final int knockbackRes;
+    private final String name;
 
     public DDArmorMaterial(int durability, int protection, int enchantability, int toughness, int knockbackRes, String name, Identifier repairItem){
         this.durability = durability;

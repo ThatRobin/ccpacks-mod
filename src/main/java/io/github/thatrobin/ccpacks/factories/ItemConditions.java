@@ -17,8 +17,7 @@ public class ItemConditions {
                 .add("comparison", ApoliDataTypes.COMPARISON)
                 .add("compare_to", SerializableDataTypes.INT),
                 (data, stack) -> {
-                    int durability = 0;
-                    durability = stack.getMaxDamage() - stack.getDamage();
+                    int durability = stack.getMaxDamage() - stack.getDamage();
                     return ((Comparison)data.get("comparison")).compare(durability, data.getInt("compare_to"));
                 }));
     }

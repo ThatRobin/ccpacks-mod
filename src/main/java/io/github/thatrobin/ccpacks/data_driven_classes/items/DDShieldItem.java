@@ -8,7 +8,6 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.LiteralText;
 import software.bernie.example.item.JackInTheBoxItem;
-import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -26,8 +25,8 @@ public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable {
     private final AnimationFactory factory = new AnimationFactory(this);
     private static final String controllerName = "popupController";
     private static final int ANIM_OPEN = 0;
-    private int cooldown;
-    private ToolMaterial toolMaterial;
+    private final int cooldown;
+    private final ToolMaterial toolMaterial;
 
     public DDShieldItem(Settings settings, int cooldown, ToolMaterial toolMaterial) {
         super(settings);
@@ -42,7 +41,7 @@ public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable {
 
     @Override
     public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-        return toolMaterial.getRepairIngredient().equals(ingredient);
+        return toolMaterial.getRepairIngredient().test(ingredient);
     }
 
     @Override
@@ -62,13 +61,6 @@ public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable {
 
     @SuppressWarnings("resource")
     private <ENTITY extends IAnimatable> void soundListener(SoundKeyframeEvent<ENTITY> event) {
-        // The animation for the jackinthebox has a sound keyframe at time 0:00.
-        // As soon as that keyframe gets hit this method fires and it starts playing the
-        // sound to the current player.
-        // The music is synced with the animation so the box opens as soon as the music
-        // plays the box opening sound
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        player.playSound(SoundRegistry.JACK_MUSIC, 1, 1);
     }
 
     private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {

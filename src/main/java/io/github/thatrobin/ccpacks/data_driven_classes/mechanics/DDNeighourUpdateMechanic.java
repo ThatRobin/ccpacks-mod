@@ -1,10 +1,9 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.mechanics;
 
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
 import io.github.thatrobin.ccpacks.util.Mechanic;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -21,11 +20,6 @@ public class DDNeighourUpdateMechanic extends Mechanic {
         this.dir = dir;
         this.block_action = block_action;
         this.block_action2 = block_action2;
-    }
-
-    @Override
-    public void fromTag(NbtElement tag) {
-
     }
 
     @Override

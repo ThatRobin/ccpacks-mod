@@ -9,11 +9,11 @@ import java.util.List;
 //public class DDEnchantment extends Enchantment implements VirtualObject {
 public class DDEnchantment extends Enchantment {
 
-    private Rarity rarity;
-    private int maxLevel;
-    private boolean curse;
-    private boolean treasure;
-    private List<Enchantment> enchantments;
+    private final Rarity rarity;
+    private final int maxLevel;
+    private final boolean curse;
+    private final boolean treasure;
+    private final List<Enchantment> enchantments;
 
     public DDEnchantment(Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes, int maxLevel, boolean curse, boolean treasure, List<Enchantment> blacklist) {
         super(weight, type, slotTypes);

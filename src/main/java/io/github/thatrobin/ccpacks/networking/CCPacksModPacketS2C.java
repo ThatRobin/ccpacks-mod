@@ -54,6 +54,7 @@ public class CCPacksModPacketS2C {
             action.accept(minecraftClient.player);
         }
         minecraftClient.execute(() -> {
+            assert minecraftClient.player != null;
             ChoiceComponent component = ModComponents.CHOICE.get(minecraftClient.player);
             component.setChoice(layer, choice);
         });

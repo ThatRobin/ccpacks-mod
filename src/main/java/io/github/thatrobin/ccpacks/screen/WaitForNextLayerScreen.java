@@ -30,6 +30,7 @@ public class WaitForNextLayerScreen extends Screen {
     public void openSelection() {
         int index = currentLayerIndex + 1;
         PlayerEntity player = MinecraftClient.getInstance().player;
+        assert player != null;
         ChoiceComponent component = ModComponents.CHOICE.get(player);
 
         while(index < layerList.size()) {

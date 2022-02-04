@@ -5,8 +5,8 @@ import net.minecraft.util.Identifier;
 
 public class TaskType {
 
-    private Identifier identifier;
-    private TaskFactory<TaskType>.Instance factory;
+    private final Identifier identifier;
+    private final TaskFactory<TaskType>.Instance factory;
 
     private String nameTranslationKey;
     private String descriptionTranslationKey;
@@ -24,17 +24,8 @@ public class TaskType {
         return factory;
     }
 
-    public TaskType setHidden() {
-        return this;
-    }
-
-    public void setTranslationKeys(String name, String description) {
-        this.nameTranslationKey = name;
-        this.descriptionTranslationKey = description;
-    }
-
     public TaskType create(Identifier identifier) {
-        return (TaskType) factory.apply(identifier, null);
+        return factory.apply(identifier, null);
     }
 
     public String getOrCreateNameTranslationKey() {

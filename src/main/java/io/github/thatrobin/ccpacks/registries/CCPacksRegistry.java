@@ -64,8 +64,7 @@ public class CCPacksRegistry {
                 Identifier id = new Identifier(file.toString().split(":")[0], file.toString().split(":")[1]);
                 if (id.getPath().startsWith(this.path)) {
                     InputStream s = modResourcePack.open(ResourceType.SERVER_DATA, id);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonObject jsonObject = (JsonObject) jsonParser.parse(new InputStreamReader(s, StandardCharsets.UTF_8));
+                    JsonObject jsonObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(s, StandardCharsets.UTF_8));
                     String namespace = file.getNamespace();
                     int index = file.getPath().replace("\\","/").split("/").length;
                     String path = (file.getPath().replace("\\","/").split("/")[index-1]).replace(".json","");
@@ -94,10 +93,8 @@ public class CCPacksRegistry {
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            JsonParser jsonParser;
-                            jsonParser = new JsonParser();
                             assert stream != null;
-                            JsonObject jsonObject = (JsonObject) jsonParser.parse(new InputStreamReader(stream, StandardCharsets.UTF_8));
+                            JsonObject jsonObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
                             String namespace = string3.split(this.path)[0].split("data")[1].replace("\\", "");
                             String path = file.getFileName().toString().split(".json")[0];
                             Identifier id = new Identifier(namespace, path);
@@ -128,8 +125,7 @@ public class CCPacksRegistry {
                 String string3 = zipEntry.getName();
                 if (string3.endsWith(".json") && string3.startsWith(string2)) {
                     InputStream stream = zipFile2.getInputStream(zipEntry);
-                    JsonParser jsonParser = new JsonParser();
-                    JsonObject jsonObject = (JsonObject)jsonParser.parse(new InputStreamReader(stream, StandardCharsets.UTF_8));
+                    JsonObject jsonObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
                     String namespace = string3.split(this.path)[0].split("data")[1].replace("\\","");
                     String path = string3.split(".json")[0];
                     Identifier id = new Identifier(namespace, path);

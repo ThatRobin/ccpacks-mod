@@ -21,7 +21,7 @@ public class SplashTextResourceSupplierMixin {
 
     @Shadow @Final private Session session;
 
-    @Inject(method = "apply", at = @At(value = "TAIL"), cancellable = true)
+    @Inject(method = "apply*", at = @At(value = "TAIL"))
     protected void apply(List<String> list, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {
         this.splashTexts.add("CCPacks is Cool!");
     }

@@ -15,9 +15,7 @@ public class PowerIconManager {
 
     public PowerIconManager() {
         PowerReloadCallback.EVENT.register(this::clear);
-        PowerTypes.registerAdditionalData("icon", (powerId, factoryId, isSubPower, data, powerType) -> {
-            addItem(powerId, Registry.ITEM.get(Identifier.tryParse(data.getAsString())).getDefaultStack());
-        });
+        PowerTypes.registerAdditionalData("icon", (powerId, factoryId, isSubPower, data, powerType) -> addItem(powerId, Registry.ITEM.get(Identifier.tryParse(data.getAsString())).getDefaultStack()));
     }
 
     public void clear() {

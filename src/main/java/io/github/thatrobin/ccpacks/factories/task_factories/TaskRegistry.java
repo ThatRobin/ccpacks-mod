@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class TaskRegistry {
-    private static HashMap<Identifier, TaskType> idToContent = new HashMap<>();
+    private static final HashMap<Identifier, TaskType> idToContent = new HashMap<>();
 
     public static TaskType register(Identifier id, TaskType contentType) {
         if(idToContent.containsKey(id)) {
@@ -15,14 +15,6 @@ public class TaskRegistry {
         }
         idToContent.put(id, contentType);
         return contentType;
-    }
-
-    protected static TaskType update(Identifier id, TaskType contentType) {
-        if(idToContent.containsKey(id)) {
-            TaskType old = idToContent.get(id);
-            idToContent.remove(id);
-        }
-        return register(id, contentType);
     }
 
     public static int size() {
@@ -37,16 +29,11 @@ public class TaskRegistry {
         return idToContent.entrySet();
     }
 
-    public static Iterable<TaskType> values() {
-        return idToContent.values();
-    }
-
     public static TaskType get(Identifier id) {
         if(!idToContent.containsKey(id)) {
             throw new IllegalArgumentException("Could not get content type from id '" + id.toString() + "', as it was not registered!");
         }
-        TaskType contentType = idToContent.get(id);
-        return contentType;
+        return idToContent.get(id);
     }
 
     public static Identifier getId(TaskType powerType) {

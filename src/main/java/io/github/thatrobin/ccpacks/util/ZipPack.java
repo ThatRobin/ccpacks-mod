@@ -65,7 +65,7 @@ public class ZipPack {
                     if(!Files.exists(Path.of(this.file.getPath()+"/fabric.mod.json"))) {
                         minecraftClient.setScreen(new WriteFabricDataScreen(titleScreen, this::editEntry, selectedEntry, base.getName()));
                     } else {
-                        compress(minecraftClient, titleScreen, this.file);
+                        compress(minecraftClient, this.file);
                     }
                 }
             } catch (Exception e) {
@@ -74,7 +74,7 @@ public class ZipPack {
         }
     }
 
-    public void compress(MinecraftClient client, TitleScreen titleScreen, File dirPath) throws IOException {
+    public void compress(MinecraftClient client, File dirPath) throws IOException {
         final Path sourceDir = Paths.get(dirPath.getPath());
         LoadingOverlay overlay = new LoadingOverlay(client, true);
 
@@ -89,9 +89,7 @@ public class ZipPack {
             String zipFileName = dirPath.getPath().concat(".jar");
             try {
                 List<File> files = Lists.newArrayList();
-                Arrays.stream(sourceDir.toFile().listFiles()).toList().forEach(path -> {
-                    files.add(path);
-                });
+                files.addAll(Arrays.stream(Objects.requireNonNull(sourceDir.toFile().listFiles())).toList());
                 zipUtility.zip(files, zipFileName, overlay, total);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -121,7 +119,7 @@ public class ZipPack {
                 FileWriter writer = new FileWriter(this.file.getPath() + "/fabric.mod.json");
                 gson.toJson(map, writer);
                 writer.close();
-                compress(minecraftClient, titleScreen, this.file);
+                compress(minecraftClient, this.file);
             } catch (IOException e) {
                 CCPacksMain.LOGGER.error(e.getMessage());
             }

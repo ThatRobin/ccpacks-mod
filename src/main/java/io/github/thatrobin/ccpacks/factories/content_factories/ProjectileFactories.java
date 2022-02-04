@@ -1,16 +1,14 @@
 package io.github.thatrobin.ccpacks.factories.content_factories;
 
 
-import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
-import io.github.thatrobin.ccpacks.data_driven_classes.entities.projectile_entities.DDProjectileEntity;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.thatrobin.ccpacks.data_driven_classes.entities.projectile_entities.DDProjectileEntity;
+import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -34,10 +32,10 @@ public class ProjectileFactories {
                         (contentType, content) -> {
 
                             DDProjectileEntity.damage = data.getInt("damage");
-                            DDProjectileEntity.base_item = (Item) data.get("base_item");
-                            DDProjectileEntity.damage_source = (DamageSource) data.get("damage_source");
+                            DDProjectileEntity.base_item = data.get("base_item");
+                            DDProjectileEntity.damage_source = data.get("damage_source");
 
-                            return (Supplier<EntityType>) () -> FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(data.getFloat("width"), data.getFloat("height"))).trackable(64, 10).build();
+                            return (Supplier<EntityType<?>>) () -> FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(data.getFloat("width"), data.getFloat("height"))).trackable(64, 10).build();
                         }));
 
     }

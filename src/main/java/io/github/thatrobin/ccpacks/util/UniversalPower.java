@@ -18,7 +18,7 @@ import java.util.List;
 
 public class UniversalPower {
 
-    private Identifier identifier;
+    private final Identifier identifier;
     public List<PowerType<?>> powerTypes = new LinkedList<>();
     public List<EntityType<?>> entityTypes = new LinkedList<>();
 
@@ -44,9 +44,9 @@ public class UniversalPower {
 
         ((List<Identifier>)data.get("powers")).forEach(powerId -> {
             try {
-                PowerType powerType = PowerTypeRegistry.get(powerId);
+                PowerType<?> powerType = PowerTypeRegistry.get(powerId);
                 if(powerType instanceof MultiplePowerType) {
-                    ImmutableList<Identifier> subPowers = ((MultiplePowerType)powerType).getSubPowers();
+                    ImmutableList<Identifier> subPowers = ((MultiplePowerType<?>)powerType).getSubPowers();
                     for(Identifier subPowerId : subPowers) {
                         universalPower.add(PowerTypeRegistry.get(subPowerId));
                     }
@@ -58,7 +58,7 @@ public class UniversalPower {
             }
         });
         if(data.isPresent("entity_entry")) {
-            ((List<EntityType>) data.get("entity_entry")).forEach(entityType -> {
+            ((List<EntityType<?>>) data.get("entity_entry")).forEach(entityType -> {
                 try {
                     universalPower.addEntity(entityType);
                 } catch (IllegalArgumentException e) {
@@ -77,9 +77,8 @@ public class UniversalPower {
         return this;
     }
 
-    public UniversalPower addEntity(EntityType<?>... powerTypes) {
+    public void addEntity(EntityType<?>... powerTypes) {
         this.entityTypes.addAll(Lists.newArrayList(powerTypes));
-        return this;
     }
 
 }

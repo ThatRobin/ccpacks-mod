@@ -3,10 +3,10 @@ package io.github.thatrobin.ccpacks.factories.content_factories;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.thatrobin.ccpacks.data_driven_classes.DDSound;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlock;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
-import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDCableBlock;
-import io.github.thatrobin.ccpacks.data_driven_classes.DDSound;
+import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDTransparentBlock;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.thatrobin.ccpacks.util.GameruleHolder;
 import io.github.thatrobin.ccpacks.util.Portal;
@@ -18,13 +18,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
@@ -34,11 +34,11 @@ import java.util.function.Supplier;
 
 public class ContentTypes {
 
-    public static Map<Identifier, EntityType> projecitles = Maps.newHashMap();
+    public static Map<Identifier, EntityType<?>> projecitles = Maps.newHashMap();
     public static Map<Identifier, DefaultParticleType> particles = Maps.newHashMap();
-    public static Map<Identifier, EntityType> entities = Maps.newHashMap();
+    public static Map<Identifier, EntityType<?>> entities = Maps.newHashMap();
     public static Map<Identifier, GameruleHolder> gamerules = Maps.newHashMap();
-    public static Map<Identifier, Pair<Block, String>> blocks = Maps.newHashMap();
+    public static Map<Identifier, DDTransparentBlock> blocks = Maps.newHashMap();
 
     public ContentTypes(Identifier id, JsonElement je) {
         readPower(id, je, ContentType::new);
@@ -64,16 +64,15 @@ public class ContentTypes {
                     case BLOCK -> {
                         Block block = type.createBlock(type);
                         Registry.register(Registry.BLOCK, id, block);
-                        if (JsonHelper.hasArray(jo, "mechanics")) {
-                            BlockEntityType<DDBlockEntity> DEMO_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create((pos, state) -> new DDBlockEntity(id, pos, state), block).build(null);
-                            if(block instanceof DDBlock ddBlock) {
-                                ddBlock.type = DEMO_BLOCK_ENTITY;
-                            }
-                            if(block instanceof DDCableBlock ddCableBlock) {
-                                ddCableBlock.type = DEMO_BLOCK_ENTITY;
-                            }
-                            Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
+                        BlockEntityType<DDBlockEntity> DEMO_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create((pos, state) -> new DDBlockEntity(id, pos, state), block).build(null);
+                        if(block instanceof DDBlock ddBlock) {
+                            ddBlock.type = DEMO_BLOCK_ENTITY;
                         }
+                        if(block instanceof DDTransparentBlock ddTransparentBlock) {
+                            ddTransparentBlock.type = DEMO_BLOCK_ENTITY;
+                            blocks.put(id, ddTransparentBlock);
+                        }
+                        Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
                     }
                     case ENCHANTMENT -> {
                         Enchantment enchantment = type.createEnchant(type);
@@ -103,7 +102,7 @@ public class ContentTypes {
                         }
                     }
                     case PROJECTILE -> {
-                        EntityType projectile = type.createProjectile(type);
+                        EntityType<?> projectile = type.createProjectile(type);
                         projecitles.put(id, projectile);
                         Registry.register(Registry.ENTITY_TYPE, id, projectile);
                     }

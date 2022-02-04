@@ -1,23 +1,14 @@
 package io.github.thatrobin.ccpacks.factories.mechanic_factories;
 
-import io.github.thatrobin.ccpacks.CCPacksMain;
-import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.*;
-import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.Entity;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.math.BlockPos;
+import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.*;
+import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Triple;
 
 public class MechanicFactories {
 
@@ -28,7 +19,16 @@ public class MechanicFactories {
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (identifier, factory) -> new DDTickMechanic(identifier, factory, data.getInt("interval"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action"), (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition")))
+                        (identifier, factory) -> new DDTickMechanic(identifier, factory, data.getInt("interval"), data.get("block_action"), data.get("block_condition")))
+        );
+
+        register(new MechanicFactory<>(CCPacksMain.identifier("resource"),
+                new SerializableData()
+                        .add("min", SerializableDataTypes.INT, 0)
+                        .add("max", SerializableDataTypes.INT, 1)
+                        .add("start_value", SerializableDataTypes.INT, 0),
+                data ->
+                        (identifier, factory) -> new DDResourceMechanic(identifier, factory, data.getInt("start_value"), data.getInt("min"), data.getInt("max")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_use"),
@@ -37,7 +37,7 @@ public class MechanicFactories {
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (identifier, factory) -> new DDUseMechanic(identifier, factory, (ActionFactory<Entity>.Instance)data.get("entity_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action"), (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition")))
+                        (identifier, factory) -> new DDUseMechanic(identifier, factory, data.get("entity_action"), data.get("block_action"), data.get("block_condition")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_step"),
@@ -45,7 +45,7 @@ public class MechanicFactories {
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
                 data ->
-                        (identifier, factory) -> new DDStepMechanic(identifier, factory, (ActionFactory<Entity>.Instance)data.get("entity_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action")))
+                        (identifier, factory) -> new DDStepMechanic(identifier, factory, data.get("entity_action"), data.get("block_action")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_neighbour_update"),
@@ -55,7 +55,7 @@ public class MechanicFactories {
                         .add("direction", SerializableDataType.enumValue(Direction.class), null)
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
                 data ->
-                        (identifier, factory) -> new DDNeighourUpdateMechanic(identifier, factory, (Direction)data.get("direction"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("neighbour_action")))
+                        (identifier, factory) -> new DDNeighourUpdateMechanic(identifier, factory, data.get("direction"), data.get("block_action"), data.get("neighbour_action")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_land"),
@@ -64,23 +64,21 @@ public class MechanicFactories {
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
                 data ->
-                        (identifier, factory) -> new DDFallMechanic(identifier, factory, data.getFloat("damage_multiplier"), (ActionFactory<Entity>.Instance)data.get("entity_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action")))
+                        (identifier, factory) -> new DDFallMechanic(identifier, factory, data.getFloat("damage_multiplier"), data.get("entity_action"), data.get("block_action")))
         );
 
-        register(new MechanicFactory<>(CCPacksMain.identifier("block_search"),
+        register(new MechanicFactory<>(CCPacksMain.identifier("triggerable"),
                 new SerializableData()
-                        .add("continue_tag", SerializableDataTypes.BLOCK_TAG)
-                        .add("execute_tag", SerializableDataTypes.BLOCK_TAG)
-                        .add("found_block_action", ApoliDataTypes.BLOCK_ACTION, null)
-                        .add("continue_block_action", ApoliDataTypes.BLOCK_ACTION, null)
-                        .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
-                        .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
+                        .add("self_action", ApoliDataTypes.BLOCK_ACTION, null)
+                        .add("self_condition", ApoliDataTypes.BLOCK_CONDITION, null)
+                        .add("neighbour_action", ApoliDataTypes.BLOCK_ACTION, null)
+                        .add("neighbour_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (identifier, factory) -> new DDFindBlockMechanic(identifier, factory, (Tag<Block>) data.get("continue_tag"), (Tag<Block>) data.get("execute_tag"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("continue_block_action"), (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("found_block_action"), (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition")))
+                        (identifier, factory) -> new DDFindBlockMechanic(identifier, factory, data.get("self_action"), data.get("self_condition"), data.get("neighbour_action"), data.get("neighbour_condition")))
         );
     }
 
-    private static void register(MechanicFactory serializer) {
+    private static void register(MechanicFactory<?> serializer) {
         Registry.register(CCPacksRegistries.MECHANIC_FACTORY, serializer.getSerializerId(), serializer);
     }
 

@@ -2,10 +2,10 @@ package io.github.thatrobin.ccpacks.util;
 
 public class ColourHolder {
 
-    private float red;
-    private float green;
-    private float blue;
-    private float alpha;
+    private final float red;
+    private final float green;
+    private final float blue;
+    private final float alpha;
 
 
     public ColourHolder(float red, float green, float blue, float alpha) {

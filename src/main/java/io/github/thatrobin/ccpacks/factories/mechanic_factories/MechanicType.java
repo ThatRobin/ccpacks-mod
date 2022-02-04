@@ -6,11 +6,8 @@ import net.minecraft.util.Identifier;
 
 public class MechanicType<T extends Mechanic> {
 
-    private Identifier identifier;
-    private MechanicFactory<Mechanic>.Instance factory;
-
-    private String nameTranslationKey;
-    private String descriptionTranslationKey;
+    private final Identifier identifier;
+    private final MechanicFactory<Mechanic>.Instance factory;
 
     public MechanicType(Identifier id, MechanicFactory<Mechanic>.Instance factory) {
         this.identifier = id;
@@ -42,7 +39,7 @@ public class MechanicType<T extends Mechanic> {
         if(!(obj instanceof MechanicType)) {
             return false;
         }
-        Identifier id = ((MechanicType)obj).getIdentifier();
+        Identifier id = ((MechanicType<?>)obj).getIdentifier();
         return identifier.equals(id);
     }
 }

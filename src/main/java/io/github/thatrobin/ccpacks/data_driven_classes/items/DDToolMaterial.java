@@ -8,12 +8,12 @@ import net.minecraft.util.registry.Registry;
 
 public class DDToolMaterial implements ToolMaterial{
 
-    private int durability;
-    private float miningMult;
-    private float attackDamage;
-    private int miningLevel;
-    private int enchantability;
-    private Identifier repairItem;
+    private final int durability;
+    private final float miningMult;
+    private final float attackDamage;
+    private final int miningLevel;
+    private final int enchantability;
+    private final Identifier repairItem;
 
     public DDToolMaterial(int durability, float miningMult, float attackDamage, int miningLevel, int enchantability, Identifier repairItem){
         this.durability = durability;

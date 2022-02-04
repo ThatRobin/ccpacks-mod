@@ -32,17 +32,16 @@ public abstract class FileResourcePackProviderMixin {
     @Shadow protected abstract Supplier<ResourcePack> createResourcePack(File file);
 
 
-    @Inject(method = "register", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "register", at = @At(value = "HEAD"))
     private void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory, CallbackInfo ci) throws IOException {
         File MODS_PATH = FabricLoader.getInstance().getGameDirectory().toPath().resolve("mods").toFile();
-        File[] files = MODS_PATH.listFiles(this.POSSIBLE_PACK);
+        File[] files = MODS_PATH.listFiles(POSSIBLE_PACK);
         if (files != null) {
-            for(int i = 0; i < files.length; ++i) {
-                File file = files[i];
+            for (File file : files) {
                 String string = "file/" + file.getName();
                 Path test = Path.of(file.getPath());
                 ResourcePackProfile resourcePackProfile = null;
-                if(file.getName().endsWith(".zip")) {
+                if (file.getName().endsWith(".zip")) {
                     ZipFile zipFile = new ZipFile(file);
                     Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
                     String string3 = test.toString();
@@ -53,10 +52,10 @@ public abstract class FileResourcePackProviderMixin {
                             ccpack = true;
                         }
                     }
-                    if(ccpack) {
+                    if (ccpack) {
                         resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
                     }
-                } else if(test.toFile().exists()) {
+                } else if (test.toFile().exists()) {
                     resourcePackProfile = ResourcePackProfile.of(string, true, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
                 }
                 if (resourcePackProfile != null) {

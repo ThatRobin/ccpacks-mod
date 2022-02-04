@@ -47,56 +47,41 @@ public class WriteFabricDataScreen extends Screen {
     }
 
     protected void init() {
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(true);
         this.nameField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) - (this.width / 4), 66, 200, 20, new TranslatableText("addServer.enterName"));
         this.nameField.setTextFieldFocused(true);
         this.nameField.setText(this.packInfo.name);
-        this.nameField.setChangedListener((serverName) -> {
-            this.updateAddButton();
-        });
+        this.nameField.setChangedListener((serverName) -> this.updateAddButton());
         this.addSelectableChild(this.nameField);
         this.idField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) - (this.width / 4), 106, 200, 20, new TranslatableText("addServer.enterIp"));
         this.idField.setMaxLength(128);
         this.idField.setText(this.packInfo.id);
-        this.idField.setChangedListener((address) -> {
-            this.updateAddButton();
-        });
+        this.idField.setChangedListener((address) -> this.updateAddButton());
         this.addSelectableChild(this.idField);
         this.versionField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) - (this.width / 4), 146, 200, 20, new TranslatableText("addServer.enterVersion"));
         this.versionField.setMaxLength(128);
         this.versionField.setText(this.packInfo.version);
-        this.versionField.setChangedListener((address) -> {
-            this.updateAddButton();
-        });
+        this.versionField.setChangedListener((address) -> this.updateAddButton());
         this.addSelectableChild(this.versionField);
         this.authorField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) + (this.width / 4), 66, 200, 20, new TranslatableText("addServer.enterName"));
         this.authorField.setMaxLength(128);
         this.authorField.setText(this.packInfo.author);
-        this.authorField.setChangedListener((serverName) -> {
-            this.updateAddButton();
-        });
+        this.authorField.setChangedListener((serverName) -> this.updateAddButton());
         this.addSelectableChild(this.authorField);
         this.descriptionField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) + (this.width / 4), 106, 200, 20, new TranslatableText("addServer.enterIp"));
         this.descriptionField.setMaxLength(128);
         this.descriptionField.setText(this.packInfo.description);
-        this.descriptionField.setChangedListener((address) -> {
-            this.updateAddButton();
-        });
+        this.descriptionField.setChangedListener((address) -> this.updateAddButton());
         this.addSelectableChild(this.descriptionField);
         this.licenseField = new TextFieldWidget(this.textRenderer, (this.width / 2 - 100) + (this.width / 4), 146, 200, 20, new TranslatableText("addServer.enterVersion"));
         this.licenseField.setMaxLength(128);
         this.licenseField.setText(this.packInfo.license);
-        this.licenseField.setChangedListener((address) -> {
-            this.updateAddButton();
-        });
+        this.licenseField.setChangedListener((address) -> this.updateAddButton());
         this.addSelectableChild(this.licenseField);
 
-        this.addButton = this.addDrawableChild(new ButtonWidget((this.width / 2 - 100), this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), (button) -> {
-            this.addAndClose();
-        }));
-        this.addDrawableChild(new ButtonWidget((this.width / 2 - 100), this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, (button) -> {
-            this.callback.accept(false);
-        }));
+        this.addButton = this.addDrawableChild(new ButtonWidget((this.width / 2 - 100), this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), (button) -> this.addAndClose()));
+        this.addDrawableChild(new ButtonWidget((this.width / 2 - 100), this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, (button) -> this.callback.accept(false)));
         this.updateAddButton();
     }
 
@@ -117,6 +102,7 @@ public class WriteFabricDataScreen extends Screen {
     }
 
     public void removed() {
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(false);
     }
 
@@ -131,6 +117,7 @@ public class WriteFabricDataScreen extends Screen {
     }
 
     public void onClose() {
+        assert this.client != null;
         this.client.setScreen(this.parent);
     }
 

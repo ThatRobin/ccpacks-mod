@@ -10,10 +10,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ContentFactory<I extends Supplier> {
+public class ContentFactory<I extends Supplier<?>> {
 
         private final Identifier id;
-        private Types type;
+        private final Types type;
         protected SerializableData data;
         protected Function<SerializableData.Instance, BiFunction<ContentType, Supplier<?>, I>>  factoryConstructor;
 
@@ -41,11 +41,6 @@ public class ContentFactory<I extends Supplier> {
                 this.dataInstance = data;
             }
 
-            public void write(PacketByteBuf buf) {
-                buf.writeIdentifier(id);
-                data.write(buf, dataInstance);
-            }
-
             public Item getItem() {
                 return this.item;
             }
@@ -53,16 +48,15 @@ public class ContentFactory<I extends Supplier> {
             @Override
             public I apply(ContentType itemType, Supplier<?> item) {
                 BiFunction<ContentType, Supplier<?>, I> itemFactory = factoryConstructor.apply(dataInstance);
-                I p = itemFactory.apply(itemType, item);
-                return p;
+                return itemFactory.apply(itemType, item);
             }
         }
 
-        public ContentFactory.Instance read(JsonObject json) {
-            return new ContentFactory.Instance(data.read(json));
+        public ContentFactory<?>.Instance read(JsonObject json) {
+            return new ContentFactory<?>.Instance(data.read(json));
         }
 
-        public ContentFactory.Instance read(PacketByteBuf buffer) {
-            return new ContentFactory.Instance(data.read(buffer));
+        public ContentFactory<?>.Instance read(PacketByteBuf buffer) {
+            return new ContentFactory<?>.Instance(data.read(buffer));
         }
 }

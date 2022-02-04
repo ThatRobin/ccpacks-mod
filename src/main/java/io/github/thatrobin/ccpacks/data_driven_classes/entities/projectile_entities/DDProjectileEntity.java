@@ -31,7 +31,7 @@ public class DDProjectileEntity extends ThrownItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return this.base_item;
+        return base_item;
     }
 
     @Override
@@ -49,8 +49,4 @@ public class DDProjectileEntity extends ThrownItemEntity {
         }
     }
 
-    //@Override
-    public EntityType<?> getVirtualEntityType() {
-        return EntityType.SNOWBALL;
-    }
 }

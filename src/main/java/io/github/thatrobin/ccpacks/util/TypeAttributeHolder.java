@@ -5,15 +5,15 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 
 public class TypeAttributeHolder {
 
-    private FabricEntityTypeBuilder entityType;
-    private DefaultAttributeContainer.Builder builder;
+    private final FabricEntityTypeBuilder<?> entityType;
+    private final DefaultAttributeContainer.Builder builder;
 
-    public TypeAttributeHolder(FabricEntityTypeBuilder entityType, DefaultAttributeContainer.Builder builder) {
+    public TypeAttributeHolder(FabricEntityTypeBuilder<?> entityType, DefaultAttributeContainer.Builder builder) {
         this.entityType = entityType;
         this.builder = builder;
     }
 
-    public FabricEntityTypeBuilder getEntityType() {
+    public FabricEntityTypeBuilder<?> getEntityType() {
         return this.entityType;
     }
 

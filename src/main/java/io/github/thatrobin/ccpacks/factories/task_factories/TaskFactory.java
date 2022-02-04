@@ -34,11 +34,6 @@ public class TaskFactory<G extends TaskType> {
                 this.dataInstance = data;
             }
 
-            public void write(PacketByteBuf buf) {
-                buf.writeIdentifier(id);
-                data.write(buf, dataInstance);
-            }
-
             public Item getItem() {
                 return this.item;
             }
@@ -46,8 +41,7 @@ public class TaskFactory<G extends TaskType> {
             @Override
             public G apply(Identifier identifier, TaskFactory<TaskType>.Instance factory) {
                 BiFunction<Identifier, TaskFactory<TaskType>.Instance, G> itemFactory = factoryConstructor.apply(dataInstance);
-                G p = itemFactory.apply(identifier, factory);
-                return p;
+                return itemFactory.apply(identifier, factory);
             }
         }
 

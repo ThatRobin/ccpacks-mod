@@ -59,10 +59,6 @@ public class ChoiceDisplayScreen extends Screen {
         return choice;
     }
 
-    public ChoiceLayer getCurrentLayer() {
-        return layer;
-    }
-
     @Override
     public void renderBackground(MatrixStack matrices, int vOffset) {
         if(showDirtBackground) {

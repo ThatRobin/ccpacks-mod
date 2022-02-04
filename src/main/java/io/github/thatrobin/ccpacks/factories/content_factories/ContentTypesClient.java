@@ -2,17 +2,18 @@ package io.github.thatrobin.ccpacks.factories.content_factories;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.apace100.apoli.ApoliClient;
 import io.github.thatrobin.ccpacks.CCPacksMain;
-import io.github.thatrobin.ccpacks.data_driven_classes.entities.client.renderer.DDGeoRenderer;
 import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDGlowParticle;
 import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDParticle;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
-import io.github.apace100.apoli.ApoliClient;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -25,8 +26,6 @@ import java.util.function.Supplier;
 
 public class ContentTypesClient {
 
-    private Optional<ContentFactory> contentFactory;
-
     public ContentTypesClient(Identifier id, JsonElement je) {
         readPower(id, je, ContentType::new);
     }
@@ -34,24 +33,20 @@ public class ContentTypesClient {
     private void readPower(Identifier id, JsonElement je, BiFunction<Identifier, ContentFactory<Supplier<?>>.Instance, ContentType> powerTypeFactory) {
         JsonObject jo = je.getAsJsonObject();
         Identifier factoryId = Identifier.tryParse(JsonHelper.getString(jo, "type"));
-        contentFactory = CCPacksRegistries.CONTENT_FACTORY.getOrEmpty(factoryId);
+        Optional<ContentFactory> contentFactory = CCPacksRegistries.CONTENT_FACTORY.getOrEmpty(factoryId);
         try {
             if (contentFactory.isPresent()) {
                 if (CCPacksRegistries.CONTENT_FACTORY.containsId(factoryId)) {
-                    if(contentFactory.isPresent()) {
-                        ContentFactory.Instance factoryInstance = contentFactory.get().read(jo);
+                    ContentFactory.Instance factoryInstance = contentFactory.get().read(jo);
 
-                        ContentType type = powerTypeFactory.apply(id, factoryInstance);
-                        if (!ContentRegistry.contains(id)) {
-                            ContentRegistry.register(id, type);
-                        }
-                        switch (contentFactory.get().getType()) {
-                            case KEYBIND -> {
-                                KeyBinding key = type.createKeybind(type);
-                                ApoliClient.registerPowerKeybinding(key.getTranslationKey(), key);
-                                KeyBindingHelper.registerKeyBinding(key);
-                            }
-                        }
+                    ContentType type = powerTypeFactory.apply(id, factoryInstance);
+                    if (!ContentRegistry.contains(id)) {
+                        ContentRegistry.register(id, type);
+                    }
+                    if (contentFactory.get().getType() == Types.KEYBIND) {
+                        KeyBinding key = type.createKeybind(type);
+                        ApoliClient.registerPowerKeybinding(key.getTranslationKey(), key);
+                        KeyBindingHelper.registerKeyBinding(key);
                     }
                 }
                 if(ContentTypes.particles.containsKey(id)) {
@@ -61,7 +56,11 @@ public class ContentTypesClient {
                     EntityRendererRegistry.INSTANCE.register(ContentTypes.projecitles.get(id), (context) -> new FlyingItemEntityRenderer(context));
                 }
                 if(ContentTypes.entities.containsKey(id)) {
-                    EntityRendererRegistry.INSTANCE.register(ContentTypes.entities.get(id), (context) -> new DDGeoRenderer(context));
+                    //EntityRendererRegistry.INSTANCE.register(ContentTypes.entities.get(id), (context) -> new DDGeoRenderer(context));
+                }
+                if(ContentTypes.blocks.containsKey(id)) {
+                    CCPacksMain.LOGGER.info("made "+id+" into translucent");
+                    BlockRenderLayerMap.INSTANCE.putBlock(ContentTypes.blocks.get(id), RenderLayer.getTranslucent());
                 }
             }
         } catch (Exception e) {

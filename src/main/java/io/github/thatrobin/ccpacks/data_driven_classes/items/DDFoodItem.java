@@ -22,11 +22,11 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class DDFoodItem extends Item {
-    private SoundEvent sound;
-    private boolean drinkable;
-    private ItemConvertible returns;
-    private int eating_time;
-    private List<String> lore;
+    private final SoundEvent sound;
+    private final boolean drinkable;
+    private final ItemConvertible returns;
+    private final int eating_time;
+    private final List<String> lore;
 
     public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore) {
         super(settings);
@@ -66,9 +66,8 @@ public class DDFoodItem extends Item {
         if (stack.isEmpty()) {
             return new ItemStack(returns);
         } else {
-            if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
+            if (user instanceof PlayerEntity playerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
                 ItemStack itemStack = new ItemStack(returns);
-                PlayerEntity playerEntity = (PlayerEntity)user;
                 if (!playerEntity.getInventory().insertStack(itemStack)) {
                     playerEntity.dropItem(itemStack, false);
                 }
@@ -90,8 +89,8 @@ public class DDFoodItem extends Item {
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
-                for (int i = 0; i < lore.size(); i++) {
-                    tooltip.add(new LiteralText(lore.get(i)).formatted(Formatting.GRAY));
+                for (String s : lore) {
+                    tooltip.add(new LiteralText(s).formatted(Formatting.GRAY));
                 }
             }
         }

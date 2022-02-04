@@ -25,7 +25,7 @@ public class StatusEffectFactories {
                         .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            ColourHolder colourHolder = data.get("color");
                             float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectCategory.NEUTRAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));
@@ -35,7 +35,7 @@ public class StatusEffectFactories {
                         .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            ColourHolder colourHolder = data.get("color");
                             float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectCategory.BENEFICIAL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));
@@ -45,7 +45,7 @@ public class StatusEffectFactories {
                         .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
                 data ->
                         (contentType, content) -> {
-                            ColourHolder colourHolder = (ColourHolder) data.get("color");
+                            ColourHolder colourHolder = data.get("color");
                             float[] color = Color.RGBtoHSB((int)colourHolder.getRed()*255, (int)colourHolder.getGreen()*255, (int)colourHolder.getBlue()*255, null);
                             return (Supplier<StatusEffect>) () -> new DDStatusEffect(StatusEffectCategory.HARMFUL, Color.getHSBColor(color[0], color[1], color[2]).hashCode());
                         }));

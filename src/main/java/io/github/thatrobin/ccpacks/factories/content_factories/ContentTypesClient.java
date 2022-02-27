@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.data_driven_classes.items.DDDyeableItem;
 import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDGlowParticle;
 import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDParticle;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
@@ -11,10 +12,12 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -59,8 +62,12 @@ public class ContentTypesClient {
                     //EntityRendererRegistry.INSTANCE.register(ContentTypes.entities.get(id), (context) -> new DDGeoRenderer(context));
                 }
                 if(ContentTypes.blocks.containsKey(id)) {
-                    CCPacksMain.LOGGER.info("made "+id+" into translucent");
                     BlockRenderLayerMap.INSTANCE.putBlock(ContentTypes.blocks.get(id), RenderLayer.getTranslucent());
+                }
+                if(ContentTypes.dyeItems.containsKey(id)) {
+                    ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+                        return tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack);
+                    }, ContentTypes.dyeItems.get(id));
                 }
             }
         } catch (Exception e) {

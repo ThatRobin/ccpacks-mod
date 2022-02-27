@@ -24,7 +24,7 @@ public class WaitForNextLayerScreen extends Screen {
         this.currentLayerIndex = currentLayerIndex;
         this.showDirtBackground = showDirtBackground;
         ChoiceLayer currentLayer = layerList.get(currentLayerIndex);
-        maxSelection = currentLayer.getChoiceOptionCount();
+        maxSelection = currentLayer.getChoiceOptionCount(MinecraftClient.getInstance().player);
     }
 
     public void openSelection() {
@@ -34,7 +34,7 @@ public class WaitForNextLayerScreen extends Screen {
         ChoiceComponent component = ModComponents.CHOICE.get(player);
 
         while(index < layerList.size()) {
-            if(!component.hasChoice(layerList.get(index)) && layerList.get(index).getChoices().size() > 0) {
+            if(!component.hasChoice(layerList.get(index)) && layerList.get(index).getChoices(MinecraftClient.getInstance().player).size() > 0) {
                 MinecraftClient.getInstance().setScreen(new ChooseChoiceScreen(layerList, index, showDirtBackground));
                 return;
             }

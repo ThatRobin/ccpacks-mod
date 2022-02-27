@@ -27,7 +27,8 @@ public class ChoiceRegistry {
         if(!idToChoice.containsKey(id)) {
             throw new IllegalArgumentException("Could not get choice from id '" + id.toString() + "', as it was not registered!");
         }
-        return idToChoice.get(id);
+        Choice choice = idToChoice.get(id);
+        return choice;
     }
 
     public static boolean contains(Identifier id) {

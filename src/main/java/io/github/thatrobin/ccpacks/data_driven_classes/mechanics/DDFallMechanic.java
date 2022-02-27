@@ -1,9 +1,11 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.mechanics;
 
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
 import io.github.thatrobin.ccpacks.util.Mechanic;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
@@ -16,20 +18,30 @@ public class DDFallMechanic extends Mechanic {
     public ActionFactory<Triple<World, BlockPos, Direction>>.Instance block_action;
     public ActionFactory<Entity>.Instance entity_action;
     public float damage_multipler;
+    public ConditionFactory<CachedBlockPosition>.Instance block_condition;
 
-    public DDFallMechanic(MechanicType<?> mechanicType, BlockEntity blockEntity, float damage_multipler, ActionFactory<Entity>.Instance entity_action, ActionFactory<Triple<World, BlockPos, Direction>>.Instance block_action) {
+    public DDFallMechanic(MechanicType<?> mechanicType, BlockEntity blockEntity, float damage_multipler, ActionFactory<Entity>.Instance entity_action, ActionFactory<Triple<World, BlockPos, Direction>>.Instance block_action, ConditionFactory<CachedBlockPosition>.Instance block_condition) {
         super(mechanicType, blockEntity);
         this.damage_multipler = damage_multipler;
         this.block_action = block_action;
         this.entity_action = entity_action;
+        this.block_condition = block_condition;
     }
 
     @Override
-    public void executeBlockAction(Triple<World, BlockPos, Direction> data){
-        if (this.block_action == null)
-            return;
-        this.block_action.accept(data);
-
+    public void executeBlockAction(Triple<World, BlockPos, Direction> data) {
+        boolean passed = true;
+        if (this.block_condition != null) {
+            CachedBlockPosition position = new CachedBlockPosition(data.getLeft(), data.getMiddle(), false);
+            if(!this.block_condition.test(position)) {
+                passed = false;
+            }
+        }
+        if(passed) {
+            if (this.block_action != null) {
+                this.block_action.accept(data);
+            }
+        }
     }
 
     @Override

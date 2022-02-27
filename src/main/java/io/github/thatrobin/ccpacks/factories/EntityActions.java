@@ -2,6 +2,7 @@ package io.github.thatrobin.ccpacks.factories;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.VariableIntPower;
@@ -11,9 +12,12 @@ import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.mixins.KeyBindingAccessor;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPackets;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,6 +62,7 @@ public class EntityActions {
                         }
                     }
                 }));
+
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {

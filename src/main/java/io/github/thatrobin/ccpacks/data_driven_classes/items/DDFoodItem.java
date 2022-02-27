@@ -1,7 +1,12 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.items;
 
+import com.google.common.collect.Lists;
+import io.github.apace100.apoli.util.PowerGrantingItem;
+import io.github.apace100.apoli.util.StackPowerUtil;
+import io.github.thatrobin.ccpacks.util.StackPowerExpansion;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -19,22 +24,26 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
+import java.util.Collection;
 import java.util.List;
 
-public class DDFoodItem extends Item {
+public class DDFoodItem extends Item implements PowerGrantingItem {
+
+    private final List<StackPowerExpansion> item_powers;
     private final SoundEvent sound;
     private final boolean drinkable;
     private final ItemConvertible returns;
     private final int eating_time;
     private final List<String> lore;
 
-    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore) {
+    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore, List<StackPowerExpansion> item_powers) {
         super(settings);
         this.drinkable = drinkable;
         this.sound = sound;
         this.returns = returns;
         this.eating_time = eating_time;
         this.lore = lore;
+        this.item_powers = item_powers;
     }
 
     @Override
@@ -94,5 +103,18 @@ public class DDFoodItem extends Item {
                 }
             }
         }
+    }
+
+    @Override
+    public Collection<StackPowerUtil.StackPower> getPowers(ItemStack stack, EquipmentSlot slot) {
+        List<StackPowerUtil.StackPower> stackPowerList = Lists.newArrayList();
+        if(this.item_powers != null) {
+            this.item_powers.forEach(item_power -> {
+                if (item_power.slot == slot) {
+                    stackPowerList.add(item_power);
+                }
+            });
+        }
+        return stackPowerList;
     }
 }

@@ -6,6 +6,7 @@ import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDNeighourUpdat
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDStepMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDUseMechanic;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
+import io.github.thatrobin.ccpacks.util.IDDBlock;
 import io.github.thatrobin.ccpacks.util.VoxelInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DDBlock extends Block implements BlockEntityProvider {
+public class DDBlock extends Block implements BlockEntityProvider, IDDBlock {
 
     public BlockEntityType<DDBlockEntity> type;
     public List<VoxelInfo> voxelInfoList;
@@ -83,7 +84,7 @@ public class DDBlock extends Block implements BlockEntityProvider {
             } else {
                 ddUseMechanic.executeBlockAction(data);
                 ddUseMechanic.executeEntityAction(player);
-                return ActionResult.CONSUME;
+                return ActionResult.SUCCESS;
             }
         }
         return ActionResult.PASS;
@@ -114,16 +115,10 @@ public class DDBlock extends Block implements BlockEntityProvider {
     @Deprecated
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDNeighourUpdateMechanic.class).forEach(ddNeighourUpdateMechanic -> {
-            //if(direction == ddNeighourUpdateMechanic.dir) {
-                Triple data = Triple.of(world, pos, Direction.UP);
-                Triple data2 = Triple.of(world, neighborPos, Direction.UP);
-                if(ddNeighourUpdateMechanic.block_action != null) {
-                    ddNeighourUpdateMechanic.executeBlockAction(data);
-                }
-                if(ddNeighourUpdateMechanic.block_action2 != null) {
-                    ddNeighourUpdateMechanic.executeNeighborAction(data2);
-                }
-            //}
+            Triple data = Triple.of(world, pos, Direction.UP);
+            Triple data2 = Triple.of(world, neighborPos, Direction.UP);
+            ddNeighourUpdateMechanic.executeBlockAction(data);
+            ddNeighourUpdateMechanic.executeNeighborAction(data2);
         });
         return state;
     }
@@ -131,7 +126,6 @@ public class DDBlock extends Block implements BlockEntityProvider {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return checkType(type, type, (world1, pos, state1, be) -> DDBlockEntity.tick(world1, pos, (DDBlockEntity) be));
-        //return checkType(type, type, (world1, pos, state1, be) -> DDBlockEntity.tick(world1, pos, state1, (DDBlockEntity) be));
     }
 
     public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
@@ -149,5 +143,10 @@ public class DDBlock extends Block implements BlockEntityProvider {
     @Nullable
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
         return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
+    }
+
+    @Override
+    public void setType(BlockEntityType<DDBlockEntity> blockEntityType) {
+        this.type = blockEntityType;
     }
 }

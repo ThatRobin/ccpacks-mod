@@ -43,28 +43,30 @@ public class MechanicFactories {
         register(new MechanicFactory<>(CCPacksMain.identifier("on_step"),
                 new SerializableData()
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
-                        .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
+                        .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                        .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (identifier, factory) -> new DDStepMechanic(identifier, factory, data.get("entity_action"), data.get("block_action")))
+                        (identifier, factory) -> new DDStepMechanic(identifier, factory, data.get("entity_action"), data.get("block_action"), data.get("block_condition")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_neighbour_update"),
                 new SerializableData()
-                        .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
+                        .add("self_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("neighbour_action", ApoliDataTypes.BLOCK_ACTION, null)
-                        .add("direction", SerializableDataType.enumValue(Direction.class), null)
-                        .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
+                        .add("self_condition", ApoliDataTypes.BLOCK_CONDITION, null)
+                        .add("neighbour_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (identifier, factory) -> new DDNeighourUpdateMechanic(identifier, factory, data.get("direction"), data.get("block_action"), data.get("neighbour_action")))
+                        (identifier, factory) -> new DDNeighourUpdateMechanic(identifier, factory, data.get("self_action"), data.get("neighbour_action"), data.get("self_condition"), data.get("neighbour_condition")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("on_land"),
                 new SerializableData()
                         .add("damage_multiplier", SerializableDataTypes.FLOAT, 1.0f)
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
+                        .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
                 data ->
-                        (identifier, factory) -> new DDFallMechanic(identifier, factory, data.getFloat("damage_multiplier"), data.get("entity_action"), data.get("block_action")))
+                        (identifier, factory) -> new DDFallMechanic(identifier, factory, data.getFloat("damage_multiplier"), data.get("entity_action"), data.get("block_action"), data.get("block_condition")))
         );
 
         register(new MechanicFactory<>(CCPacksMain.identifier("triggerable"),

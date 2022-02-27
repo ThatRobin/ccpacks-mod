@@ -14,7 +14,7 @@ import java.util.List;
 public interface ItemHolderComponent extends AutoSyncedComponent, ServerTickingComponent {
     ComponentKey<ItemHolderComponent> KEY = ComponentRegistry.getOrCreate(CCPacksMain.identifier("saved_items"), ItemHolderComponent.class);
 
-    void removeItem(ItemStack stack);
+    void removeItem(Identifier id);
 
     int removeAllItems();
 

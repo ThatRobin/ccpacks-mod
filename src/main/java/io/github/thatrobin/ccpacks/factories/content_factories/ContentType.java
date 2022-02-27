@@ -1,6 +1,7 @@
 package io.github.thatrobin.ccpacks.factories.content_factories;
 
 import io.github.thatrobin.ccpacks.util.GameruleHolder;
+import io.github.thatrobin.ccpacks.util.ItemGroupHolder;
 import io.github.thatrobin.ccpacks.util.Portal;
 import io.github.thatrobin.ccpacks.util.TypeAttributeHolder;
 import io.github.apace100.apoli.power.PowerType;
@@ -13,7 +14,9 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ContentType {
@@ -75,6 +78,10 @@ public class ContentType {
 
     public GameruleHolder createGamerule(ContentType contentType) {
         return (GameruleHolder) factory.apply(contentType, null).get();
+    }
+
+    public PlacedFeature createFeature(ContentType contentType) {
+        return (PlacedFeature) factory.apply(contentType, null).get();
     }
 
     public String getOrCreateNameTranslationKey() {

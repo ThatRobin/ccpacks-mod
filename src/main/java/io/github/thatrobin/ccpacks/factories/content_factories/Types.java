@@ -11,5 +11,7 @@ public enum Types {
     SOUND,
     PARTICLE,
     ENTITY,
-    GAMERULE
+    GAMERULE,
+    ITEM_GROUP,
+    FEATURE
 }

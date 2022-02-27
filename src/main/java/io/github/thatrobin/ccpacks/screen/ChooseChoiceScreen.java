@@ -32,7 +32,7 @@ public class ChooseChoiceScreen extends ChoiceDisplayScreen {
         this.currentLayerIndex = currentLayerIndex;
         this.ChoiceSelection = new ArrayList<>(0);
         ChoiceLayer currentLayer = layerList.get(currentLayerIndex);
-        List<Identifier> ChoiceIdentifiers = currentLayer.getChoices();
+        List<Identifier> ChoiceIdentifiers = currentLayer.getChoices(MinecraftClient.getInstance().player);
         ChoiceIdentifiers.forEach(ChoiceId -> {
             Choice Choice = ChoiceRegistry.get(ChoiceId);
             this.ChoiceSelection.add(Choice);

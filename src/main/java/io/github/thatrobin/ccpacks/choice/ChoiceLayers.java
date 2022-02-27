@@ -61,7 +61,7 @@ public class ChoiceLayers extends MultiJsonDataLoader implements IdentifiableRes
             for(Integer key : keys) {
                 for(JsonObject jo : layerToLoad.getValue().get(key)) {
                     if(layer == null) {
-                        layer = ChoiceLayer.createFromData(layerId, ChoiceLayer.DATA.read(jo));
+                        layer = ChoiceLayer.createFromData(layerId, jo);
                     } else {
                         layer.merge(ChoiceLayer.DATA.read(jo));
                     }

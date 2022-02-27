@@ -1,7 +1,9 @@
 package io.github.thatrobin.ccpacks.component;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.thatrobin.ccpacks.CCPacksMain;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -23,8 +25,8 @@ public class ItemHolderComponentImpl implements ItemHolderComponent {
     }
 
     @Override
-    public void removeItem(ItemStack stack) {
-
+    public void removeItem(Identifier id) {
+        items.remove(id);
     }
 
     @Override
@@ -55,7 +57,10 @@ public class ItemHolderComponentImpl implements ItemHolderComponent {
 
     @Override
     public ItemStack getItem(Identifier id) {
-        return items.get(id);
+        if(items.containsKey(id)) {
+            return items.get(id);
+        }
+        return null;
     }
 
     @Override
@@ -69,20 +74,24 @@ public class ItemHolderComponentImpl implements ItemHolderComponent {
     }
 
     private void fromTag(NbtCompound compoundTag) {
+        ConcurrentHashMap<Identifier, ItemStack> tempItems = new ConcurrentHashMap<>();
         try {
             if (owner == null) {
-                Apoli.LOGGER.error("Owner was null in ItemHolderComponent#fromTag!");
+                CCPacksMain.LOGGER.error("Owner was null in ItemHolderComponent#fromTag!");
             }
             NbtList powerList = (NbtList) compoundTag.get("Items");
             if(powerList != null) {
                 for (int i = 0; i < powerList.size(); i++) {
                     NbtCompound powerTag = powerList.getCompound(i);
-                    NbtCompound data = powerTag.getCompound("Stack");
-                    ItemStack.fromNbt(data);
+                    Identifier id = Identifier.tryParse(powerTag.getString("identifier"));
+                    tempItems.put(id, ItemStack.fromNbt(powerTag));
                 }
             }
+            for(Map.Entry<Identifier, ItemStack> entry: tempItems.entrySet()) {
+                addItem(entry.getValue(), entry.getKey());
+            }
         } catch(Exception e) {
-            Apoli.LOGGER.info("Error while reading data: " + e.getMessage());
+            CCPacksMain.LOGGER.info("Error while reading data: " + e.getMessage());
         }
     }
 

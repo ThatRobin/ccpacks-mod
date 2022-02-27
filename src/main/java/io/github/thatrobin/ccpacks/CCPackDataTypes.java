@@ -1,5 +1,7 @@
 package io.github.thatrobin.ccpacks;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.Calio;
@@ -20,6 +22,8 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Item;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.tag.Tag;
@@ -32,6 +36,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class CCPackDataTypes {
+
+    public static final SerializableDataType<List<Item>> ITEMS =
+            SerializableDataType.list(SerializableDataTypes.ITEM);
 
     public static final SerializableDataType<MechanicTypeReference> MECHANIC_TYPE = SerializableDataType.wrap(
             MechanicTypeReference.class, SerializableDataTypes.IDENTIFIER,
@@ -92,6 +99,7 @@ public class CCPackDataTypes {
                     .add("lore", CCPackDataTypes.STRINGS, null)
                     .add("item_modifiers", SerializableDataTypes.IDENTIFIERS, null)
                     .add("fuel_tick", SerializableDataTypes.INT, 0)
+                    .add("item_powers", CCPackDataTypes.STACK_POWERS, null)
                     .add("max_count", SerializableDataTypes.INT, 64),
             (data) -> {
                 FabricItemSettings settings = new FabricItemSettings();

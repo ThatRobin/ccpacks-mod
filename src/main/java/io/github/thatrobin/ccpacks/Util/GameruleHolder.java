@@ -8,11 +8,11 @@ import java.util.List;
 
 public class GameruleHolder {
 
-    private GameRules.Key<GameRules.BooleanRule> gamerule;
-    private List<Identifier> powers;
-    private List<EntityType> entities;
+    private final GameRules.Key<GameRules.BooleanRule> gamerule;
+    private final List<Identifier> powers;
+    private final List<EntityType<?>> entities;
 
-    public GameruleHolder(GameRules.Key<GameRules.BooleanRule> gamerule, List<Identifier> powers, List<EntityType> entities) {
+    public GameruleHolder(GameRules.Key<GameRules.BooleanRule> gamerule, List<Identifier> powers, List<EntityType<?>> entities) {
         this.gamerule = gamerule;
         this.powers = powers;
         this.entities = entities;
@@ -27,7 +27,7 @@ public class GameruleHolder {
     }
 
 
-    public List<EntityType> getEntities() {
+    public List<EntityType<?>> getEntities() {
         return this.entities;
     }
 }

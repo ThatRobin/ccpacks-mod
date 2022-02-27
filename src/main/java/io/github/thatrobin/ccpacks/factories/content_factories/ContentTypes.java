@@ -1,16 +1,21 @@
 package io.github.thatrobin.ccpacks.factories.content_factories;
 
 import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.thatrobin.ccpacks.CCPackDataTypes;
 import io.github.thatrobin.ccpacks.data_driven_classes.DDSound;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlock;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
+import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDFallingBlock;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDTransparentBlock;
+import io.github.thatrobin.ccpacks.data_driven_classes.items.DDDyeableItem;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
-import io.github.thatrobin.ccpacks.util.GameruleHolder;
-import io.github.thatrobin.ccpacks.util.Portal;
-import io.github.thatrobin.ccpacks.util.TypeAttributeHolder;
+import io.github.thatrobin.ccpacks.util.*;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
@@ -20,13 +25,21 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.PlacedFeature;
+import org.spongepowered.include.com.google.common.collect.Lists;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -39,6 +52,8 @@ public class ContentTypes {
     public static Map<Identifier, EntityType<?>> entities = Maps.newHashMap();
     public static Map<Identifier, GameruleHolder> gamerules = Maps.newHashMap();
     public static Map<Identifier, DDTransparentBlock> blocks = Maps.newHashMap();
+    public static Map<Identifier, DDDyeableItem> dyeItems = Maps.newHashMap();
+    public static Map<Identifier, Map<Identifier, ItemGroupHolder>> itemGroups = Maps.newHashMap();
 
     public ContentTypes(Identifier id, JsonElement je) {
         readPower(id, je, ContentType::new);
@@ -59,18 +74,17 @@ public class ContentTypes {
                 switch (contentFactory.get().getType()) {
                     case ITEM -> {
                         Item item = type.createItem(type);
+                        if(item instanceof DDDyeableItem dyeableItem) {
+                            dyeItems.put(id, dyeableItem);
+                        }
                         Registry.register(Registry.ITEM, id, item);
                     }
                     case BLOCK -> {
                         Block block = type.createBlock(type);
                         Registry.register(Registry.BLOCK, id, block);
                         BlockEntityType<DDBlockEntity> DEMO_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create((pos, state) -> new DDBlockEntity(id, pos, state), block).build(null);
-                        if(block instanceof DDBlock ddBlock) {
-                            ddBlock.type = DEMO_BLOCK_ENTITY;
-                        }
-                        if(block instanceof DDTransparentBlock ddTransparentBlock) {
-                            ddTransparentBlock.type = DEMO_BLOCK_ENTITY;
-                            blocks.put(id, ddTransparentBlock);
+                        if(block instanceof IDDBlock ddBlock) {
+                            ddBlock.setType(DEMO_BLOCK_ENTITY);
                         }
                         Registry.register(Registry.BLOCK_ENTITY_TYPE, id, DEMO_BLOCK_ENTITY);
                     }
@@ -125,6 +139,25 @@ public class ContentTypes {
                     case GAMERULE -> {
                         GameruleHolder holder = type.createGamerule(type);
                         gamerules.put(id, holder);
+                    }
+                    case ITEM_GROUP -> {
+                        Map<Identifier, ItemGroupHolder> holderMap = Maps.newHashMap();
+                        jo.entrySet().forEach((stringJsonElementEntry -> {
+                            String field = stringJsonElementEntry.getKey();
+                            if(stringJsonElementEntry.getValue().isJsonObject()) {
+                                JsonObject data = stringJsonElementEntry.getValue().getAsJsonObject();
+                                ItemGroupHolder holder = new ItemGroupHolder(data);
+                                Identifier newId = new Identifier(id.getNamespace(), id.getPath()+"_"+field);
+                                holderMap.put(newId, holder);
+                            }
+                        }));
+                        itemGroups.put(id, holderMap);
+                    }
+                    case FEATURE -> {
+                        PlacedFeature feature = type.createFeature(type);
+                        RegistryKey<PlacedFeature> oreGeneration = RegistryKey.of(Registry.PLACED_FEATURE_KEY, id);
+                        Registry.register(BuiltinRegistries.PLACED_FEATURE, oreGeneration.getValue(), feature);
+                        BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, oreGeneration);
                     }
                 }
             }

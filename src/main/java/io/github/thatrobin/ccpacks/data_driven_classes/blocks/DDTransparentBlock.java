@@ -6,6 +6,7 @@ import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDNeighourUpdat
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDStepMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDUseMechanic;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
+import io.github.thatrobin.ccpacks.util.IDDBlock;
 import io.github.thatrobin.ccpacks.util.VoxelInfo;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DDTransparentBlock extends TransparentBlock implements BlockEntityProvider {
+public class DDTransparentBlock extends TransparentBlock implements BlockEntityProvider, IDDBlock {
 
     public BlockEntityType<DDBlockEntity> type;
     public List<VoxelInfo> voxelInfoList;
@@ -114,13 +115,8 @@ public class DDTransparentBlock extends TransparentBlock implements BlockEntityP
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDNeighourUpdateMechanic.class).forEach(ddNeighourUpdateMechanic -> {
             Triple data = Triple.of(world, pos, Direction.UP);
             Triple data2 = Triple.of(world, neighborPos, Direction.UP);
-            if(ddNeighourUpdateMechanic.block_action != null) {
-                ddNeighourUpdateMechanic.executeBlockAction(data);
-            }
-            if(ddNeighourUpdateMechanic.block_action2 != null) {
-                ddNeighourUpdateMechanic.executeNeighborAction(data2);
-            }
-            //}
+            ddNeighourUpdateMechanic.executeBlockAction(data);
+            ddNeighourUpdateMechanic.executeNeighborAction(data2);
         });
         return state;
     }
@@ -151,6 +147,11 @@ public class DDTransparentBlock extends TransparentBlock implements BlockEntityP
     @Nullable
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
         return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
+    }
+
+    @Override
+    public void setType(BlockEntityType<DDBlockEntity> blockEntityType) {
+        this.type = blockEntityType;
     }
 
 }

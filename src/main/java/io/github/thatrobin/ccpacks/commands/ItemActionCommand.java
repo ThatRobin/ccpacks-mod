@@ -9,10 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.github.thatrobin.ccpacks.component.ItemHolderComponent;
+import io.github.thatrobin.ccpacks.component.ModComponents;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +26,10 @@ import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.GiveCommand;
+import net.minecraft.server.command.ItemCommand;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
@@ -46,7 +51,7 @@ public class ItemActionCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 (LiteralArgumentBuilder<ServerCommandSource>) literal("itemaction").requires(cs -> cs.hasPermissionLevel(2))
-                        .then(literal("summon").then(((RequiredArgumentBuilder) CommandManager.argument("pos", Vec3ArgumentType.vec3())).then(argument("target", EntityArgumentType.entity()).then((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot()).then((RequiredArgumentBuilder)CommandManager.argument("pickupDelay", IntegerArgumentType.integer()).executes((command) -> {
+                        .then(literal("summon").then(((RequiredArgumentBuilder) argument("pos", Vec3ArgumentType.vec3())).then(argument("target", EntityArgumentType.entity()).then((RequiredArgumentBuilder) argument("sourceSlot", ItemSlotArgumentType.itemSlot()).then((RequiredArgumentBuilder) argument("pickupDelay", IntegerArgumentType.integer()).executes((command) -> {
                                                             try {
                                                                 double x = Vec3ArgumentType.getPosArgument(command, "pos").toAbsolutePos(command.getSource()).x;
                                                                 double y = Vec3ArgumentType.getPosArgument(command, "pos").toAbsolutePos(command.getSource()).y;
@@ -63,11 +68,30 @@ public class ItemActionCommand {
                                                             }
                                                         }
                                                         )))
-                                )))
+                                ).then((RequiredArgumentBuilder) argument("identifier", IdentifierArgumentType.identifier())
+                                    .then(argument("target", EntityArgumentType.entity()).then((RequiredArgumentBuilder) argument("pickupDelay", IntegerArgumentType.integer()).executes((command) -> {
+                            try {
+                                double x = Vec3ArgumentType.getPosArgument(command, "pos").toAbsolutePos(command.getSource()).x;
+                                double y = Vec3ArgumentType.getPosArgument(command, "pos").toAbsolutePos(command.getSource()).y;
+                                double z = Vec3ArgumentType.getPosArgument(command, "pos").toAbsolutePos(command.getSource()).z;
+                                Identifier id = IdentifierArgumentType.getIdentifier(command, "identifier");
+                                Entity entity = EntityArgumentType.getEntity(command, "target");
+                                ItemHolderComponent component = ItemHolderComponent.KEY.get(entity);
+                                ItemStack stack = component.getItem(id);
+                                ItemEntity ientity = new ItemEntity(command.getSource().getWorld(), x, y, z, stack);
+                                ientity.setPickupDelay(IntegerArgumentType.getInteger(command, "pickupDelay"));
+                                command.getSource().getWorld().spawnEntity(ientity);
+                                command.getSource().sendFeedback(new LiteralText("Summoned Item from Virtual Item Storage"), true);
+                                return 1;
+                            } catch (Exception e){
+                                command.getSource().sendFeedback(new LiteralText("Could not summon Item"), true);
+                                return 0;
+                            }
+                        }))))))
                                 .then(literal("save")
-                                        .then(((RequiredArgumentBuilder) CommandManager.argument("identifier", IdentifierArgumentType.identifier()))
+                                        .then(((RequiredArgumentBuilder) argument("identifier", IdentifierArgumentType.identifier()))
                                                 .then(argument("target", EntityArgumentType.entity())
-                                                        .then((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+                                                        .then((RequiredArgumentBuilder) argument("sourceSlot", ItemSlotArgumentType.itemSlot())
                                                                 .executes((command) -> {
                                                                     try {
                                                                         Entity entity = EntityArgumentType.getEntity(command, "target");
@@ -85,9 +109,9 @@ public class ItemActionCommand {
                                                                     }
                                                                 })))))
                         .then(literal("add")
-                                .then(((RequiredArgumentBuilder) CommandManager.argument("identifier", IdentifierArgumentType.identifier()))
+                                .then(((RequiredArgumentBuilder) argument("identifier", IdentifierArgumentType.identifier()))
                                         .then(argument("target", EntityArgumentType.entity())
-                                                .then((RequiredArgumentBuilder)CommandManager.argument("item", ItemStackArgumentType.itemStack())
+                                                .then((RequiredArgumentBuilder) argument("item", ItemStackArgumentType.itemStack())
                                                         .executes((command) -> {
                                                             try {
                                                                 Entity entity = EntityArgumentType.getEntity(command, "target");
@@ -104,18 +128,26 @@ public class ItemActionCommand {
                                                             }
                                                         })))))
                         .then(literal("load")
-                                .then(((RequiredArgumentBuilder) CommandManager.argument("identifier", IdentifierArgumentType.identifier()))
+                                .then(argument("player", EntityArgumentType.player())
+                                    .then(((RequiredArgumentBuilder) argument("identifier", IdentifierArgumentType.identifier()))
                                         .then(argument("target", EntityArgumentType.entity())
-                                                .then((RequiredArgumentBuilder)CommandManager.argument("sourceSlot", ItemSlotArgumentType.itemSlot())
-                                                        .executes((command) -> {
+                                            .then((RequiredArgumentBuilder) argument("sourceSlot", ItemSlotArgumentType.itemSlot())
+                                                .executes((command) -> {
                                                             try {
                                                                 Entity entity = EntityArgumentType.getEntity(command, "target");
+                                                                ServerPlayerEntity player = EntityArgumentType.getPlayer(command, "player");
                                                                 Identifier id = IdentifierArgumentType.getIdentifier(command, "identifier");
                                                                 int slotId = ItemSlotArgumentType.getItemSlot(command, "sourceSlot");
                                                                 ItemHolderComponent component = ItemHolderComponent.KEY.get(entity);
-                                                                ItemStack itemStack = component.getItem(id);
+                                                                ItemStack itemStack = component.getItem(id).copy();
                                                                 StackReference stackReference = entity.getStackReference(slotId);
-                                                                stackReference.set(itemStack);
+                                                                if (stackReference != StackReference.EMPTY) {
+                                                                    if (stackReference.set(itemStack)) {
+                                                                        if (player instanceof ServerPlayerEntity) {
+                                                                            ((ServerPlayerEntity) player).currentScreenHandler.sendContentUpdates();
+                                                                        }
+                                                                    }
+                                                                }
                                                                 command.getSource().sendFeedback(new LiteralText("Item loaded to Entity"), true);
                                                                 component.sync();
                                                                 return 1;
@@ -123,7 +155,7 @@ public class ItemActionCommand {
                                                                 command.getSource().sendFeedback(new LiteralText("Could not load Item to Entity"), true);
                                                                 return 0;
                                                             }
-                                                        })))))
+                                                        }))))))
                         .then(literal("has")
                                 .then(((RequiredArgumentBuilder) CommandManager.argument("identifier", IdentifierArgumentType.identifier()))
                                         .then(argument("target", EntityArgumentType.entity())
@@ -185,8 +217,11 @@ public class ItemActionCommand {
                                                             Identifier id = IdentifierArgumentType.getIdentifier(command, "identifier");
                                                             ItemHolderComponent component = ItemHolderComponent.KEY.get(entity);
                                                             ItemStack itemStack = component.getItem(id);
+                                                            component.removeItem(id);
                                                             LootFunction modifier = IdentifierArgumentType.getItemModifierArgument(command, "modifier");
-                                                            getStackWithModifier(command.getSource(), modifier, itemStack);
+                                                            ItemStack newStack = getStackWithModifier(command.getSource(), modifier, itemStack);
+                                                            component.addItem(newStack, id);
+                                                            command.getSource().sendFeedback(new LiteralText("Modified item at "+id), true);
                                                             return 1;
                                                         } catch (Exception e){
                                                             command.getSource().sendFeedback(new LiteralText("Could not find Item on Entity"), true);
@@ -221,10 +256,11 @@ public class ItemActionCommand {
 
     }
 
-    private static void getStackWithModifier(ServerCommandSource source, LootFunction modifier, ItemStack stack) {
+    private static ItemStack getStackWithModifier(ServerCommandSource source, LootFunction modifier, ItemStack stack) {
         ServerWorld serverWorld = source.getWorld();
         LootContext.Builder builder = (new LootContext.Builder(serverWorld)).parameter(LootContextParameters.ORIGIN, source.getPosition()).optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity());
         modifier.apply(stack, builder.build(LootContextTypes.COMMAND));
+        return stack;
     }
 
     private static final DynamicCommandExceptionType NO_SUCH_SLOT_SOURCE_EXCEPTION = new DynamicCommandExceptionType((slot) -> new TranslatableText("commands.item.source.no_such_slot", slot));

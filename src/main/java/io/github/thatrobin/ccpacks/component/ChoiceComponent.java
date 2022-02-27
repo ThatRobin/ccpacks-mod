@@ -33,7 +33,7 @@ public interface ChoiceComponent extends AutoSyncedComponent {
         ModComponents.CHOICE.sync(player);
     }
 
-    default void checkAutoChoosingLayers() {
+    default void checkAutoChoosingLayers(PlayerEntity player) {
         ArrayList<ChoiceLayer> layers = new ArrayList<>();
         for(ChoiceLayer layer : ChoiceLayers.getLayers()) {
             if(layer.isEnabled()) {
@@ -44,11 +44,11 @@ public interface ChoiceComponent extends AutoSyncedComponent {
         for(ChoiceLayer layer : layers) {
             boolean shouldContinue = false;
             if (layer.isEnabled() && !hasChoice(layer)) {
-                if (layer.getChoiceOptionCount() == 1) {
-                    List<Choice> choices = layer.getChoices().stream().map(ChoiceRegistry::get).collect(Collectors.toList());
+                if (layer.getChoiceOptionCount(player) == 1) {
+                    List<Choice> choices = layer.getChoices(player).stream().map(ChoiceRegistry::get).collect(Collectors.toList());
                     setChoice(layer, choices.get(0));
                     shouldContinue = true;
-                } else if(layer.getChoiceOptionCount() == 0) {
+                } else if(layer.getChoiceOptionCount(player) == 0) {
                     shouldContinue = true;
                 }
             } else {

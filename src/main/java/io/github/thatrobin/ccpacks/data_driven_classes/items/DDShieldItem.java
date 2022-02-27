@@ -1,7 +1,12 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.items;
 
+import com.google.common.collect.Lists;
+import io.github.apace100.apoli.util.PowerGrantingItem;
+import io.github.apace100.apoli.util.StackPowerUtil;
+import io.github.thatrobin.ccpacks.util.StackPowerExpansion;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
@@ -20,18 +25,23 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable {
+import java.util.Collection;
+import java.util.List;
 
+public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable, PowerGrantingItem {
+
+    private final List<StackPowerExpansion> item_powers;
     private final AnimationFactory factory = new AnimationFactory(this);
     private static final String controllerName = "popupController";
     private static final int ANIM_OPEN = 0;
     private final int cooldown;
     private final ToolMaterial toolMaterial;
 
-    public DDShieldItem(Settings settings, int cooldown, ToolMaterial toolMaterial) {
+    public DDShieldItem(Settings settings, int cooldown, ToolMaterial toolMaterial, List<StackPowerExpansion> item_powers) {
         super(settings);
         this.cooldown = cooldown;
         this.toolMaterial = toolMaterial;
+        this.item_powers = item_powers;
     }
 
     @Override
@@ -96,5 +106,18 @@ public class DDShieldItem extends ShieldItem implements IAnimatable, ISyncable {
                 controller.setAnimation(new AnimationBuilder().addAnimation("Soaryn_chest_popup", false));
             }
         }
+    }
+
+    @Override
+    public Collection<StackPowerUtil.StackPower> getPowers(ItemStack stack, EquipmentSlot slot) {
+        List<StackPowerUtil.StackPower> stackPowerList = Lists.newArrayList();
+        if(this.item_powers != null) {
+            this.item_powers.forEach(item_power -> {
+                if (item_power.slot == slot) {
+                    stackPowerList.add(item_power);
+                }
+            });
+        }
+        return stackPowerList;
     }
 }

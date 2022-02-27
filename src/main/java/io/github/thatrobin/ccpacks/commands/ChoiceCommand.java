@@ -35,7 +35,7 @@ public class ChoiceCommand {
                                             component.setChoice(l, Choice.EMPTY);
                                         }
 
-                                        component.checkAutoChoosingLayers();
+                                        component.checkAutoChoosingLayers(target);
                                         component.sync();
                                         PacketByteBuf data = new PacketByteBuf(Unpooled.buffer());
                                         data.writeBoolean(false);

@@ -3,6 +3,7 @@ package io.github.thatrobin.ccpacks.choice;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ChoiceRegistry {
     private static final HashMap<Identifier, Choice> idToChoice = new HashMap<>();
@@ -41,6 +42,10 @@ public class ChoiceRegistry {
 
     public static void clear() {
         idToChoice.clear();
+    }
+
+    public static Iterable<Map.Entry<Identifier, Choice>> entries() {
+        return idToChoice.entrySet();
     }
 
     public static void reset() {

@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -35,15 +36,33 @@ public class DDFoodItem extends Item implements PowerGrantingItem {
     private final ItemConvertible returns;
     private final int eating_time;
     private final List<String> lore;
+    private LiteralText name;
 
-    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore, List<StackPowerExpansion> item_powers) {
+    public DDFoodItem(Settings settings, boolean drinkable, SoundEvent sound, ItemConvertible returns, int eating_time, List<String> lore, List<StackPowerExpansion> item_powers, LiteralText name) {
         super(settings);
+        this.name = name;
         this.drinkable = drinkable;
         this.sound = sound;
         this.returns = returns;
         this.eating_time = eating_time;
         this.lore = lore;
         this.item_powers = item_powers;
+    }
+
+    @Override
+    public Text getName() {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey());
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey(stack));
     }
 
     @Override

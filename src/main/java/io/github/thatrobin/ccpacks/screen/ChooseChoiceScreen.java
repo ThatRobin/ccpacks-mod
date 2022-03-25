@@ -1,15 +1,18 @@
 package io.github.thatrobin.ccpacks.screen;
 
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.choice.Choice;
 import io.github.thatrobin.ccpacks.choice.ChoiceLayer;
 import io.github.thatrobin.ccpacks.choice.ChoiceRegistry;
+import io.github.thatrobin.ccpacks.component.ModComponents;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPackets;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
@@ -73,8 +76,12 @@ public class ChooseChoiceScreen extends ChoiceDisplayScreen {
         }));
         addDrawableChild(new ButtonWidget(guiLeft + windowWidth / 2 - 50, guiTop + windowHeight + 5, 100, 20, new TranslatableText(CCPacksMain.MODID + ".gui.select"), b -> {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeIdentifier(getCurrentChoiceInternal().getIdentifier());
-            buf.writeIdentifier(getCurrentLayerInternal().getIdentifier());
+            buf.writeString(getCurrentChoice().getIdentifier().toString());
+            buf.writeString(layerList.get(currentLayerIndex).getIdentifier().toString());
+            ActionFactory<Entity>.Instance action = getCurrentChoice().getAction();
+            if(action != null) {
+                action.accept(MinecraftClient.getInstance().player);
+            }
             ClientPlayNetworking.send(CCPacksModPackets.CHOOSE_CHOICE, buf);
             openNextLayerScreen();
         }));

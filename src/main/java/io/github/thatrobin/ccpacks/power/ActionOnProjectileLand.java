@@ -20,13 +20,15 @@ public class ActionOnProjectileLand extends Power {
 
     private final Predicate<CachedBlockPosition> blockCondition;
     private final Consumer<Entity> entityAction;
+    private final Consumer<Entity> selfAction;
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
     private final Identifier projectile;
 
-    public ActionOnProjectileLand(PowerType<?> type, LivingEntity entity, Predicate<CachedBlockPosition> blockCondition, Consumer<Entity> entityAction, Consumer<Triple<World, BlockPos, Direction>> blockAction, Identifier projectile) {
+    public ActionOnProjectileLand(PowerType<?> type, LivingEntity entity, Predicate<CachedBlockPosition> blockCondition, Consumer<Entity> entityAction, Consumer<Entity> selfAction, Consumer<Triple<World, BlockPos, Direction>> blockAction, Identifier projectile) {
         super(type, entity);
         this.blockCondition = blockCondition;
         this.entityAction = entityAction;
+        this.selfAction = selfAction;
         this.blockAction = blockAction;
         this.projectile = projectile;
     }
@@ -40,9 +42,12 @@ public class ActionOnProjectileLand extends Power {
         return blockCondition == null || blockCondition.test(pos);
     }
 
-    public void executeActions(BlockPos pos, Direction dir) {
+    public void executeActions(BlockPos pos, Direction dir, Entity projectileEntity) {
+        if (selfAction != null) {
+            selfAction.accept(entity);
+        }
         if (entityAction != null) {
-            entityAction.accept(entity);
+            entityAction.accept(projectileEntity);
         }
         if (blockAction != null) {
             blockAction.accept(Triple.of(entity.world, pos, dir));

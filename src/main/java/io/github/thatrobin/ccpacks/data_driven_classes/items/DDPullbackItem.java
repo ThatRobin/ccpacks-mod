@@ -25,12 +25,10 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.awt.*;
@@ -40,20 +38,22 @@ import java.util.function.Predicate;
 
 public class DDPullbackItem extends BowItem implements PowerGrantingItem {
 
-    public EntityType entityType;
+    public Identifier entityType;
     private final List<StackPowerExpansion> item_powers;
     public List<String> lore;
     private final ColourHolder startColours;
     private final ColourHolder endColours;
     private final LiteralText name;
+    private final float max_speed;
 
-    public DDPullbackItem(Settings settings, LiteralText name, List<String> lore, List<StackPowerExpansion> item_powers, EntityType entityType) {
-        this(settings, name, lore, null, null, item_powers, entityType);
+    public DDPullbackItem(Settings settings, LiteralText name, List<String> lore, List<StackPowerExpansion> item_powers, Identifier entityType, float max_speed) {
+        this(settings, name, lore, null, null, item_powers, entityType, max_speed);
     }
 
 
-    public DDPullbackItem(Settings settings, LiteralText name, List<String> lore, ColourHolder startColours, ColourHolder endColours, List<StackPowerExpansion> item_powers, EntityType entityType) {
+    public DDPullbackItem(Settings settings, LiteralText name, List<String> lore, ColourHolder startColours, ColourHolder endColours, List<StackPowerExpansion> item_powers, Identifier entityType, float max_speed) {
         super(settings);
+        this.max_speed = max_speed;
         this.name = name;
         this.lore = lore;
         this.startColours = startColours;
@@ -65,20 +65,24 @@ public class DDPullbackItem extends BowItem implements PowerGrantingItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity)user;
+            PlayerEntity playerEntity = (PlayerEntity) user;
 
             int i = this.getMaxUseTime(stack) - remainingUseTicks;
             float f = getPullProgress(i);
-            if (f > 0.9f) {
-                if(entityType != null) {
-                    fireProjectile(playerEntity);
+            if (!((double) f < 0.1D)) {
+                if (!world.isClient) {
+                    fireProjectile(playerEntity, f);
                 }
+
+                world.playSound((PlayerEntity) null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+
+                playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
             }
         }
     }
 
-    private void fireProjectile(PlayerEntity playerEntity) {
-        Entity entity = entityType.create(playerEntity.world);
+    private void fireProjectile(PlayerEntity playerEntity, float speedMultiplier) {
+        Entity entity = Registry.ENTITY_TYPE.get(entityType).create(playerEntity.world);
         if (entity == null) {
             return;
         }
@@ -96,7 +100,7 @@ public class DDPullbackItem extends BowItem implements PowerGrantingItem {
             }
             ProjectileEntity projectile = (ProjectileEntity) entity;
             projectile.setOwner(playerEntity);
-            projectile.setVelocity(playerEntity, pitch, yaw, 0F, 1.5F, 0);
+            projectile.setVelocity(playerEntity, pitch, yaw, 0F, speedMultiplier * this.max_speed, 0);
         } else {
             float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
             float g = -MathHelper.sin(pitch * 0.017453292F);

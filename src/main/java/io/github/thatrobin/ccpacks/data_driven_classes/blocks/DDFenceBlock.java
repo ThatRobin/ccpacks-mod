@@ -7,7 +7,6 @@ import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDStepMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDUseMechanic;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
 import io.github.thatrobin.ccpacks.util.IDDBlock;
-import io.github.thatrobin.ccpacks.util.VoxelInfo;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -36,23 +35,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDDBlock {
 
     public BlockEntityType<DDBlockEntity> type;
-    public List<VoxelInfo> voxelInfoList;
     public List<MechanicTypeReference> mechanicTypeReferences;
     private BlockMechanicHolder component;
 
-    public DDFenceBlock(Settings settings, List<MechanicTypeReference> mechanicTypeReferences, List<VoxelInfo> voxelInfoList) {
+    public DDFenceBlock(Settings settings, List<MechanicTypeReference> mechanicTypeReferences) {
         super(settings);
-        this.voxelInfoList = voxelInfoList;
         this.mechanicTypeReferences = mechanicTypeReferences;
         StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
         this.appendProperties(builder);
-        BlockState blockState = this.stateManager.getDefaultState();
-        if(voxelInfoList != null) {
-            for (VoxelInfo voxelInfo : voxelInfoList) {
-                blockState.with(voxelInfo.property, voxelInfo.base);
-            }
-        }
-        this.setDefaultState(blockState);
     }
 
     @Override
@@ -78,9 +68,6 @@ public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDD
         return be;
     }
 
-
-    @Override
-    @Deprecated
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         for(DDUseMechanic ddUseMechanic : BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDUseMechanic.class)) {
@@ -92,10 +79,9 @@ public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDD
                 return ActionResult.CONSUME;
             }
         }
-        return ActionResult.PASS;
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
-    @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         AtomicReference<Float> damage = new AtomicReference<>(1.0f);
@@ -107,7 +93,6 @@ public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDD
         entity.handleFallDamage(fallDistance, damage.get(), DamageSource.FALL);
     }
 
-    @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDStepMechanic.class).forEach(ddStepMechanic -> {
@@ -116,8 +101,6 @@ public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDD
         });
     }
 
-    @Override
-    @Deprecated
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDNeighourUpdateMechanic.class).forEach(ddNeighourUpdateMechanic -> {
             Triple data = Triple.of(world, pos, Direction.UP);
@@ -125,7 +108,7 @@ public class DDFenceBlock extends FenceBlock implements BlockEntityProvider, IDD
             ddNeighourUpdateMechanic.executeBlockAction(data);
             ddNeighourUpdateMechanic.executeNeighborAction(data2);
         });
-        return state;
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

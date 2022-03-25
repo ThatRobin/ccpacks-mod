@@ -3,14 +3,11 @@ package io.github.thatrobin.ccpacks;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
-import io.github.apace100.calio.util.ClientTagManagerGetter;
+import io.github.apace100.calio.util.OrderedResourceListeners;
 import io.github.thatrobin.ccpacks.choice.Choice;
 import io.github.thatrobin.ccpacks.choice.ChoiceLayers;
 import io.github.thatrobin.ccpacks.choice.ChoiceManager;
-import io.github.thatrobin.ccpacks.commands.ChoiceCommand;
-import io.github.thatrobin.ccpacks.commands.ItemActionCommand;
-import io.github.thatrobin.ccpacks.commands.MechanicCommand;
-import io.github.thatrobin.ccpacks.commands.SetCommand;
+import io.github.thatrobin.ccpacks.commands.*;
 import io.github.thatrobin.ccpacks.component.ItemHolderComponent;
 import io.github.thatrobin.ccpacks.component.ItemHolderComponentImpl;
 import io.github.thatrobin.ccpacks.factories.content_factories.*;
@@ -21,24 +18,21 @@ import io.github.thatrobin.ccpacks.power.PowerIconManager;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistry;
 import io.github.thatrobin.ccpacks.registries.ContentManager;
 import io.github.thatrobin.ccpacks.registries.MechanicManager;
-import io.github.thatrobin.ccpacks.registries.TaskManager;
 import io.github.thatrobin.ccpacks.util.ItemGroupHolder;
 import io.github.thatrobin.ccpacks.util.OnLoadResourceManager;
 import io.github.thatrobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.wispforest.owo.itemgroup.OwoItemGroup;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.tag.TagFactory;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.argument.ArgumentTypes;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.tag.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +40,8 @@ import software.bernie.geckolib3.GeckoLib;
 
 public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
+	public static int[] SEMVER;
+	public static String VERSION = "";
 	public static final Logger LOGGER = LogManager.getLogger(CCPacksMain.class);
 	public static final String MODID = "ccpacks";
 
@@ -55,6 +51,20 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	@Override
 	public void onInitialize() {
+		FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
+			VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
+			if(VERSION.contains("+")) {
+				VERSION = VERSION.split("\\+")[0];
+			}
+			if(VERSION.contains("-")) {
+				VERSION = VERSION.split("-")[0];
+			}
+			String[] splitVersion = VERSION.split("\\.");
+			SEMVER = new int[splitVersion.length];
+			for(int i = 0; i < SEMVER.length; i++) {
+				SEMVER[i] = Integer.parseInt(splitVersion[i]);
+			}
+		});
 		GeckoLib.initialize();
 		Choice.init();
 
@@ -62,7 +72,6 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		NamespaceAlias.addAlias("origins", "apoli");
 		EntityActions.register();
 		EntityConditions.register();
-		ItemActions.register();
 		ItemConditions.register();
 		BlockActions.register();
 		BlockConditions.register();
@@ -71,14 +80,9 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 		MechanicFactories.register();
 
-		// Mob Behaviours
-
-		//TaskFactories.register();
-
 		// Custom Content
 		BlockFactories.register();
 		EnchantmentFactories.register();
-		//EntityFactories.register();
 		ItemFactories.register();
 		ItemGroupFactories.register();
 		FeatureFactories.register();
@@ -90,6 +94,7 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		StatusEffectFactories.register();
 
 		CCPacksModPacketC2S.register();
+
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
 			MechanicCommand.register(dispatcher);
 			SetCommand.register(dispatcher);
@@ -97,25 +102,21 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 			ChoiceCommand.register(dispatcher);
 		});
 
-		OnLoadResourceManager.addSingleListener(new TaskManager());
 		OnLoadResourceManager.addSingleListener(new ContentManager());
 
 		//ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new CollisionManager());
+		OrderedResourceListeners.register(new UniversalPowerManager()).after(new Identifier("apoli","powers")).complete();
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new MechanicManager());
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new UniversalPowerManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceManager());
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceLayers());
 
+		ArgumentTypes.register("ccpacks:choice_layer", LayerArgument.class, new ConstantArgumentSerializer<>(LayerArgument::layer));
+		ArgumentTypes.register("ccpacks:mechanic", MechanicArgument.class, new ConstantArgumentSerializer<>(MechanicArgument::mechanic));
+
 		ContentTypes.itemGroups.forEach((identifier, itemGroupHolder) -> {
-			itemGroupHolder.entrySet().forEach((entry) -> {
-				ItemGroupHolder holder = entry.getValue();
-				Identifier name = entry.getKey();
-				FabricItemGroupBuilder.create(name)
-						.icon(() -> Registry.ITEM.get(holder.icon).getDefaultStack())
-						.appendItems((stacks) -> {
-							stacks.addAll(holder.getHolder());
-						}).build();
-			});
+			if(itemGroupHolder.getItemGroup() instanceof OwoItemGroup owoItemGroup) {
+				owoItemGroup.initialize();
+			}
 		});
 	}
 

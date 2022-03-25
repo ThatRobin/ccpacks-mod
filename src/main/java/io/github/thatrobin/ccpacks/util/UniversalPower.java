@@ -24,11 +24,11 @@ public class UniversalPower {
 
     private final Identifier identifier;
     public List<PowerType<?>> powerTypes = new LinkedList<>();
-    public Predicate<Entity> condition = null;
+    public List<EntityType<?>> entities = Lists.newArrayList();
 
     public static final SerializableData DATA = new SerializableData()
             .add("powers", SerializableDataTypes.IDENTIFIERS, Lists.newArrayList())
-            .add("entity_condition", ApoliDataTypes.ENTITY_CONDITION, null);
+            .add("entity_entry", CCPackDataTypes.ENTITY_ENTRY, null);
 
     public UniversalPower(Identifier id) {
         this.identifier = id;
@@ -61,8 +61,8 @@ public class UniversalPower {
                 CCPacksMain.LOGGER.error("Powerset \"" + id + "\" contained unregistered power: \"" + powerId + "\"");
             }
         });
-        if(data.isPresent("entity_condition")) {
-            universalPower.condition = (Predicate<Entity>)data.get("entity_condition");
+        if(data.isPresent("entity_entry")) {
+            universalPower.entities = (List<EntityType<?>>)data.get("entity_entry");
         }
 
         return universalPower;

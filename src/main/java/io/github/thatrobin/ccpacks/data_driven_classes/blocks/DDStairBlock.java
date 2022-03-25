@@ -7,7 +7,6 @@ import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDStepMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDUseMechanic;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
 import io.github.thatrobin.ccpacks.util.IDDBlock;
-import io.github.thatrobin.ccpacks.util.VoxelInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -38,23 +37,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DDStairBlock extends StairsBlock implements BlockEntityProvider, IDDBlock {
 
     public BlockEntityType<DDBlockEntity> type;
-    public List<VoxelInfo> voxelInfoList;
     public List<MechanicTypeReference> mechanicTypeReferences;
     private BlockMechanicHolder component;
 
-    public DDStairBlock(BlockState baseBlockState, Settings settings, List<MechanicTypeReference> mechanicTypeReferences, List<VoxelInfo> voxelInfoList) {
+    public DDStairBlock(BlockState baseBlockState, Settings settings, List<MechanicTypeReference> mechanicTypeReferences) {
         super(baseBlockState, settings);
-        this.voxelInfoList = voxelInfoList;
         this.mechanicTypeReferences = mechanicTypeReferences;
         StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
         this.appendProperties(builder);
-        BlockState blockState = this.stateManager.getDefaultState();
-        if(voxelInfoList != null) {
-            for (VoxelInfo voxelInfo : voxelInfoList) {
-                blockState.with(voxelInfo.property, voxelInfo.base);
-            }
-        }
-        this.setDefaultState(blockState);
     }
 
     @Nullable
@@ -72,6 +62,7 @@ public class DDStairBlock extends StairsBlock implements BlockEntityProvider, ID
     @Override
     @Deprecated
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        super.onUse(state, world, pos, player, hand, hit);
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         for(DDUseMechanic ddUseMechanic : BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDUseMechanic.class)) {
             if (world.isClient) {
@@ -82,11 +73,12 @@ public class DDStairBlock extends StairsBlock implements BlockEntityProvider, ID
                 return ActionResult.CONSUME;
             }
         }
-        return ActionResult.PASS;
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        super.onLandedUpon(world, state, pos, entity, fallDistance);
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         AtomicReference<Float> damage = new AtomicReference<>(1.0f);
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDFallMechanic.class).forEach(ddFallMechanic -> {
@@ -99,6 +91,7 @@ public class DDStairBlock extends StairsBlock implements BlockEntityProvider, ID
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        super.onSteppedOn(world, pos, state, entity);
         Triple<World, BlockPos, Direction> data = Triple.of(world, pos, Direction.UP);
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDStepMechanic.class).forEach(ddStepMechanic -> {
             ddStepMechanic.executeBlockAction(data);
@@ -109,13 +102,14 @@ public class DDStairBlock extends StairsBlock implements BlockEntityProvider, ID
     @Override
     @Deprecated
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         BlockMechanicHolder.KEY.get(Objects.requireNonNull(this.type.get(world, pos))).getMechanics(DDNeighourUpdateMechanic.class).forEach(ddNeighourUpdateMechanic -> {
             Triple data = Triple.of(world, pos, Direction.UP);
             Triple data2 = Triple.of(world, neighborPos, Direction.UP);
             ddNeighourUpdateMechanic.executeBlockAction(data);
             ddNeighourUpdateMechanic.executeNeighborAction(data2);
         });
-        return state;
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

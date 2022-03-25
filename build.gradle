@@ -83,6 +83,9 @@ dependencies {
 		exclude(group: "com.terraformersmc")
 	}
 
+	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+	include "io.wispforest:owo-lib:${project.owo_version}"
+
 	modImplementation "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 	include "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 

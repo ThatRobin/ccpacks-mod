@@ -1,5 +1,6 @@
 package io.github.thatrobin.ccpacks.client.model.item;
 
+import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.DDShieldItem;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.GeckoLib;
@@ -10,19 +11,19 @@ public class DDShieldItemModel extends AnimatedGeoModel<DDShieldItem> {
     @Override
     public Identifier getModelLocation(DDShieldItem object)
     {
-        return new Identifier(GeckoLib.ModID, "geo/jack.geo.json");
+        return new Identifier(CCPacksMain.MODID, "geo/shield.geo.json");
     }
 
     @Override
     public Identifier getTextureLocation(DDShieldItem object)
     {
-        return new Identifier(GeckoLib.ModID, "textures/item/jack.png");
+        return new Identifier(CCPacksMain.MODID, "textures/item/shield.png");
     }
 
     @Override
     public Identifier getAnimationFileLocation(DDShieldItem object)
     {
-        return new Identifier(GeckoLib.ModID, "animations/jackinthebox.animation.json");
+        return new Identifier(CCPacksMain.MODID, "animations/shield.animation.json");
     }
 
 }

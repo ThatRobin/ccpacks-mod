@@ -17,17 +17,18 @@ public class MechanicCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 literal("mechanic").requires(cs -> cs.hasPermissionLevel(2))
-                        .then(literal("grant").then(argument("pos", BlockPosArgumentType.blockPos()).then(argument("mechanic", MechanicArgument.mechanic()).executes((command) -> {
-                                try {
-                                    MechanicType mechanicType = MechanicArgument.mechanic().getMechanic(command, "mechanic");
-                                    BlockPos block = BlockPosArgumentType.getBlockPos(command, "pos");
-                                    BlockEntity blockEntity = command.getSource().getWorld().getBlockEntity(block);
-                                    BlockMechanicHolder.KEY.get(blockEntity).addMechanic(mechanicType);
-                                    return 1;
-                                } catch (Exception e) {
-                                    CCPacksMain.LOGGER.info(e.getMessage());
-                                }
-                            return 0;
+                        .then(literal("grant").then(argument("pos", BlockPosArgumentType.blockPos())
+                                .then(argument("mechanic", MechanicArgument.mechanic()).executes((command) -> {
+                                    try {
+                                        MechanicType mechanicType = MechanicArgument.mechanic().getMechanic(command, "mechanic");
+                                        BlockPos block = BlockPosArgumentType.getBlockPos(command, "pos");
+                                        BlockEntity blockEntity = command.getSource().getWorld().getBlockEntity(block);
+                                        BlockMechanicHolder.KEY.get(blockEntity).addMechanic(mechanicType);
+                                        return 1;
+                                    } catch (Exception e) {
+                                        CCPacksMain.LOGGER.info(e.getMessage());
+                                    }
+                                return 0;
                         })))));
     }
 

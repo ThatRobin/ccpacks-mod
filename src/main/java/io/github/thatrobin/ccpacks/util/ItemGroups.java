@@ -12,7 +12,8 @@ public enum ItemGroups {
     MATERIALS(ItemGroup.MATERIALS),
     REDSTONE(ItemGroup.REDSTONE),
     TOOLS(ItemGroup.TOOLS),
-    MISC(ItemGroup.MISC);
+    MISC(ItemGroup.MISC),
+    NONE(null);
 
     public ItemGroup group;
 

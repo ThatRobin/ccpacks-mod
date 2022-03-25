@@ -9,10 +9,12 @@ import io.github.thatrobin.ccpacks.component.ModComponents;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPackets;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
 
 import java.util.Collection;
 
@@ -40,10 +42,10 @@ public class ChoiceCommand {
                                         PacketByteBuf data = new PacketByteBuf(Unpooled.buffer());
                                         data.writeBoolean(false);
                                         data.writeIdentifier(l.getIdentifier());
-                                        ServerSidePacketRegistry.INSTANCE.sendToPlayer(target, CCPacksModPackets.OPEN_CHOICE_SCREEN, data);
+                                        ServerPlayNetworking.send(target, CCPacksModPackets.OPEN_CHOICE_SCREEN, data);
                                     });
-
-                                    return 1;
+                                    command.getSource().sendFeedback(new TranslatableText("commands.choice.gui.layer", targets.size(), new TranslatableText(l.getTranslationKey())), false);
+                                    return targets.size();
                                 } catch (Exception e) {
                                     CCPacksMain.LOGGER.info(e.getMessage());
                                 }

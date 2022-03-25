@@ -21,21 +21,21 @@ public class PortalFactories {
     public static void register() {
         register(new ContentFactory<>(identifier("vertical"), Types.PORTAL,
                 new SerializableData()
-                        .add("block", SerializableDataTypes.BLOCK, Blocks.ACACIA_LEAVES)
+                        .add("block", SerializableDataTypes.BLOCK)
                         .add("ignition_item", SerializableDataTypes.IDENTIFIER, new Identifier("flint_and_steel"))
                         .add("dimension", SerializableDataTypes.IDENTIFIER, new Identifier("the_end"))
-                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
+                        .add("colour", CCPackDataTypes.COLOUR, new ColourHolder(1,1,1,1)),
                 data ->
-                        (contentType, content) -> (Supplier<Portal>) () -> new Portal(data.get("block"), data.getId("ignition_item"), data.getId("dimension"), data.get("color"))));
+                        (contentType, content) -> (Supplier<Portal>) () -> new Portal(data.get("block"), data.getId("ignition_item"), data.getId("dimension"), data.get("colour"))));
 
         register(new ContentFactory<>(identifier("horizontal"), Types.PORTAL,
                 new SerializableData()
-                        .add("block", SerializableDataTypes.BLOCK, Blocks.ACACIA_LEAVES)
+                        .add("block", SerializableDataTypes.BLOCK)
                         .add("ignition_item", SerializableDataTypes.IDENTIFIER, new Identifier("flint_and_steel"))
                         .add("dimension", SerializableDataTypes.IDENTIFIER, new Identifier("the_end"))
-                        .add("color", CCPackDataTypes.COLOR, new ColourHolder(1,1,1,1)),
+                        .add("colour", CCPackDataTypes.COLOUR, new ColourHolder(1,1,1,1)),
                 data ->
-                        (contentType, content) -> (Supplier<Portal>) () -> new Portal(data.get("block"), data.getId("ignition_item"), data.getId("dimension"), data.get("color"))));
+                        (contentType, content) -> (Supplier<Portal>) () -> new Portal(data.get("block"), data.getId("ignition_item"), data.getId("dimension"), data.get("colour"))));
 
 
     }

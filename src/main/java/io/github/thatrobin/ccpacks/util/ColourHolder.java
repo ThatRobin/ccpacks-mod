@@ -7,6 +7,10 @@ public class ColourHolder {
     private final float blue;
     private final float alpha;
 
+    public ColourHolder(float red, float green, float blue) {
+        this(red, green, blue, 1);
+    }
+
 
     public ColourHolder(float red, float green, float blue, float alpha) {
         this.red = red;

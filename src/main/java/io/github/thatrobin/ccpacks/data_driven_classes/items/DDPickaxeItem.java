@@ -12,6 +12,7 @@ import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -26,9 +27,11 @@ public class DDPickaxeItem extends PickaxeItem implements PowerGrantingItem {
     private final List<String> lore;
     private final ColourHolder startColours;
     private final ColourHolder endColours;
+    private LiteralText name;
 
-    public DDPickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours, List<StackPowerExpansion> item_powers) {
+    public DDPickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Settings settings, List<String> lore, ColourHolder startColours, ColourHolder endColours, List<StackPowerExpansion> item_powers, LiteralText name) {
         super(material, attackDamage, attackSpeed, settings);
+        this.name = name;
         this.lore = lore;
         this.startColours = startColours;
         this.endColours = endColours;
@@ -44,6 +47,22 @@ public class DDPickaxeItem extends PickaxeItem implements PowerGrantingItem {
                 }
             }
         }
+    }
+
+    @Override
+    public Text getName() {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey());
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        if(name != null) {
+            return name;
+        }
+        return new TranslatableText(this.getTranslationKey(stack));
     }
 
     @Override

@@ -14,8 +14,8 @@ public class ItemConditions {
 
     public static void register() {
         register(new ConditionFactory<>(CCPacksMain.identifier("compare_durability"), new SerializableData()
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.INT),
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
+                .add("compare_to", SerializableDataTypes.INT, 0),
                 (data, stack) -> {
                     int durability = stack.getMaxDamage() - stack.getDamage();
                     return ((Comparison)data.get("comparison")).compare(durability, data.getInt("compare_to"));

@@ -1,17 +1,17 @@
 package io.github.thatrobin.ccpacks.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
 
 public enum RenderLayerTypes {
-    SOLID("solid", RenderLayer.getSolid()),
-    CUTOUT("cutout", RenderLayer.getCutout()),
-    TRANSLUCENT("shovels", RenderLayer.getTranslucent());
+    SOLID("solid"),
+    CUTOUT("cutout"),
+    TRANSLUCENT("translucent");
 
     public String name;
-    public RenderLayer renderLayer;
 
-    RenderLayerTypes(String name, RenderLayer renderLayer) {
+    RenderLayerTypes(String name) {
         this.name=name;
-        this.renderLayer=renderLayer;
     }
 }

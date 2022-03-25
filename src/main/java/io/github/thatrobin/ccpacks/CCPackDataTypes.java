@@ -1,7 +1,5 @@
 package io.github.thatrobin.ccpacks;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.Calio;
@@ -18,14 +16,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.Item;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
@@ -36,9 +27,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class CCPackDataTypes {
-
-    public static final SerializableDataType<List<Item>> ITEMS =
-            SerializableDataType.list(SerializableDataTypes.ITEM);
 
     public static final SerializableDataType<MechanicTypeReference> MECHANIC_TYPE = SerializableDataType.wrap(
             MechanicTypeReference.class, SerializableDataTypes.IDENTIFIER,
@@ -52,7 +40,7 @@ public class CCPackDataTypes {
                     .add("power", SerializableDataTypes.IDENTIFIER)
                     .add("hidden", SerializableDataTypes.BOOLEAN, false)
                     .add("negative", SerializableDataTypes.BOOLEAN, false),
-            (dataInst) -> new StackPowerExpansion(dataInst.getId("power"), dataInst.getBoolean("hidden"), dataInst.getBoolean("negative"), EquipmentSlot.MAINHAND),
+            (dataInst) -> new StackPowerExpansion(dataInst.getId("power"), dataInst.getBoolean("hidden"), dataInst.getBoolean("negative"), null),
             (data, inst) -> {
                 SerializableData.Instance dataInst = data.new Instance();
                 dataInst.set("power", inst.powerId);
@@ -86,8 +74,6 @@ public class CCPackDataTypes {
     public static final SerializableDataType<List<String>> STRINGS =
             SerializableDataType.list(SerializableDataTypes.STRING);
 
-    public static final SerializableDataType<ToolTypes> TOOL_TYPES = SerializableDataType.enumValue(ToolTypes.class);
-
     public static final SerializableDataType<ItemGroups> ITEM_GROUP = SerializableDataType.enumValue(ItemGroups.class);
 
     public static final SerializableDataType<RenderLayerTypes> RENDER_LAYER = SerializableDataType.enumValue(RenderLayerTypes.class);
@@ -108,26 +94,6 @@ public class CCPackDataTypes {
                 return new BlockItemHolder(settings.maxCount(data.getInt("max_count")), data.get("name"), data.get("lore"), data.get("item_modifiers"), data.getInt("fuel_tick"));
             },
             (data, inst) -> data.new Instance());
-
-    public static final SerializableDataType<VoxelInfo> BLOCK_STATE = SerializableDataType.compound(VoxelInfo.class,
-            new SerializableData()
-                    .add("name", SerializableDataTypes.STRING)
-                    .add("base_value", SerializableDataTypes.BOOLEAN, false),
-            (dataInst) -> {
-                VoxelInfo info = new VoxelInfo();
-                info.property = BooleanProperty.of(dataInst.getString("name"));
-                info.base = dataInst.getBoolean("base_value");
-                return info;
-            },
-            (data, inst) -> {
-                SerializableData.Instance dataInst = data.new Instance();
-                dataInst.set("name", inst.property.getName());
-                dataInst.set("base_value", inst.base);
-                return dataInst;
-            });
-
-    public static final SerializableDataType<List<VoxelInfo>> BLOCK_STATES =
-            SerializableDataType.list(CCPackDataTypes.BLOCK_STATE);
 
     public static final SerializableDataType<StatBarHudRender> STAT_BAR_HUD_RENDER = SerializableDataType.compound(StatBarHudRender.class, new
                     SerializableData()
@@ -152,7 +118,7 @@ public class CCPackDataTypes {
                 return dataInst;
             });
 
-    public static final SerializableDataType<ColourHolder> COLOR = SerializableDataType.compound(ColourHolder.class, new
+    public static final SerializableDataType<ColourHolder> COLOUR = SerializableDataType.compound(ColourHolder.class, new
                     SerializableData()
                     .add("red", SerializableDataTypes.FLOAT, 1f)
                     .add("green", SerializableDataTypes.FLOAT, 1f)
@@ -171,51 +137,6 @@ public class CCPackDataTypes {
                 dataInst.set("alpha", inst.getAlpha());
                 return dataInst;
             });
-
-    public static final SerializableDataType<DefaultAttributeContainer.Builder> ENTITY_ATTRIBUTES = SerializableDataType.compound(DefaultAttributeContainer.Builder.class,
-            new SerializableData()
-                    .add("generic.max_health", SerializableDataTypes.DOUBLE, 20.0D)
-                    .add("generic.follow_range", SerializableDataTypes.DOUBLE, 32.0D)
-                    .add("generic.knockback_resistance", SerializableDataTypes.DOUBLE, 0.0D)
-                    .add("generic.movement_speed", SerializableDataTypes.DOUBLE, 0.7D)
-                    .add("generic.attack_damage", SerializableDataTypes.DOUBLE, 0.4D)
-                    .add("generic.armor", SerializableDataTypes.DOUBLE, 0.0D)
-                    .add("generic.armor_toughness", SerializableDataTypes.DOUBLE, 0.0D)
-                    .add("generic.attack_knockback", SerializableDataTypes.DOUBLE, 0.0D),
-            (dataInst) -> {
-                DefaultAttributeContainer.Builder builder = MobEntity.createLivingAttributes();
-                dataInst.ifPresent("generic.max_health", (doubleVar) -> builder.add(EntityAttributes.GENERIC_MAX_HEALTH,(double)doubleVar));
-                dataInst.ifPresent("generic.follow_range", (doubleVar) -> builder.add(EntityAttributes.GENERIC_FOLLOW_RANGE,(double)doubleVar));
-                dataInst.ifPresent("generic.knockback_resistance", (doubleVar) -> builder.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,(double)doubleVar));
-                dataInst.ifPresent("generic.movement_speed", (doubleVar) -> builder.add(EntityAttributes.GENERIC_MOVEMENT_SPEED,(double)doubleVar));
-                dataInst.ifPresent("generic.attack_damage", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE,(double)doubleVar));
-                dataInst.ifPresent("generic.armor", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ARMOR,(double)doubleVar));
-                dataInst.ifPresent("generic.armor_toughness", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS,(double)doubleVar));
-                dataInst.ifPresent("generic.attack_knockback", (doubleVar) -> builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK,(double)doubleVar));
-                return builder;
-            },
-            (data, inst) -> {
-                SerializableData.Instance dataInst = data.new Instance();
-                if(inst.build().has(EntityAttributes.GENERIC_MAX_HEALTH))
-                    dataInst.set("generic.max_health", inst.build().getBaseValue(EntityAttributes.GENERIC_MAX_HEALTH));
-                if(inst.build().has(EntityAttributes.GENERIC_FOLLOW_RANGE))
-                    dataInst.set("generic.follow_range", inst.build().getBaseValue(EntityAttributes.GENERIC_FOLLOW_RANGE));
-                if(inst.build().has(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE))
-                    dataInst.set("generic.knockback_resistance", inst.build().getBaseValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
-                if(inst.build().has(EntityAttributes.GENERIC_MOVEMENT_SPEED))
-                    dataInst.set("generic.movement_speed", inst.build().getBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-                if(inst.build().has(EntityAttributes.GENERIC_ATTACK_DAMAGE))
-                    dataInst.set("generic.attack_damage", inst.build().getBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
-                if(inst.build().has(EntityAttributes.GENERIC_ARMOR))
-                    dataInst.set("generic.armor", inst.build().getBaseValue(EntityAttributes.GENERIC_ARMOR));
-                if(inst.build().has(EntityAttributes.GENERIC_ARMOR_TOUGHNESS))
-                    dataInst.set("generic.armor_toughness", inst.build().getBaseValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
-                if(inst.build().has(EntityAttributes.GENERIC_ATTACK_KNOCKBACK))
-                    dataInst.set("generic.attack_knockback", inst.build().getBaseValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK));
-                return dataInst;
-            });
-
-    public static final SerializableDataType<SpawnGroup> SPAWN_GROUP = SerializableDataType.enumValue(SpawnGroup.class);
 
     public static final SerializableDataType<BlockSoundGroup> BLOCK_SOUND_GROUP = SerializableDataType.compound(BlockSoundGroup.class, new
                     SerializableData()
@@ -281,7 +202,7 @@ public class CCPackDataTypes {
                 boolean tagPresent = dataInstance.isPresent("tag");
                 boolean entityPresent = dataInstance.isPresent("entity");
                 if(tagPresent == entityPresent) {
-                    throw new JsonParseException("An ingredient entry is either a tag or an entity, " + (tagPresent ? "not both" : "one has to be provided."));
+                    throw new JsonParseException("An entity entry is either a tag or an entity, " + (tagPresent ? "not both" : "one has to be provided."));
                 }
                 if(tagPresent) {
                     Tag<EntityType<?>> tag = dataInstance.get("tag");

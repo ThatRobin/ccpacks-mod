@@ -1,9 +1,6 @@
 package io.github.thatrobin.ccpacks.factories.content_factories;
 
-import io.github.thatrobin.ccpacks.util.GameruleHolder;
-import io.github.thatrobin.ccpacks.util.ItemGroupHolder;
-import io.github.thatrobin.ccpacks.util.Portal;
-import io.github.thatrobin.ccpacks.util.TypeAttributeHolder;
+import io.github.thatrobin.ccpacks.util.*;
 import io.github.apace100.apoli.power.PowerType;
 import net.minecraft.block.Block;
 import net.minecraft.client.option.KeyBinding;
@@ -14,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.world.gen.feature.PlacedFeature;
 
 import java.util.List;
@@ -44,8 +42,8 @@ public class ContentType {
         return (Item) factory.apply(contentType, null).get();
     }
 
-    public Block createBlock(ContentType contentType) {
-        return (Block) factory.apply(contentType, null).get();
+    public Pair<Block, RenderLayerTypes> createBlock(ContentType contentType) {
+        return (Pair<Block, RenderLayerTypes>) factory.apply(contentType, null).get();
     }
 
     public Enchantment createEnchant(ContentType contentType) {
@@ -68,16 +66,12 @@ public class ContentType {
         return (EntityType<?>) factory.apply(contentType, null).get();
     }
 
-    public DefaultParticleType createParticle(ContentType contentType) {
-        return (DefaultParticleType) factory.apply(contentType, null).get();
+    public ParticleHolder createParticle(ContentType contentType) {
+        return (ParticleHolder) factory.apply(contentType, null).get();
     }
 
     public TypeAttributeHolder createEntity(ContentType contentType) {
         return (TypeAttributeHolder) factory.apply(contentType, null).get();
-    }
-
-    public GameruleHolder createGamerule(ContentType contentType) {
-        return (GameruleHolder) factory.apply(contentType, null).get();
     }
 
     public PlacedFeature createFeature(ContentType contentType) {

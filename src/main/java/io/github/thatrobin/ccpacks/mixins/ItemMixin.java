@@ -42,10 +42,6 @@ public class ItemMixin implements BundleItem {
     public int hold_amount;
     public boolean isBundle;
 
-    private float getAmountFilled(ItemStack stack) {
-        return (float)getBundleOccupancy(stack) / 64.0F;
-    }
-
     @Inject(method = "onStackClicked", at = @At("HEAD"), cancellable = true)
     public void onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if(isBundle()) {
@@ -199,26 +195,6 @@ public class ItemMixin implements BundleItem {
         }
     }
 
-    private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-        NbtCompound nbtCompound = stack.getOrCreateNbt();
-        if (!nbtCompound.contains("Items")) {
-            return false;
-        } else {
-            if (player instanceof ServerPlayerEntity) {
-                NbtList nbtList = nbtCompound.getList("Items", 10);
-
-                for(int i = 0; i < nbtList.size(); ++i) {
-                    NbtCompound nbtCompound2 = nbtList.getCompound(i);
-                    ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
-                    player.dropItem(itemStack, true);
-                }
-            }
-
-            stack.removeSubNbt("Items");
-            return true;
-        }
-    }
-
     private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound == null) {
@@ -233,12 +209,18 @@ public class ItemMixin implements BundleItem {
 
     @Inject(method = "getTooltipData", at = @At("HEAD"), cancellable = true)
     public void getTooltipData(ItemStack stack, CallbackInfoReturnable<Optional<TooltipData>> cir) {
-        if(isBundle()) {
+        if (isBundle()) {
             DefaultedList<ItemStack> defaultedList = DefaultedList.of();
             Stream var10000 = getBundledStacks(stack);
             Objects.requireNonNull(defaultedList);
             var10000.forEach((stack2) -> defaultedList.add((ItemStack) stack2));
-            cir.setReturnValue(Optional.of(new BundleTooltipData(defaultedList, getBundleOccupancy(stack))));
+            cir.setReturnValue(Optional.of(new BundleTooltipData(defaultedList, getBundleMax())));
+        } else if ((Item) (Object) this instanceof net.minecraft.item.BundleItem) {
+            DefaultedList<ItemStack> defaultedList = DefaultedList.of();
+            Stream var10000 = getBundledStacks(stack);
+            Objects.requireNonNull(defaultedList);
+            var10000.forEach((stack2) -> defaultedList.add((ItemStack) stack2));
+            cir.setReturnValue(Optional.of(new BundleTooltipData(defaultedList, 64)));
         }
     }
 

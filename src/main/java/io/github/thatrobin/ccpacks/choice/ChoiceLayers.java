@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.apace100.calio.data.MultiJsonDataLoader;
+import io.github.thatrobin.ccpacks.networking.CCPacksDataLoadedCallback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -63,12 +64,13 @@ public class ChoiceLayers extends MultiJsonDataLoader implements IdentifiableRes
                     if(layer == null) {
                         layer = ChoiceLayer.createFromData(layerId, jo);
                     } else {
-                        layer.merge(ChoiceLayer.DATA.read(jo));
+                        layer.merge(jo);
                     }
                 }
             }
             add(layer);
         }
+        CCPacksDataLoadedCallback.EVENT.invoker().onDataLoaded(false);
         CCPacksMain.LOGGER.info("Finished loading choice layers from data files. Read " + layers.size() + " layers.");
     }
 

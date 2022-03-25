@@ -1,20 +1,14 @@
 package io.github.thatrobin.ccpacks.mixins;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.apace100.apoli.power.Power;
-import io.github.thatrobin.ccpacks.power.GuiElementPower;
 import io.github.thatrobin.ccpacks.power.StatBar;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -123,34 +117,4 @@ public abstract class InGameHudMixin extends DrawableHelper {
         }
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    public void render(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
-        PowerHolderComponent.getPowers(this.client.player, GuiElementPower.class).forEach((guiElementPower -> {
-            if (this.client.options.getPerspective().isFirstPerson()) {
-                if(guiElementPower.isActive()) {
-                    this.renderOverlay(guiElementPower.texture, guiElementPower.opacity, guiElementPower.minx, guiElementPower.miny, guiElementPower.maxx, guiElementPower.maxy);
-                }
-            }
-        }));
-    }
-
-    private void renderOverlay(Identifier texture, float opacity, float minx, float miny, float maxx, float maxy) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
-        RenderSystem.setShaderTexture(0, texture);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(minx, maxy, -90.0D).texture(0.0F, 1.0F).next();
-        bufferBuilder.vertex(maxx, maxy, -90.0D).texture(1.0F, 1.0F).next();
-        bufferBuilder.vertex(maxx, miny, -90.0D).texture(1.0F, 0.0F).next();
-        bufferBuilder.vertex(minx, miny, -90.0D).texture(0.0F, 0.0F).next();
-        tessellator.draw();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
-    }
 }

@@ -1,6 +1,7 @@
 package io.github.thatrobin.ccpacks.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -16,6 +17,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.command.AttributeCommand;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.registry.Registry;
@@ -35,7 +38,8 @@ public class SetCommand {
                         .then(literal("attribute")
                                 .then(argument("target", EntityArgumentType.player())
                                         .then((RequiredArgumentBuilder) argument("attribute", IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER)
-                                                .then(argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
+                                                .then(((LiteralArgumentBuilder)CommandManager.literal("base")
+                                                    .then(argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
                                                         .then(argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
                                                                 .executes((command) -> {
                                                                     try {
@@ -49,7 +53,22 @@ public class SetCommand {
                                                                         command.getSource().sendFeedback(new LiteralText("Could not set attribute to scoreboard value"), true);
                                                                         return 0;
                                                                     }
-                                                                })))
+                                                                })
+                                                                .then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes((command) -> {
+                                                                    try {
+                                                                        EntityAttribute attribute = IdentifierArgumentType.getAttributeArgument(command, "attribute");
+                                                                        LivingEntity entity = EntityArgumentType.getPlayer(command, "target");
+                                                                        double multiplier = DoubleArgumentType.getDouble(command, "scale");
+                                                                        EntityAttributeInstance entityAttributeInstance = entity.getAttributes().getCustomInstance(attribute);
+                                                                        setAttributeM(entity, command.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(command, "targets"), ScoreboardObjectiveArgumentType.getObjective(command, "objective"), entityAttributeInstance, multiplier);
+                                                                        command.getSource().sendFeedback(new LiteralText("Set attribute to scoreboard value successfully"), true);
+                                                                        return 1;
+                                                                    } catch (Exception e) {
+                                                                        command.getSource().sendFeedback(new LiteralText("Could not set attribute to scoreboard value"), true);
+                                                                        return 0;
+                                                                    }
+                                                                }))))))
+
                                         )))
                         .then(literal(("food"))
                             .then(argument("target", EntityArgumentType.player())
@@ -66,9 +85,21 @@ public class SetCommand {
                                                         command.getSource().sendFeedback(new LiteralText("Could not set attribute to scoreboard value"), true);
                                                         return 0;
                                                     }
-                                                })))
-                        ))
-                        .then(literal(("health"))
+                                                }).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes((command) -> {
+                                                        try {
+                                                            EntityAttribute attribute = IdentifierArgumentType.getAttributeArgument(command, "attribute");
+                                                            LivingEntity entity = EntityArgumentType.getPlayer(command, "target");
+                                                            double multiplier = DoubleArgumentType.getDouble(command, "scale");
+                                                            EntityAttributeInstance entityAttributeInstance = entity.getAttributes().getCustomInstance(attribute);
+                                                            setAttributeM(entity, command.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(command, "targets"), ScoreboardObjectiveArgumentType.getObjective(command, "objective"), entityAttributeInstance, multiplier);
+                                                            command.getSource().sendFeedback(new LiteralText("Set attribute to scoreboard value successfully"), true);
+                                                            return 1;
+                                                        } catch (Exception e) {
+                                                            command.getSource().sendFeedback(new LiteralText("Could not set attribute to scoreboard value"), true);
+                                                            return 0;
+                                                        }
+                                                    }))))
+                        )).then(literal(("health"))
                                 .then(argument("target", EntityArgumentType.player())
                                         .then(argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
                                                 .then(argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
@@ -115,6 +146,18 @@ public class SetCommand {
             eai.setBaseValue(scoreboardPlayerScore.getScore());
             if (eai.getAttribute().getTranslationKey().equals("attribute.name.generic.max_health")) {
                 entity.setHealth(scoreboardPlayerScore.getScore());
+            }
+
+        }
+    }
+
+    public static void setAttributeM(LivingEntity entity, ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, EntityAttributeInstance eai, double multiplier) {
+        Scoreboard scoreboard = source.getServer().getScoreboard();
+        for (String string : targets) {
+            ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
+            eai.setBaseValue(scoreboardPlayerScore.getScore() * multiplier);
+            if (eai.getAttribute().getTranslationKey().equals("attribute.name.generic.max_health")) {
+                entity.setHealth((float) (scoreboardPlayerScore.getScore() * multiplier));
             }
 
         }

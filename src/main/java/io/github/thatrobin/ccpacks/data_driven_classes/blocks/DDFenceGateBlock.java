@@ -7,7 +7,6 @@ import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDStepMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDUseMechanic;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
 import io.github.thatrobin.ccpacks.util.IDDBlock;
-import io.github.thatrobin.ccpacks.util.VoxelInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -38,23 +37,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DDFenceGateBlock extends FenceGateBlock implements BlockEntityProvider, IDDBlock {
 
     public BlockEntityType<DDBlockEntity> type;
-    public List<VoxelInfo> voxelInfoList;
     public List<MechanicTypeReference> mechanicTypeReferences;
     private BlockMechanicHolder component;
 
-    public DDFenceGateBlock(Settings settings, List<MechanicTypeReference> mechanicTypeReferences, List<VoxelInfo> voxelInfoList) {
+    public DDFenceGateBlock(Settings settings, List<MechanicTypeReference> mechanicTypeReferences) {
         super(settings);
-        this.voxelInfoList = voxelInfoList;
         this.mechanicTypeReferences = mechanicTypeReferences;
         StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
         this.appendProperties(builder);
-        BlockState blockState = this.stateManager.getDefaultState();
-        if(voxelInfoList != null) {
-            for (VoxelInfo voxelInfo : voxelInfoList) {
-                blockState.with(voxelInfo.property, voxelInfo.base);
-            }
-        }
-        this.setDefaultState(blockState);
     }
 
     @Nullable
@@ -82,7 +72,7 @@ public class DDFenceGateBlock extends FenceGateBlock implements BlockEntityProvi
                 return ActionResult.CONSUME;
             }
         }
-        return ActionResult.PASS;
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     @Override
@@ -115,7 +105,7 @@ public class DDFenceGateBlock extends FenceGateBlock implements BlockEntityProvi
             ddNeighourUpdateMechanic.executeBlockAction(data);
             ddNeighourUpdateMechanic.executeNeighborAction(data2);
         });
-        return state;
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

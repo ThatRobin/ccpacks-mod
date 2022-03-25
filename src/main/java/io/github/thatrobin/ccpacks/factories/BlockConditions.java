@@ -47,8 +47,8 @@ public class BlockConditions {
 
         register(new ConditionFactory<>(CCPacksMain.identifier("resource"), new SerializableData()
                 .add("resource", CCPackDataTypes.MECHANIC_TYPE)
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.INT),
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
+                .add("compare_to", SerializableDataTypes.INT, 0),
                 (data, blockPosition) -> {
                     BlockEntity blockEntity = blockPosition.getBlockEntity();
                     if (blockEntity instanceof DDBlockEntity ddBlockEntity) {

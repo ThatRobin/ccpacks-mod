@@ -10,23 +10,19 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
-//public class DDProjectileEntity extends ThrownItemEntity implements VirtualEntity {
 public class DDProjectileEntity extends ThrownItemEntity {
 
-    public static int damage;
-    public static Item base_item;
-    public static DamageSource damage_source;
+    public int damage;
+    public Item base_item;
+    public DamageSource damage_source;
+    public float gravity;
 
-    public DDProjectileEntity(EntityType<? extends DDProjectileEntity> entityType, World world) {
+    public DDProjectileEntity(EntityType<? extends DDProjectileEntity> entityType, World world, int damage, Item base_item, DamageSource damage_source, float gravity) {
         super(entityType, world);
-    }
-
-    public DDProjectileEntity(World world, LivingEntity owner) { //null will be changed into the entity type once it has been registered. Same for the constructor below
-        super(null, owner, world);
-    }
-
-    public DDProjectileEntity(World world, double x, double y, double z) {
-        super(null, x, y, z, world);
+        this.damage = damage;
+        this.damage_source = damage_source;
+        this.base_item = base_item;
+        this.gravity = gravity;
     }
 
     @Override
@@ -47,6 +43,11 @@ public class DDProjectileEntity extends ThrownItemEntity {
         if(!this.world.isClient) {
             this.discard();
         }
+    }
+
+    @Override
+    protected float getGravity() {
+        return gravity;
     }
 
 }

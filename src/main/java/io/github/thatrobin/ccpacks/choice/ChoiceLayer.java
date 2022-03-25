@@ -67,12 +67,17 @@ public class ChoiceLayer implements Comparable<ChoiceLayer> {
     }
 
     public boolean contains(Choice choice) {
-        return choices.contains(choice.getIdentifier());
+        return choices.stream().anyMatch(co -> co.getChoices().stream().anyMatch(o -> o.equals(choice.getIdentifier())));
     }
 
-    public void merge(SerializableData.Instance data) {
-        data.<Boolean>ifPresent("enabled", aBoolean -> this.enabled = aBoolean);
-        data.<List<ConditionedChoice>>ifPresent("choices", choices -> this.choices = choices);
+    public void merge(JsonObject json) {
+        if(json.has("enabled")) {
+            this.enabled = json.get("enabled").getAsBoolean();
+        }
+        if(json.has("choices")) {
+            JsonArray originArray = json.getAsJsonArray("choices");
+            originArray.forEach(je -> this.choices.add(ConditionedChoice.read(je)));
+        }
     }
 
     @Override
@@ -91,22 +96,34 @@ public class ChoiceLayer implements Comparable<ChoiceLayer> {
         }
     }
 
+    public void write(PacketByteBuf buffer) {
+        buffer.writeString(identifier.toString());
+        buffer.writeBoolean(enabled);
+        buffer.writeInt(choices.size());
+        choices.forEach(co -> co.write(buffer));
+        buffer.writeString(getOrCreateTranslationKey());
+    }
+
     @Environment(EnvType.CLIENT)
     public static ChoiceLayer read(PacketByteBuf buffer) {
         ChoiceLayer layer = new ChoiceLayer();
         layer.identifier = Identifier.tryParse(buffer.readString());
         layer.enabled = buffer.readBoolean();
+        int conditionedOriginCount = buffer.readInt();
+        layer.choices = new ArrayList<>(conditionedOriginCount);
+        for(int i = 0; i < conditionedOriginCount; i++) {
+            layer.choices.add(ConditionedChoice.read(buffer));
+        }
         layer.nameTranslationKey = buffer.readString();
         return layer;
     }
 
     public static ChoiceLayer createFromData(Identifier id, JsonObject json) {
-        ChoiceLayer choiceLayer = new ChoiceLayer();
         JsonArray choiceArray = json.getAsJsonArray("choices");
         List<ConditionedChoice> list = new ArrayList<>(choiceArray.size());
         choiceArray.forEach(je -> list.add(ConditionedChoice.read(je)));
         boolean enabled = JsonHelper.getBoolean(json, "enabled", true);
-
+        ChoiceLayer choiceLayer = new ChoiceLayer();
         choiceLayer.identifier = id;
         choiceLayer.choices = list;
         choiceLayer.enabled = enabled;
@@ -134,6 +151,7 @@ public class ChoiceLayer implements Comparable<ChoiceLayer> {
         public List<Identifier> getChoices() {
             return choices;
         }
+
         private static final SerializableData conditionedOriginObjectData = new SerializableData()
                 .add("condition", ApoliDataTypes.ENTITY_CONDITION)
                 .add("choices", SerializableDataTypes.IDENTIFIERS);
@@ -167,12 +185,12 @@ public class ChoiceLayer implements Comparable<ChoiceLayer> {
                 if(elemPrimitive.isString()) {
                     return new ConditionedChoice(null, Lists.newArrayList(Identifier.tryParse(elemPrimitive.getAsString())));
                 }
-                throw new JsonParseException("Expected origin in layer to be either a string or an object.");
+                throw new JsonParseException("Expected choice in layer to be either a string or an object.");
             } else if(element.isJsonObject()) {
                 SerializableData.Instance data = conditionedOriginObjectData.read(element.getAsJsonObject());
-                return new ConditionedChoice((ConditionFactory<Entity>.Instance)data.get("condition"), (List<Identifier>)data.get("choices"));
+                return new ConditionedChoice(data.get("condition"), data.get("choices"));
             }
-            throw new JsonParseException("Expected origin in layer to be either a string or an object.");
+            throw new JsonParseException("Expected choice in layer to be either a string or an object.");
         }
     }
 }

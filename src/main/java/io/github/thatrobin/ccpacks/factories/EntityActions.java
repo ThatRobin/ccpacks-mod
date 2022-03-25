@@ -12,6 +12,10 @@ import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.choice.Choice;
+import io.github.thatrobin.ccpacks.choice.ChoiceLayer;
+import io.github.thatrobin.ccpacks.choice.ChoiceLayers;
+import io.github.thatrobin.ccpacks.component.ModComponents;
 import io.github.thatrobin.ccpacks.mixins.KeyBindingAccessor;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPackets;
 import io.netty.buffer.Unpooled;
@@ -35,6 +39,7 @@ public class EntityActions {
                             PacketByteBuf data2 = new PacketByteBuf(Unpooled.buffer());
                             data2.writeBoolean(false);
                             data2.writeIdentifier(data.getId("choice_layer"));
+                            ModComponents.CHOICE.get(player).setChoice(ChoiceLayers.getLayer(data.getId("choice_layer")), Choice.EMPTY);
                             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, CCPacksModPackets.OPEN_CHOICE_SCREEN, data2);
                         }
                     }

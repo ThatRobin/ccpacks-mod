@@ -1,15 +1,19 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.items;
 
 import com.google.common.collect.Lists;
+import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
+import io.github.apace100.apoli.power.PowerType;
 import io.github.thatrobin.ccpacks.util.ColourHolder;
 import io.github.thatrobin.ccpacks.util.PowerGrantingTrinket;
 import io.github.thatrobin.ccpacks.util.StackPowerExpansion;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.StackPowerUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -41,7 +45,7 @@ public class DDTrinketItem extends TrinketItem implements PowerGrantingTrinket {
     }
 
     @Override
-    public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         if (lore != null) {
             if (lore.size() > 0) {
                 for (String s : lore) {

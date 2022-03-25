@@ -14,6 +14,8 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -21,13 +23,14 @@ import net.minecraft.util.registry.Registry;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Choice {
 
     public static final SerializableData DATA = new SerializableData()
             .add("powers", SerializableDataTypes.IDENTIFIERS, Lists.newArrayList())
             .add("name", SerializableDataTypes.STRING, "")
-            .add("icon", SerializableDataTypes.STRING, "")
+            .add("icon", SerializableDataTypes.ITEM_STACK, new ItemStack(Items.AIR))
             .add("action_on_chosen", ApoliDataTypes.ENTITY_ACTION, null)
             .add("description", SerializableDataTypes.STRING, "");
 
@@ -81,8 +84,8 @@ public class Choice {
         return this;
     }
 
-    public void setIcon(String icon) {
-        this.itemIcon = Registry.ITEM.get(Identifier.tryParse(icon)).getDefaultStack();
+    public void setIcon(ItemStack icon) {
+        this.itemIcon = icon;
     }
 
     public void setAction(ActionFactory<Entity>.Instance action) {
@@ -147,6 +150,17 @@ public class Choice {
         return new TranslatableText(getOrCreateDescriptionTranslationKey());
     }
 
+    public void write(PacketByteBuf buffer) {
+        SerializableData.Instance data = DATA.new Instance();
+        data.set("icon", itemIcon);
+        data.set("action_on_chosen", action);
+        data.set("powers", powerTypes.stream().map(PowerType::getIdentifier).collect(Collectors.toList()));
+        data.set("name", getOrCreateNameTranslationKey());
+        data.set("description", getOrCreateDescriptionTranslationKey());
+        CCPacksMain.LOGGER.info(data);
+        DATA.write(buffer, data);
+    }
+
     @SuppressWarnings("unchecked")
     public static Choice createFromData(Identifier id, SerializableData.Instance data) {
         Choice choice = new Choice(id);
@@ -159,7 +173,7 @@ public class Choice {
                 CCPacksMain.LOGGER.error("Choice \"" + id + "\" contained unregistered power: \"" + powerId + "\"");
             }
         });
-        choice.setIcon(data.getString("icon"));
+        choice.setIcon(data.get("icon"));
         choice.setAction((ActionFactory<Entity>.Instance)data.get("action_on_chosen"));
         choice.setName(data.getString("name"));
         choice.setDescription(data.getString("description"));

@@ -24,8 +24,14 @@ public class ItemGroupFactories {
     }
 
     public static void register() {
-        register(new ContentFactory<>(identifier("generic"),
-                Types.ITEM_GROUP,
+        register(new ContentFactory<>(identifier("generic"), Types.ITEM_GROUP,
+                new SerializableData(),
+                data ->
+                        (contentType, content) -> (Supplier<ItemGroupHolder>) () -> {
+                            return null;
+                        }));
+
+        register(new ContentFactory<>(identifier("tabbed"), Types.ITEM_GROUP,
                 new SerializableData(),
                 data ->
                         (contentType, content) -> (Supplier<ItemGroupHolder>) () -> {

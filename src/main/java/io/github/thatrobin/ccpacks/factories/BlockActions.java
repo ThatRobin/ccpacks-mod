@@ -12,7 +12,9 @@ import io.github.thatrobin.ccpacks.component.BlockMechanicHolder;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDFindBlockMechanic;
 import io.github.thatrobin.ccpacks.data_driven_classes.mechanics.DDResourceMechanic;
+import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicRegistry;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicType;
+import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicTypeReference;
 import io.github.thatrobin.ccpacks.util.Mechanic;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -53,13 +55,18 @@ public class BlockActions {
                     }
                 }));
 
-            register(new ActionFactory<>(CCPacksMain.identifier("trigger_search"), new SerializableData(),
+            register(new ActionFactory<>(CCPacksMain.identifier("trigger_mechanic"), new SerializableData()
+                    .add("mechanic", CCPackDataTypes.MECHANIC_TYPE, null),
                     (data, block) -> {
                         World world = block.getLeft();
                         BlockPos blockPos = block.getMiddle();
+                        MechanicTypeReference mechanicTypeReference = data.get("mechanic");
                         BlockEntity blockEntity = world.getBlockEntity(blockPos);
                         if(blockEntity instanceof DDBlockEntity ddBlockEntity) {
-                            BlockMechanicHolder.KEY.get(ddBlockEntity).getMechanics(DDFindBlockMechanic.class).forEach(ddFindBlockMechanic -> ddFindBlockMechanic.executeAction(block));
+                            Mechanic mechanic = BlockMechanicHolder.KEY.get(ddBlockEntity).getMechanic(mechanicTypeReference.getReferencedPowerType());
+                            if(mechanic instanceof DDFindBlockMechanic findBlockMechanic) {
+                                findBlockMechanic.executeAction(block);
+                            }
                         }
                     }));
     }

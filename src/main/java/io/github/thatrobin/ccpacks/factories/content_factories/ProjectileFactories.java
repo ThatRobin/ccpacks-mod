@@ -26,16 +26,12 @@ public class ProjectileFactories {
                         .add("damage", SerializableDataTypes.INT, 0)
                         .add("height", SerializableDataTypes.FLOAT, 0.25f)
                         .add("width", SerializableDataTypes.FLOAT, 0.25f)
+                        .add("gravity", SerializableDataTypes.FLOAT, 0.03f)
                         .add("base_item", SerializableDataTypes.ITEM)
                         .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE),
                 data ->
                         (contentType, content) -> {
-
-                            DDProjectileEntity.damage = data.getInt("damage");
-                            DDProjectileEntity.base_item = data.get("base_item");
-                            DDProjectileEntity.damage_source = data.get("damage_source");
-
-                            return (Supplier<EntityType<?>>) () -> FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, DDProjectileEntity::new).dimensions(EntityDimensions.fixed(data.getFloat("width"), data.getFloat("height"))).trackable(64, 10).build();
+                            return (Supplier<EntityType<?>>) () -> FabricEntityTypeBuilder.<DDProjectileEntity>create(SpawnGroup.MISC, (world, entity_type) -> new DDProjectileEntity(world, entity_type, data.getInt("damage"), data.get("base_item"), data.get("damage_source"), data.getFloat("gravity"))).dimensions(EntityDimensions.fixed(data.getFloat("width"), data.getFloat("height"))).trackable(64, 10).build();
                         }));
 
     }

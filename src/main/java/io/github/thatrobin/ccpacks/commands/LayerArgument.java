@@ -18,10 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class LayerArgument implements ArgumentType<Identifier> {
 
-    public static final DynamicCommandExceptionType LAYER_NOT_FOUND = new DynamicCommandExceptionType((object) -> new TranslatableText("commands.choice.layer_not_found", new Object[]{object}));
-
-    public LayerArgument() {
-    }
+    public static final DynamicCommandExceptionType LAYER_NOT_FOUND = new DynamicCommandExceptionType((object) -> new TranslatableText("commands.choice.layer_not_found", object));
 
     public static LayerArgument layer() {
         return new LayerArgument();

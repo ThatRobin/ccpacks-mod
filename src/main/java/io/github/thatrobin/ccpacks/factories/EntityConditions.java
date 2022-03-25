@@ -2,7 +2,11 @@ package io.github.thatrobin.ccpacks.factories;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.github.apace100.apoli.power.PowerTypeReference;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.util.AccessFactory;
 import io.github.thatrobin.ccpacks.power.StatBar;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
@@ -17,8 +21,11 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.compress.utils.Lists;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EntityConditions {
@@ -26,8 +33,8 @@ public class EntityConditions {
     public static void register() {
         register(new ConditionFactory<>(CCPacksMain.identifier("check_stat"), new SerializableData()
                 .add("stat_bar", ApoliDataTypes.POWER_TYPE)
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.INT),
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
+                .add("compare_to", SerializableDataTypes.INT, 0),
                 (data, entity) -> {
                     int resourceValue = 0;
                     PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
@@ -58,6 +65,27 @@ public class EntityConditions {
                 return false;
             }
         }));
+
+        register(new ConditionFactory<>(CCPacksMain.identifier("active_power_type"), new SerializableData()
+                .add("power_type", SerializableDataTypes.IDENTIFIER)
+                .add("blacklisted_powers", SerializableDataType.list(ApoliDataTypes.POWER_TYPE)),
+                (data, entity) -> {
+                    Identifier powerTypeId = data.getId("power_type");
+                    List<PowerType<?>> blacklistedPowers = data.get("blacklisted_powers");
+                    PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                    List<PowerType<?>> correctPowers = Lists.newArrayList();
+
+                    component.getPowerTypes(true).forEach(powerType -> {
+                        if(!blacklistedPowers.contains(powerType) && component.hasPower(powerType)) {
+                            Identifier allowedPowerId = (((AccessFactory) powerType.getFactory()).getFactory().getSerializerId());
+                            if (allowedPowerId.equals(powerTypeId)) {
+                                correctPowers.add(powerType);
+                            }
+                        }
+                    });
+
+                    return correctPowers.stream().anyMatch(pt -> pt.isActive(entity));
+                }));
     }
 
     private static void register(ConditionFactory<Entity> conditionFactory) {

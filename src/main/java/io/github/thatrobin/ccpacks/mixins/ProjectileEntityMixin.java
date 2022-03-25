@@ -21,13 +21,13 @@ public abstract class ProjectileEntityMixin {
     @Shadow @Nullable public abstract Entity getOwner();
 
     @Inject(method = "onCollision", at = @At(value = "HEAD"))
-    public void getTexture(HitResult hitResult, CallbackInfo ci) {
+    public void onCollision(HitResult hitResult, CallbackInfo ci) {
         PowerHolderComponent.withPower(this.getOwner(), ActionOnProjectileLand.class, null, actionOnProjectileLand -> {
             EntityType<?> projectile = actionOnProjectileLand.getProjectile();
             if(((ProjectileEntity)(Object)this).getType() == projectile || projectile == null) {
                 BlockPos pos = new BlockPos(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
                 if (actionOnProjectileLand.doesApply(pos)) {
-                    actionOnProjectileLand.executeActions(pos, Direction.UP);
+                    actionOnProjectileLand.executeActions(pos, Direction.UP, ((ProjectileEntity)(Object)this));
                 }
             }
         });

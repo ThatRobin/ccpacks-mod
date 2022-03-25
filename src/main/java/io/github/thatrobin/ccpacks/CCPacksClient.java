@@ -25,11 +25,12 @@ import java.util.List;
 
 public class CCPacksClient implements ClientModInitializer {
 
+	public static boolean isServerRunningCCPacks = false;
+
 	@Override
 	public void onInitializeClient() {
 		OnLoadResourceManager.addSingleListener(new ClientContentManager());
 		CCPacksModPacketS2C.register();
-
 	}
 
 }

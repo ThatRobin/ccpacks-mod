@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +31,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     @Override
     public boolean hasAllChoices() {
-        return ChoiceLayers.getLayers().stream().allMatch(layer -> !layer.isEnabled() || (choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY));
+        return ChoiceLayers.getLayers().stream().allMatch(layer -> !layer.isEnabled() || layer.getChoices(player).size() == 0 || (choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY));
     }
 
     @Override
@@ -42,7 +41,7 @@ public class PlayerChoiceComponent implements ChoiceComponent {
 
     @Override
     public boolean hasChoice(ChoiceLayer layer) {
-        return choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY;
+        return choices != null && choices.containsKey(layer) && choices.get(layer) != null && choices.get(layer) != Choice.EMPTY;
     }
 
     @Override
@@ -110,62 +109,57 @@ public class PlayerChoiceComponent implements ChoiceComponent {
         }
     }
 
-    @Override
-    public void readFromNbt(@NotNull NbtCompound compoundTag) {
-        this.fromTag(compoundTag, true);
+    private void revokeRemovedPowers(Choice choice, PowerHolderComponent powerComponent) {
+        Identifier source = choice.getIdentifier();
+        List<PowerType<?>> powersByOrigin = powerComponent.getPowersFromSource(source);
+        powersByOrigin.stream().filter(p -> !choice.hasPowerType(p)).forEach(p -> powerComponent.removePower(p, source));
     }
 
-    private void fromTag(NbtCompound compoundTag, boolean callPowerOnAdd) {
-        if(player == null) {
+    @Override
+    public void readFromNbt(NbtCompound compoundTag) {
+        if (player == null) {
             CCPacksMain.LOGGER.error("Player was null in `fromTag`! This is a bug!");
         }
-        if(callPowerOnAdd) {
-            for (Power power: powers.values()) {
-                power.onRemoved();
-                power.onLost();
-            }
-        }
-        powers.clear();
 
         this.choices.clear();
 
-        if(compoundTag.contains("Choice")) {
+        if (compoundTag.contains("Choice")) {
             try {
                 ChoiceLayer defaultChoiceLayer = ChoiceLayers.getLayer(new Identifier(CCPacksMain.MODID, "choice"));
                 this.choices.put(defaultChoiceLayer, ChoiceRegistry.get(Identifier.tryParse(compoundTag.getString("Choice"))));
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 assert player != null;
                 CCPacksMain.LOGGER.warn("Player " + player.getDisplayName().asString() + " had old choice which could not be migrated: " + compoundTag.getString("Choice"));
             }
         } else {
-            NbtList choiceLayerList = (NbtList)compoundTag.get("ChoiceLayers");
-            if(choiceLayerList != null) {
-                for(int i = 0; i < choiceLayerList.size(); i++) {
+            NbtList choiceLayerList = (NbtList) compoundTag.get("ChoiceLayers");
+            if (choiceLayerList != null) {
+                for (int i = 0; i < choiceLayerList.size(); i++) {
                     NbtCompound layerTag = choiceLayerList.getCompound(i);
                     Identifier layerId = Identifier.tryParse(layerTag.getString("Layer"));
                     ChoiceLayer layer = null;
                     try {
                         layer = ChoiceLayers.getLayer(layerId);
-                    } catch(IllegalArgumentException e) {
-                        assert layerId != null;
-                        assert player != null;
-                        CCPacksMain.LOGGER.warn("Could not find choice layer with id " + layerId + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                    } catch (IllegalArgumentException e) {
+                        CCPacksMain.LOGGER.warn("Could not find choice layer with id " + layerId.toString() + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
                     }
-                    if(layer != null) {
+                    if (layer != null) {
                         Identifier choiceId = Identifier.tryParse(layerTag.getString("Choice"));
                         Choice choice = null;
                         try {
                             choice = ChoiceRegistry.get(choiceId);
-                        } catch(IllegalArgumentException e) {
-                            assert choiceId != null;
-                            assert player != null;
+                        } catch (IllegalArgumentException e) {
                             CCPacksMain.LOGGER.warn("Could not find choice with id " + choiceId + ", which existed on the data of player " + player.getDisplayName().asString() + ".");
+                            PowerHolderComponent powerComponent = PowerHolderComponent.KEY.get(player);
+                            powerComponent.removeAllPowersFromSource(choiceId);
                         }
-                        if(choice != null) {
-                            if(!layer.contains(choice)) {
+                        if (choice != null) {
+                            if (!layer.contains(choice)) {
                                 assert player != null;
-                                CCPacksMain.LOGGER.warn("Choice with id " + choice.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + " and is not special, but was found on " + player.getDisplayName().asString() + ", setting to EMPTY.");
+                                CCPacksMain.LOGGER.warn("Choice with id " + choice.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + ", but was found on " + player.getDisplayName().asString() + ", setting to EMPTY.");
                                 choice = Choice.EMPTY;
+                                PowerHolderComponent powerComponent = PowerHolderComponent.KEY.get(player);
+                                powerComponent.removeAllPowersFromSource(choiceId);
                             }
                             this.choices.put(layer, choice);
                         }
@@ -174,38 +168,44 @@ public class PlayerChoiceComponent implements ChoiceComponent {
             }
         }
         this.hadChoiceBefore = compoundTag.getBoolean("HadChoiceBefore");
-        NbtList powerList = (NbtList)compoundTag.get("Powers");
-        for(int i = 0; i < Objects.requireNonNull(powerList).size(); i++) {
-            NbtCompound powerTag = powerList.getCompound(i);
-            Identifier powerTypeId = Identifier.tryParse(powerTag.getString("Type"));
-            try {
-                PowerType<?> type = PowerTypeRegistry.get(powerTypeId);
-                if(hasPowerType(type)) {
-                    NbtElement data = powerTag.get("Data");
-                    Power power = type.create(player);
+
+        if (!player.world.isClient) {
+            PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(player);
+            for (Choice choice : choices.values()) {
+                // Grants powers only if the player doesn't have them yet from the specific Origin source.
+                // Needed in case the origin was set before the update to Apoli happened.
+                grantPowersFromChoice(choice, powerHolderComponent);
+            }
+            for (Choice origin : choices.values()) {
+                revokeRemovedPowers(origin, powerHolderComponent);
+            }
+
+            // Compatibility with old worlds:
+            // Loads power data from Origins tag, whereas new versions
+            // store the data in the Apoli tag.
+            if (compoundTag.contains("Powers")) {
+                NbtList powerList = (NbtList) compoundTag.get("Powers");
+                for (int i = 0; i < powerList.size(); i++) {
+                    NbtCompound powerTag = powerList.getCompound(i);
+                    Identifier powerTypeId = Identifier.tryParse(powerTag.getString("Type"));
                     try {
-                        power.fromTag(data);
-                    } catch(ClassCastException e) {
-                        // Occurs when power was overriden by data pack since last world load
-                        // to be a power type which uses different data class.
-                        assert player != null;
-                        CCPacksMain.LOGGER.warn("Data type of \"" + powerTypeId + "\" changed, skipping data for that power on player " + player.getName().asString());
-                    }
-                    this.powers.put(type, power);
-                    if(callPowerOnAdd) {
-                        power.onAdded();
+                        PowerType<?> type = PowerTypeRegistry.get(powerTypeId);
+                        if (powerHolderComponent.hasPower(type)) {
+                            NbtElement data = powerTag.get("Data");
+                            try {
+                                powerHolderComponent.getPower(type).fromTag(data);
+                            } catch (ClassCastException e) {
+                                // Occurs when power was overriden by data pack since last world load
+                                // to be a power type which uses different data class.
+                                CCPacksMain.LOGGER.warn("Data type of \"" + powerTypeId + "\" changed, skipping data for that power on player " + player.getName().asString());
+                            }
+                        }
+                    } catch (IllegalArgumentException e) {
+                        CCPacksMain.LOGGER.warn("Power data of unregistered power \"" + powerTypeId + "\" found on player, skipping...");
                     }
                 }
-            } catch(IllegalArgumentException e) {
-                CCPacksMain.LOGGER.warn("Power data of unregistered power \"" + powerTypeId + "\" found on player, skipping...");
             }
         }
-        this.getPowerTypes().forEach(pt -> {
-            if(!this.powers.containsKey(pt)) {
-                Power power = pt.create(player);
-                this.powers.put(pt, power);
-            }
-        });
     }
 
     @Override
@@ -227,14 +227,6 @@ public class PlayerChoiceComponent implements ChoiceComponent {
             powerList.add(powerTag);
         }
         compoundTag.put("Powers", powerList);
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        NbtCompound compoundTag = buf.readNbt();
-        if(compoundTag != null) {
-            this.fromTag(compoundTag, false);
-        }
     }
 
     @Override

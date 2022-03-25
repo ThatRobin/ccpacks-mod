@@ -1,6 +1,5 @@
 package io.github.thatrobin.ccpacks.factories;
 
-import com.google.gson.JsonObject;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.PowerFactory;
@@ -15,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,10 +43,11 @@ public class PowerFactories {
                 new SerializableData()
                         .add("projectile", SerializableDataTypes.IDENTIFIER, null)
                         .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                        .add("self_action", ApoliDataTypes.ENTITY_ACTION, null)
                         .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                         .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
                 data ->
-                        (type, player) -> new ActionOnProjectileLand(type, player, data.get("block_condition"), data.get("entity_action"), data.get("block_action"), data.getId("projectile")))
+                        (type, player) -> new ActionOnProjectileLand(type, player, data.get("block_condition"), data.get("entity_action"), data.get("self_action"), data.get("block_action"), data.getId("projectile")))
                 .allowCondition());
 
         register(new PowerFactory<>(CCPacksMain.identifier("item_use"),

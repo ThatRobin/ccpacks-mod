@@ -1,5 +1,6 @@
 package io.github.thatrobin.ccpacks.data_driven_classes.particles;
 
+import io.github.thatrobin.ccpacks.util.ColourHolder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
@@ -8,23 +9,17 @@ import net.minecraft.particle.DefaultParticleType;
 import org.jetbrains.annotations.Nullable;
 
 public class DDParticle extends SpriteBillboardParticle {
-    public static float size;
-    public static int max_age;
-    public static boolean collides_with_world;
-    public static float alpha;
-    public static float red;
-    public static float green;
-    public static float blue;
 
 
-    public DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+
+    public DDParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider, float size, int max_age, boolean collides_with_world, ColourHolder colourHolder) {
         super(clientWorld, d, e, f, g, h, i);
         this.scale = size;
         this.maxAge = max_age; //ticks
         this.collidesWithWorld = collides_with_world;
         this.setSpriteForAge(spriteProvider);
-        this.colorAlpha = alpha;
-        this.setColor(red, green, blue);
+        this.colorAlpha = colourHolder.getAlpha();
+        this.setColor(colourHolder.getRed(), colourHolder.getGreen(), colourHolder.getBlue());
     }
 
     @Override
@@ -36,16 +31,23 @@ public class DDParticle extends SpriteBillboardParticle {
     public static class Factory implements ParticleFactory<DefaultParticleType> {
 
         private final SpriteProvider spriteProvider;
+        public float size;
+        public int max_age;
+        public boolean collides_with_world;
+        public ColourHolder colourHolder;
 
-        public Factory(SpriteProvider spriteProvider) {
+        public Factory(SpriteProvider spriteProvider, float size, int max_age, boolean collides_with_world, ColourHolder colourHolder) {
             this.spriteProvider = spriteProvider;
+            this.size = size;
+            this.max_age = max_age;
+            this.collides_with_world = collides_with_world;
+            this.colourHolder = colourHolder;
         }
-
 
         @Nullable
         @Override
         public Particle createParticle(DefaultParticleType parameters, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            DDParticle testParticle = new DDParticle(clientWorld, d, e, f, g, h, i, spriteProvider);
+            DDParticle testParticle = new DDParticle(clientWorld, d, e, f, g, h, i, spriteProvider, this.size, this.max_age, this.collides_with_world, this.colourHolder);
             testParticle.setSprite(this.spriteProvider);
             return testParticle;
         }

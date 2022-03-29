@@ -1,11 +1,13 @@
 package io.github.thatrobin.ccpacks.power;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -14,10 +16,10 @@ public class ItemUsePower extends Power {
 
     private final Predicate<ItemStack> itemCondition;
     private final Consumer<Entity> entityAction;
-    private final Consumer<ItemStack> itemAction;
+    private final Consumer<Pair<World, ItemStack>> itemAction;
     private final int cooldown;
 
-    public ItemUsePower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Consumer<Entity> entityAction, Consumer<ItemStack> itemAction, int cooldown) {
+    public ItemUsePower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Consumer<Entity> entityAction, Consumer<Pair<World, ItemStack>> itemAction, int cooldown) {
         super(type, entity);
         this.itemCondition = itemCondition;
         this.entityAction = entityAction;
@@ -40,7 +42,7 @@ public class ItemUsePower extends Power {
             entityAction.accept(entity);
         }
         if (itemAction != null) {
-            itemAction.accept(stack);
+            itemAction.accept(new Pair<>(entity.world,stack));
         }
         setCooldown(stack);
     }

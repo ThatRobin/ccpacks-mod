@@ -1,5 +1,6 @@
 package io.github.thatrobin.ccpacks.factories;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.PowerFactory;
@@ -13,6 +14,7 @@ import io.github.thatrobin.ccpacks.power.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,7 +38,7 @@ public class PowerFactories {
                         .add("prevent_use_condition", ApoliDataTypes.ITEM_CONDITION, null)
                         .add("slots", SerializableDataTypes.INTS, null),
                 data ->
-                        (type, player) -> new BindPower(type, player, data.get("item_condition"), data.get("slots"), data.get("prevent_use")))
+                        (type, player) -> new BindPower(type, player, data.get("item_condition"), data.get("slots"), data.get("prevent_use_condition")))
                 .allowCondition());
 
         register(new PowerFactory<>(CCPacksMain.identifier("action_on_projectile_land"),
@@ -58,7 +60,7 @@ public class PowerFactories {
                         .add("item_action", ApoliDataTypes.ITEM_ACTION, null),
                 data ->
                         (type, player) -> {
-                            ItemUsePower power = new ItemUsePower(type, player, (Predicate<ItemStack>)data.get("item_condition"), (Consumer<Entity>)data.get("entity_action"), (Consumer<ItemStack>)data.get("item_action"), data.getInt("cooldown"));
+                            ItemUsePower power = new ItemUsePower(type, player, (Predicate<ItemStack>)data.get("item_condition"), (Consumer<Entity>)data.get("entity_action"), (Consumer<Pair<World, ItemStack>>)data.get("item_action"), data.getInt("cooldown"));
                             return power;
                         })
                 .allowCondition());

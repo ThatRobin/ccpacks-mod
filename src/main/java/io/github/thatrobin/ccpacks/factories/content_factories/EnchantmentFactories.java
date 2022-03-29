@@ -9,6 +9,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.compress.utils.Lists;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -26,7 +27,7 @@ public class EnchantmentFactories {
                         .add("target", SerializableDataType.enumValue(EnchantmentTarget.class), EnchantmentTarget.BREAKABLE)
                         .add("max_level", SerializableDataTypes.INT, 1)
                         .add("rarity", SerializableDataType.enumValue(Enchantment.Rarity.class), Enchantment.Rarity.VERY_RARE)
-                        .add("blacklist", SerializableDataType.list(SerializableDataTypes.ENCHANTMENT), null),
+                        .add("blacklist", SerializableDataType.list(SerializableDataTypes.ENCHANTMENT), Lists.newArrayList()),
                 data ->
                         (contentType, content) -> (Supplier<Enchantment>) () -> new DDEnchantment(data.get("rarity"), data.get("target"), null, data.getInt("max_level"), false, data.getBoolean("treasure"), data.get("blacklist"))));
 
@@ -36,7 +37,7 @@ public class EnchantmentFactories {
                         .add("target", SerializableDataType.enumValue(EnchantmentTarget.class), EnchantmentTarget.BREAKABLE)
                         .add("max_level", SerializableDataTypes.INT, 1)
                         .add("rarity", SerializableDataType.enumValue(Enchantment.Rarity.class), Enchantment.Rarity.VERY_RARE)
-                        .add("blacklist", SerializableDataTypes.ENCHANTMENT, null),
+                        .add("blacklist", SerializableDataType.list(SerializableDataTypes.ENCHANTMENT), Lists.newArrayList()),
                 data ->
                         (contentType, content) -> (Supplier<Enchantment>) () -> new DDEnchantment(data.get("rarity"), data.get("target"), null, data.getInt("max_level"), true, data.getBoolean("treasure"), data.get("blacklist"))));
     }

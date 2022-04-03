@@ -41,7 +41,7 @@ public class BindPower extends Power {
     }
 
     public boolean doesPrevent(ItemStack stack) {
-        return prevent_use == null || prevent_use.test(stack);
+        return prevent_use.test(stack);
     }
 
     public boolean doesApply(ItemStack stack) {

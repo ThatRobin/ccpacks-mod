@@ -20,7 +20,7 @@ public abstract class SlotMixin {
     public void canTakeItems(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
         PowerHolderComponent.getPowers(playerEntity, BindPower.class).forEach(preventItemSelectionPower -> {
             if(preventItemSelectionPower.doesApply(this.getStack())) {
-                if (preventItemSelectionPower.checkSlot(((Slot)(Object)this).id)) {
+                if (preventItemSelectionPower.checkSlot(((Slot)(Object)this).getIndex())) {
                     cir.setReturnValue(false);
                 }
             }

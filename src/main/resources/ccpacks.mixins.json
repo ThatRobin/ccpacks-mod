@@ -1,33 +1,36 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "io.github.thatrobin.ccpacks.mixins",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "AccessorMixin",
-    "PlayerManagerMixin",
-    "EntityTypeMixin",
-    "FileResourcePackProviderMixin",
-    "MinecraftServerMixin",
-    "ProjectileEntityMixin",
-    "StackPowerUtilMixin",
-    "ItemStackMixin",
-    "ItemMixin",
-    "SlotMixin",
-    "ItemFrameEntityMixin",
-    "SerializableDataMixin",
-    "PowerFactoryInstanceMixin"
-  ],
-  "client": [
-    "ConnectScreenMixin",
-    "InGameHudMixin",
-    "TitleScreenMixin",
-    "SplashTextResourceSupplierMixin",
-    "BundleTooltipComponentMixin",
-    "KeyBindingMixin",
-    "KeyBindingAccessor"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.thatrobin.ccpacks.mixins",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "AccessorMixin",
+        "PlayerManagerMixin",
+        "EntityTypeMixin",
+        "FileResourcePackProviderMixin",
+        "MinecraftServerMixin",
+        "ProjectileEntityMixin",
+        "StackPowerUtilMixin",
+        "ItemStackMixin",
+        "ItemMixin",
+        "SlotMixin",
+        "ItemFrameEntityMixin",
+        "SerializableDataMixin",
+        "PowerFactoryInstanceMixin",
+        "DeletableObjectsMixin",
+        "SimpleRegistryMixin"
+    ],
+    "client": [
+        "ConnectScreenMixin",
+        "InGameHudMixin",
+        "TitleScreenMixin",
+        "SplashTextResourceSupplierMixin",
+        "BundleTooltipComponentMixin",
+        "KeyBindingMixin",
+        "KeyBindingAccessor",
+        "CreativeInventoryScreenMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }

@@ -6,7 +6,6 @@ import io.github.thatrobin.ccpacks.CCPacksMain;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
@@ -18,6 +17,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import java.io.IOException;
@@ -27,8 +27,8 @@ import java.util.function.IntSupplier;
 @Environment(EnvType.CLIENT)
 public class LoadingOverlay extends Overlay {
     static final Identifier LOGO = CCPacksMain.identifier("textures/gui/title/icon.png");
-    private static final int CCPACKS_BLUE = BackgroundHelper.ColorMixer.getArgb(255, 25, 125, 143);
-    private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
+    private static final int CCPACKS_BLUE = ColorHelper.Argb.getArgb(255, 25, 125, 143);
+    private static final int MONOCHROME_BLACK = ColorHelper.Argb.getArgb(255, 0, 0, 0);
     private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : CCPACKS_BLUE;
     private final MinecraftClient client;
     private final boolean reloading;
@@ -132,7 +132,7 @@ public class LoadingOverlay extends Overlay {
     private void renderProgressBar(MatrixStack matrices, int minX, int minY, int maxX, int maxY, float opacity) {
         int i = MathHelper.ceil(this.progress * 2);
         int j = Math.round(opacity * 255.0F);
-        int k = BackgroundHelper.ColorMixer.getArgb(j, 255, 255, 255);
+        int k = ColorHelper.Argb.getArgb(j, 255, 255, 255);
         fill(matrices, minX + 2, minY + 2, minX + i, maxY - 2, k);
         fill(matrices, minX + 1, minY, maxX - 1, minY + 1, k);
         fill(matrices, minX + 1, maxY, maxX - 1, maxY - 1, k);

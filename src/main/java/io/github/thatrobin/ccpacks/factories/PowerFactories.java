@@ -87,6 +87,7 @@ public class PowerFactories {
                             return toggle;
                         }).allowCondition());
 
+
     }
 
     private static void register(PowerFactory<?> serializer) {

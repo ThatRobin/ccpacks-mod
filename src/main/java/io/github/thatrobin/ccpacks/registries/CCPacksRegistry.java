@@ -38,8 +38,6 @@ public class CCPacksRegistry {
                 for (File file : fileArray) {
                     if (file.isDirectory()) {
                         readFromDir(file);
-                    } else if (file.getName().endsWith(".zip")) {
-                        readFromZip(file, new ZipFile(file));
                     }
                 }
             }
@@ -104,33 +102,6 @@ public class CCPacksRegistry {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-    private ZipFile getZipFile(File base, ZipFile zipFile) throws IOException {
-        if (zipFile == null) {
-            zipFile = new ZipFile(base);
-        }
-        return zipFile;
-    }
-
-    public void readFromZip(File base, ZipFile zipFile) throws IOException {
-        ZipFile zipFile2 = this.getZipFile(base, zipFile);
-        Enumeration<? extends ZipEntry> enumeration = zipFile2.entries();
-        String string2 = "data/";
-        while(enumeration.hasMoreElements()) {
-            ZipEntry zipEntry = enumeration.nextElement();
-            if (!zipEntry.isDirectory()) {
-                String string3 = zipEntry.getName();
-                if (string3.endsWith(".json") && string3.startsWith(string2)) {
-                    InputStream stream = zipFile2.getInputStream(zipEntry);
-                    JsonObject jsonObject = (JsonObject) JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-                    String namespace = string3.split(this.path)[0].split("data")[1].replace("\\","");
-                    String path = string3.split(".json")[0];
-                    Identifier id = new Identifier(namespace, path);
-                    map.put(id, jsonObject);
-                }
             }
         }
     }

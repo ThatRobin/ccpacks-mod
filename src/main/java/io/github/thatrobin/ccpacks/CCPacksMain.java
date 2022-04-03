@@ -13,18 +13,17 @@ import io.github.thatrobin.ccpacks.component.ItemHolderComponentImpl;
 import io.github.thatrobin.ccpacks.factories.content_factories.*;
 import io.github.thatrobin.ccpacks.factories.*;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicFactories;
+import io.github.thatrobin.ccpacks.item_groups.TabbedItemGroup;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPacketC2S;
 import io.github.thatrobin.ccpacks.power.PowerIconManager;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistry;
 import io.github.thatrobin.ccpacks.registries.ContentManager;
 import io.github.thatrobin.ccpacks.registries.MechanicManager;
-import io.github.thatrobin.ccpacks.util.ItemGroupHolder;
 import io.github.thatrobin.ccpacks.util.OnLoadResourceManager;
+import io.github.thatrobin.ccpacks.util.RegistryUtils;
 import io.github.thatrobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
-import io.wispforest.owo.itemgroup.OwoItemGroup;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -51,6 +50,8 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	@Override
 	public void onInitialize() {
+
+
 		FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
 			VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
 			if(VERSION.contains("+")) {
@@ -114,10 +115,11 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		ArgumentTypes.register("ccpacks:mechanic", MechanicArgument.class, new ConstantArgumentSerializer<>(MechanicArgument::mechanic));
 
 		ContentTypes.itemGroups.forEach((identifier, itemGroupHolder) -> {
-			if(itemGroupHolder.getItemGroup() instanceof OwoItemGroup owoItemGroup) {
+			if(itemGroupHolder.getItemGroup() instanceof TabbedItemGroup owoItemGroup) {
 				owoItemGroup.initialize();
 			}
 		});
+
 	}
 
 	public static Identifier identifier(String path) {

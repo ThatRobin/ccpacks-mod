@@ -1,49 +1,50 @@
 {
-  "schemaVersion": 1,
-  "id": "ccpacks",
-  "version": "${version}",
-  "name": "Custom Content Packs",
-  "description": "Data Driven blocks, items, tools and weapons, in minecraft!",
-  "authors": [
-    "ThatRobin",
-    "PixelNinja"
-  ],
-  "license": "CC0-1.0",
-  "icon": "assets/ccpacks/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "io.github.thatrobin.ccpacks.CCPacksMain"
+    "schemaVersion": 1,
+    "id": "ccpacks",
+    "version": "${version}",
+    "name": "Custom Content Packs",
+    "description": "Data Driven blocks, items, tools and weapons, in minecraft!",
+    "authors": [
+        "ThatRobin",
+        "PixelNinja"
     ],
-    "cardinal-components-entity": [
-      "io.github.thatrobin.ccpacks.CCPacksMain",
-      "io.github.thatrobin.ccpacks.component.ModComponents"
+    "accessWidener": "ccpacks.accesswidener",
+    "license": "CC0-1.0",
+    "icon": "assets/ccpacks/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "io.github.thatrobin.ccpacks.CCPacksMain"
+        ],
+        "cardinal-components-entity": [
+            "io.github.thatrobin.ccpacks.CCPacksMain",
+            "io.github.thatrobin.ccpacks.component.ModComponents"
+        ],
+        "cardinal-components-block": [
+            "io.github.thatrobin.ccpacks.component.ModComponents"
+        ],
+        "client": [
+            "io.github.thatrobin.ccpacks.CCPacksClient"
+        ]
+    },
+    "mixins": [
+        "ccpacks.mixins.json"
     ],
-    "cardinal-components-block": [
-      "io.github.thatrobin.ccpacks.component.ModComponents"
-    ],
-    "client": [
-      "io.github.thatrobin.ccpacks.CCPacksClient"
-    ]
-  },
-  "mixins": [
-    "ccpacks.mixins.json"
-  ],
-  "custom": {
-    "cardinal-components": [
-      "ccpacks:saved_items",
-      "ccpacks:choice",
-      "ccpacks:mechanics"
-    ],
-    "modmenu": {
-      "badges": [
-        "library"
-      ]
+    "custom": {
+        "cardinal-components": [
+            "ccpacks:saved_items",
+            "ccpacks:choice",
+            "ccpacks:mechanics"
+        ],
+        "modmenu": {
+            "badges": [
+                "library"
+            ]
+        }
+    },
+    "depends": {
+        "fabricloader": ">=0.12.6",
+        "fabric": "*",
+        "minecraft": "1.18.*"
     }
-  },
-  "depends": {
-    "fabricloader": ">=0.12.6",
-    "fabric": "*",
-    "minecraft": "1.18.*"
-  }
 }

@@ -7,6 +7,9 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+loom {
+	accessWidenerPath = file("src/main/resources/ccpacks.accesswidener")
+}
 repositories {
 	maven {
 		url "https://maven.shedaniel.me/"
@@ -33,8 +36,7 @@ repositories {
 		url = 'https://ladysnake.jfrog.io/artifactory/mods'
 	}
 	maven {
-		name = "TerraformersMC"
-		url = "https://maven.kotlindiscord.com/repository/terraformers/"
+		url "https://maven.terraformersmc.com/"
 	}
 	maven {
 		name = "NerdHubMC"
@@ -53,7 +55,6 @@ repositories {
 		name "Siphalor's Maven"
 		url "https://maven.siphalor.de"
 	}
-	maven { url 'https://maven.wispforest.io' }
 }
 
 dependencies {
@@ -65,33 +66,29 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
 
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-block:${project.cca_version}"
-	include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-block:${project.cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-block:${project.cca_version}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-block:${project.cca_version}"
 
-	modImplementation "com.github.apace100:calio:${project.calio_version}"
-	include "com.github.apace100:calio:${project.calio_version}"
+	modImplementation "com.github.ThatRobin:calio:${project.calio_version}"
+	include "com.github.ThatRobin:calio:${project.calio_version}"
 
 	modImplementation "net.kyrptonaught:customportalapi:${project.portals_version}"
 	include "net.kyrptonaught:customportalapi:${project.portals_version}"
 
-	modImplementation ("com.github.apace100:apoli:${project.apoli_version}") {
+	modImplementation ("com.github.ThatRobin:apoli:${project.apoli_version}") {
 		exclude(group: "com.terraformersmc")
 	}
-	include ("com.github.apace100:apoli:${project.apoli_version}") {
+	include ("com.github.ThatRobin:apoli:${project.apoli_version}") {
 		exclude(group: "com.terraformersmc")
 	}
-
-	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
-	include "io.wispforest:owo-lib:${project.owo_version}"
 
 	modImplementation "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 	include "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 
-	modImplementation "software.bernie.geckolib:geckolib-fabric-1.18:${project.geckolib_version}"
-	include "software.bernie.geckolib:geckolib-fabric-1.18:${project.geckolib_version}"
+	modImplementation "software.bernie.geckolib:geckolib-fabric-1.18.2:${project.geckolib_version}"
 
 }
 

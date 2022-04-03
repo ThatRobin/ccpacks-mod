@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.thatrobin.ccpacks.factories.content_factories.ContentTypes;
 import io.github.thatrobin.ccpacks.util.DataLoader;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-
 import java.util.Map;
 
 public class ContentManager extends DataLoader {
@@ -22,7 +19,6 @@ public class ContentManager extends DataLoader {
     @Override
     public void apply(Map<Identifier, JsonObject> map) {
         map.forEach(ContentTypes::new);
-
     }
 
 }

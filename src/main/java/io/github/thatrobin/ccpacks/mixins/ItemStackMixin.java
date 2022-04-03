@@ -1,6 +1,7 @@
 package io.github.thatrobin.ccpacks.mixins;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.emi.trinkets.TrinketSlot;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -59,25 +61,24 @@ public abstract class ItemStackMixin {
         try {
             BlockArgumentParser blockArgumentParser = (new BlockArgumentParser(new StringReader(tag), true)).parse(true);
             BlockState blockState = blockArgumentParser.getBlockState();
-            Identifier identifier = blockArgumentParser.getTagId();
+            TagKey<Block> tagKey = blockArgumentParser.getTagId();
             boolean bl = blockState != null;
-            boolean bl2 = identifier != null;
-            if (bl || bl2) {
-                if (bl) {
-                    return Lists.newArrayList(new Text[]{blockState.getBlock().getName().formatted(Formatting.DARK_GRAY)});
-                }
+            boolean bl2 = tagKey != null;
+            if (bl) {
+                return Lists.newArrayList(new Text[]{blockState.getBlock().getName().formatted(Formatting.DARK_GRAY)});
+            }
 
-                Tag<Block> tag2 = BlockTags.getTagGroup().getTag(identifier);
-                if (tag2 != null) {
-                    Collection<Block> collection = tag2.values();
-                    if (!collection.isEmpty()) {
-                        return (Collection)collection.stream().map(Block::getName).map((text) -> {
-                            return text.formatted(Formatting.DARK_GRAY);
-                        }).collect(Collectors.toList());
-                    }
+            if (bl2) {
+                List<Text> list = (List) Streams.stream(Registry.BLOCK.iterateEntries(tagKey)).map((entry) -> {
+                    return ((Block)entry.value()).getName();
+                }).map((text) -> {
+                    return text.formatted(Formatting.DARK_GRAY);
+                }).collect(Collectors.toList());
+                if (!list.isEmpty()) {
+                    return list;
                 }
             }
-        } catch (CommandSyntaxException var8) {
+        } catch (CommandSyntaxException var7) {
         }
 
         return Lists.newArrayList(new Text[]{(new LiteralText("missingno")).formatted(Formatting.DARK_GRAY)});

@@ -6,10 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.argument.ScoreHolderArgumentType;
-import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
+import net.minecraft.command.argument.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -43,7 +40,7 @@ public class SetCommand {
                                                         .then(argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
                                                                 .executes((command) -> {
                                                                     try {
-                                                                        EntityAttribute attribute = IdentifierArgumentType.getAttributeArgument(command, "attribute");
+                                                                        EntityAttribute attribute = RegistryKeyArgumentType.getAttribute(command, "attribute");
                                                                         LivingEntity entity = EntityArgumentType.getPlayer(command, "target");
                                                                         EntityAttributeInstance entityAttributeInstance = entity.getAttributes().getCustomInstance(attribute);
                                                                         setAttribute(entity, command.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(command, "targets"), ScoreboardObjectiveArgumentType.getObjective(command, "objective"), entityAttributeInstance);
@@ -56,7 +53,7 @@ public class SetCommand {
                                                                 })
                                                                 .then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes((command) -> {
                                                                     try {
-                                                                        EntityAttribute attribute = IdentifierArgumentType.getAttributeArgument(command, "attribute");
+                                                                        EntityAttribute attribute = RegistryKeyArgumentType.getAttribute(command, "attribute");
                                                                         LivingEntity entity = EntityArgumentType.getPlayer(command, "target");
                                                                         double multiplier = DoubleArgumentType.getDouble(command, "scale");
                                                                         EntityAttributeInstance entityAttributeInstance = entity.getAttributes().getCustomInstance(attribute);
@@ -87,7 +84,7 @@ public class SetCommand {
                                                     }
                                                 }).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes((command) -> {
                                                         try {
-                                                            EntityAttribute attribute = IdentifierArgumentType.getAttributeArgument(command, "attribute");
+                                                            EntityAttribute attribute = RegistryKeyArgumentType.getAttribute(command, "attribute");
                                                             LivingEntity entity = EntityArgumentType.getPlayer(command, "target");
                                                             double multiplier = DoubleArgumentType.getDouble(command, "scale");
                                                             EntityAttributeInstance entityAttributeInstance = entity.getAttributes().getCustomInstance(attribute);

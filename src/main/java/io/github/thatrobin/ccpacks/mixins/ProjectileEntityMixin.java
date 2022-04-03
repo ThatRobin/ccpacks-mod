@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,8 +33,13 @@ public abstract class ProjectileEntityMixin {
                     if (actionOnProjectileLand.doesApply(blockHitResult.getBlockPos())) {
                         actionOnProjectileLand.executeActions(blockHitResult.getBlockPos(), Direction.UP, ((ProjectileEntity)(Object)this));
                     }
-                }
+                } else if (hitResult.getType() == HitResult.Type.ENTITY) {
+                    EntityHitResult entityHitResult = (EntityHitResult) hitResult;
 
+                    if (actionOnProjectileLand.doesApply(entityHitResult.getEntity().getLandingPos())) {
+                        actionOnProjectileLand.executeActions(entityHitResult.getEntity().getLandingPos(), Direction.UP, ((ProjectileEntity)(Object)this));
+                    }
+                }
             }
         });
     }

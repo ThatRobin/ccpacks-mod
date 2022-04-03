@@ -45,6 +45,9 @@ public class ContentTypes {
     public static Map<Identifier, ItemGroupHolder> itemGroups = Maps.newHashMap();
 
     public ContentTypes(Identifier id, JsonElement je) {
+        for (Registry<?> registry : Registry.REGISTRIES) {
+            RegistryUtils.unfreeze(registry);
+        }
         readPower(id, je, ContentType::new);
     }
 
@@ -142,6 +145,7 @@ public class ContentTypes {
             }
         } catch (Exception e) {
             CCPacksMain.LOGGER.error("Failed to register item with id: "+id);
+            CCPacksMain.LOGGER.error(e.getMessage());
         }
     }
 

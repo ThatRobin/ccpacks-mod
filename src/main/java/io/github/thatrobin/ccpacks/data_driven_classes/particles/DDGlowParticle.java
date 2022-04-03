@@ -17,7 +17,7 @@ public class DDGlowParticle extends SpriteBillboardParticle {
         this.maxAge = max_age; //ticks
         this.collidesWithWorld = collides_with_world;
         this.setSpriteForAge(spriteProvider);
-        this.colorAlpha = colourHolder.getAlpha();
+        this.setAlpha(colourHolder.getAlpha());
         this.setColor(colourHolder.getRed(), colourHolder.getGreen(), colourHolder.getBlue());
     }
 

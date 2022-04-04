@@ -13,7 +13,6 @@
     "StackPowerUtilMixin",
     "ItemStackMixin",
     "ItemMixin",
-    "SlotMixin",
     "ItemFrameEntityMixin",
     "SerializableDataMixin",
     "PowerFactoryInstanceMixin"
@@ -25,7 +24,9 @@
     "SplashTextResourceSupplierMixin",
     "BundleTooltipComponentMixin",
     "KeyBindingMixin",
-    "KeyBindingAccessor"
+    "KeyBindingAccessor",
+    "MinecraftClientMixin",
+    "SlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1

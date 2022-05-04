@@ -12,6 +12,5 @@ public enum Types {
     PARTICLE,
     ENTITY,
     GAMERULE,
-    ITEM_GROUP,
-    FEATURE
+    ITEM_GROUP
 }

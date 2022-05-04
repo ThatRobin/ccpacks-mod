@@ -14,17 +14,23 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.data.server.EntityTypeTagProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
-import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CCPackDataTypes {
 
@@ -205,26 +211,37 @@ public class CCPackDataTypes {
                     throw new JsonParseException("An entity entry is either a tag or an entity, " + (tagPresent ? "not both" : "one has to be provided."));
                 }
                 if(tagPresent) {
-                    Tag<EntityType<?>> tag = dataInstance.get("tag");
-                    return List.copyOf(tag.values());
+                    TagKey<EntityType<?>> tag = dataInstance.get("tag");
+                    var entryList = Registry.ENTITY_TYPE.getEntryList(tag);
+
+                    if (entryList.isPresent()) {
+                        return entryList.get().stream().map(RegistryEntry::value).collect(Collectors.toList());
+                    } else {
+                        return List.of();
+                    }
                 } else {
-                    return List.of((EntityType<? extends net.minecraft.entity.Entity>)dataInstance.get("entity"));
+                    return List.of((EntityType<?>)dataInstance.get("entity"));
                 }
             }, (data, entities) -> {
                 SerializableData.Instance inst = data.new Instance();
                 if(entities.size() == 1) {
                     inst.set("entity", entities.get(0));
                 } else {
-                    TagManager tagManager = Calio.getTagManager();
-                    TagGroup<EntityType<?>> tagGroup = tagManager.getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY);
-                    Collection<Identifier> possibleTags = tagGroup.getTagsFor(entities.get(0));
-                    for(int i = 1; i < entities.size() && possibleTags.size() > 1; i++) {
-                        possibleTags.removeAll(tagGroup.getTagsFor(entities.get(i)));
-                    }
-                    if(possibleTags.size() != 1) {
+                    var entityTags = Registry.ENTITY_TYPE.streamTags();
+                    //filter out any tags where the entries do not completely match the items list
+                    entityTags = entityTags.filter(tag -> {
+                        var entryList = Registry.ENTITY_TYPE.getEntryList(tag);
+                        if (entryList.isPresent()) {
+                            var tagItems = entryList.get().stream().map(RegistryEntry::value).toList();
+                            return entities.equals(tagItems);
+                        }
+                        return false;
+                    });
+                    //2 tags contain the same items. panic.
+                    if(entityTags.count() != 1) {
                         throw new IllegalStateException("Couldn't transform entity list to a single tag");
                     }
-                    inst.set("tag", tagGroup.getTag(possibleTags.stream().findFirst().get()));
+                    inst.set("tag", entityTags.findFirst().get().id());
                 }
                 return inst;
             });

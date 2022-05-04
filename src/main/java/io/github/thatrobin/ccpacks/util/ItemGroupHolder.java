@@ -13,6 +13,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
@@ -61,8 +62,8 @@ public class ItemGroupHolder {
                         JsonElement je = stringJsonElementEntry.getValue();
                         if(je.isJsonObject()) {
                             JsonObject jo = je.getAsJsonObject();
-                            Set<Item> items = getItemsFromJson(jo);
-                            addTab(Icon.of(Registry.ITEM.get(Identifier.tryParse(jo.get("icon").getAsString()))),field,Tag.of(items));
+                            TagKey<Item> items = getItemTagFromJson(jo);
+                            addTab(Icon.of(Registry.ITEM.get(Identifier.tryParse(jo.get("icon").getAsString()))),field,items);
                         }
                     });
                 }
@@ -71,6 +72,9 @@ public class ItemGroupHolder {
         return null;
     }
 
+    public TagKey<Item> getItemTagFromJson(JsonObject jo) {
+        return SerializableDataTypes.ITEM_TAG.read(jo.get("items"));
+    }
 
     public Set<Item> getItemsFromJson(JsonObject jo){
         Set<Item> items = Sets.newHashSet();

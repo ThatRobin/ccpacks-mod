@@ -30,6 +30,6 @@ public class MinecraftClientMixin {
                 return false;
             }
         }
-        return this.options.keySwapHands.wasPressed();
+        return this.options.swapHandsKey.wasPressed();
     }
 }

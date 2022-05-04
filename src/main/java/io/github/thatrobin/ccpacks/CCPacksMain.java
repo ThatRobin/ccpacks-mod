@@ -20,6 +20,7 @@ import io.github.thatrobin.ccpacks.registries.ContentManager;
 import io.github.thatrobin.ccpacks.registries.MechanicManager;
 import io.github.thatrobin.ccpacks.util.ItemGroupHolder;
 import io.github.thatrobin.ccpacks.util.OnLoadResourceManager;
+import io.github.thatrobin.ccpacks.util.RegistryUtils;
 import io.github.thatrobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import io.wispforest.owo.itemgroup.OwoItemGroup;
@@ -51,6 +52,10 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	@Override
 	public void onInitialize() {
+		for (Registry<?> registry : Registry.REGISTRIES) {
+			RegistryUtils.unfreeze(registry);
+		}
+
 		FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
 			VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
 			if(VERSION.contains("+")) {
@@ -85,7 +90,6 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 		EnchantmentFactories.register();
 		ItemFactories.register();
 		ItemGroupFactories.register();
-		FeatureFactories.register();
 		KeybindFactories.register();
 		ParticleFactories.register();
 		PortalFactories.register();
@@ -112,12 +116,6 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 		ArgumentTypes.register("ccpacks:choice_layer", LayerArgument.class, new ConstantArgumentSerializer<>(LayerArgument::layer));
 		ArgumentTypes.register("ccpacks:mechanic", MechanicArgument.class, new ConstantArgumentSerializer<>(MechanicArgument::mechanic));
-
-		ContentTypes.itemGroups.forEach((identifier, itemGroupHolder) -> {
-			if(itemGroupHolder.getItemGroup() instanceof OwoItemGroup owoItemGroup) {
-				owoItemGroup.initialize();
-			}
-		});
 	}
 
 	public static Identifier identifier(String path) {

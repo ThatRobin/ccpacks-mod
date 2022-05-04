@@ -15,7 +15,8 @@
     "ItemMixin",
     "ItemFrameEntityMixin",
     "SerializableDataMixin",
-    "PowerFactoryInstanceMixin"
+    "PowerFactoryInstanceMixin",
+    "SimpleRegistryMixin"
   ],
   "client": [
     "ConnectScreenMixin",

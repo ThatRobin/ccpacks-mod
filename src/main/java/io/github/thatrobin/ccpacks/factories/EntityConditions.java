@@ -2,8 +2,7 @@ package io.github.thatrobin.ccpacks.factories;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import io.github.apace100.apoli.power.PowerTypeReference;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.power.*;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.util.AccessFactory;
@@ -11,8 +10,6 @@ import io.github.thatrobin.ccpacks.power.StatBar;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.Comparison;
@@ -85,6 +82,28 @@ public class EntityConditions {
                     });
 
                     return correctPowers.stream().anyMatch(pt -> pt.isActive(entity));
+                }));
+
+        register(new ConditionFactory<>(CCPacksMain.identifier("resource_percentage"), new SerializableData()
+                .add("resource", ApoliDataTypes.POWER_TYPE)
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
+                .add("percentage", SerializableDataTypes.INT, 50),
+                (data, entity) -> {
+                    int resourceValue = 0;
+                    float percentageValue = 0;
+                    PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
+                    Power p = component.getPower((PowerType<?>)data.get("resource"));
+                    if(p instanceof VariableIntPower r) {
+                        resourceValue = r.getValue();
+                        percentageValue = ((float)resourceValue / (float)r.getMax()) * 100;
+
+                    } else if(p instanceof CooldownPower cp) {
+                        resourceValue = cp.getRemainingTicks();
+                        percentageValue = ((float)resourceValue / (float)cp.cooldownDuration) * 100;
+                    }
+                    CCPacksMain.LOGGER.info(percentageValue);
+                    CCPacksMain.LOGGER.info(data.getInt("percentage"));
+                    return ((Comparison)data.get("comparison")).compare(percentageValue, data.getInt("percentage"));
                 }));
     }
 

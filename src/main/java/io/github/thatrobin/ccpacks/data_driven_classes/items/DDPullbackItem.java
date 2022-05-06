@@ -82,35 +82,37 @@ public class DDPullbackItem extends BowItem implements PowerGrantingItem {
     }
 
     private void fireProjectile(PlayerEntity playerEntity, float speedMultiplier) {
-        Entity entity = Registry.ENTITY_TYPE.get(entityType).create(playerEntity.world);
-        if (entity == null) {
-            return;
-        }
-        Vec3d rotationVector = playerEntity.getRotationVector();
-        float yaw = playerEntity.getYaw();
-        float pitch = playerEntity.getPitch();
-        Vec3d spawnPos = playerEntity.getPos().add(0, ((EyeHeightAccess) playerEntity).callGetEyeHeight(playerEntity.getPose(), playerEntity.getDimensions(playerEntity.getPose())), 0).add(rotationVector);
-        entity.refreshPositionAndAngles(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), pitch, yaw);
-        if (entity instanceof ProjectileEntity) {
-            if (entity instanceof ExplosiveProjectileEntity) {
-                ExplosiveProjectileEntity explosiveProjectileEntity = (ExplosiveProjectileEntity) entity;
-                explosiveProjectileEntity.powerX = rotationVector.x * 1.5F;
-                explosiveProjectileEntity.powerY = rotationVector.y * 1.5F;
-                explosiveProjectileEntity.powerZ = rotationVector.z * 1.5F;
+        if(entityType != null) {
+            Entity entity = Registry.ENTITY_TYPE.get(entityType).create(playerEntity.world);
+            if (entity == null) {
+                return;
             }
-            ProjectileEntity projectile = (ProjectileEntity) entity;
-            projectile.setOwner(playerEntity);
-            projectile.setVelocity(playerEntity, pitch, yaw, 0F, speedMultiplier * this.max_speed, 0);
-        } else {
-            float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-            float g = -MathHelper.sin(pitch * 0.017453292F);
-            float h = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-            Vec3d vec3d = (new Vec3d(f, g, h)).normalize().add(playerEntity.getRandom().nextGaussian() * 0.007499999832361937D, playerEntity.getRandom().nextGaussian() * 0.007499999832361937D, playerEntity.getRandom().nextGaussian() * 0.007499999832361937D).multiply((double) 1.5F);
-            entity.setVelocity(vec3d);
-            Vec3d entityVelo = playerEntity.getVelocity();
-            entity.setVelocity(entity.getVelocity().add(entityVelo.x, playerEntity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
+            Vec3d rotationVector = playerEntity.getRotationVector();
+            float yaw = playerEntity.getYaw();
+            float pitch = playerEntity.getPitch();
+            Vec3d spawnPos = playerEntity.getPos().add(0, ((EyeHeightAccess) playerEntity).callGetEyeHeight(playerEntity.getPose(), playerEntity.getDimensions(playerEntity.getPose())), 0).add(rotationVector);
+            entity.refreshPositionAndAngles(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), pitch, yaw);
+            if (entity instanceof ProjectileEntity) {
+                if (entity instanceof ExplosiveProjectileEntity) {
+                    ExplosiveProjectileEntity explosiveProjectileEntity = (ExplosiveProjectileEntity) entity;
+                    explosiveProjectileEntity.powerX = rotationVector.x * 1.5F;
+                    explosiveProjectileEntity.powerY = rotationVector.y * 1.5F;
+                    explosiveProjectileEntity.powerZ = rotationVector.z * 1.5F;
+                }
+                ProjectileEntity projectile = (ProjectileEntity) entity;
+                projectile.setOwner(playerEntity);
+                projectile.setVelocity(playerEntity, pitch, yaw, 0F, speedMultiplier * this.max_speed, 0);
+            } else {
+                float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+                float g = -MathHelper.sin(pitch * 0.017453292F);
+                float h = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+                Vec3d vec3d = (new Vec3d(f, g, h)).normalize().add(playerEntity.getRandom().nextGaussian() * 0.007499999832361937D, playerEntity.getRandom().nextGaussian() * 0.007499999832361937D, playerEntity.getRandom().nextGaussian() * 0.007499999832361937D).multiply((double) 1.5F);
+                entity.setVelocity(vec3d);
+                Vec3d entityVelo = playerEntity.getVelocity();
+                entity.setVelocity(entity.getVelocity().add(entityVelo.x, playerEntity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
+            }
+            playerEntity.world.spawnEntity(entity);
         }
-        playerEntity.world.spawnEntity(entity);
     }
 
 

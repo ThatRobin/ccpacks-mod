@@ -1,6 +1,5 @@
 package io.github.thatrobin.ccpacks.factories;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.PowerFactory;
@@ -13,6 +12,7 @@ import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.power.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 

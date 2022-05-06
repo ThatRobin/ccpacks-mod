@@ -9,6 +9,7 @@ import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.DDDyeableItem;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.thatrobin.ccpacks.util.*;
+import io.wispforest.owo.itemgroup.OwoItemGroup;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -132,13 +133,10 @@ public class ContentTypes {
                         }
                         case ITEM_GROUP -> {
                             ItemGroupHolder holder = new ItemGroupHolder(id, jo);
+                            if(holder.getItemGroup() instanceof OwoItemGroup owoItemGroup) {
+                                owoItemGroup.initialize();
+                            }
                             itemGroups.put(id, holder);
-                        }
-                        case FEATURE -> {
-                            PlacedFeature feature = type.createFeature(type);
-                            RegistryKey<PlacedFeature> oreGeneration = RegistryKey.of(Registry.PLACED_FEATURE_KEY, id);
-                            Registry.register(BuiltinRegistries.PLACED_FEATURE, oreGeneration.getValue(), feature);
-                            BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Feature.UNDERGROUND_ORES, oreGeneration);
                         }
                     }
                 }

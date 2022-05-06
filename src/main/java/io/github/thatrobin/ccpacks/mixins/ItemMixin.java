@@ -42,6 +42,8 @@ public class ItemMixin implements BundleItem {
     public int hold_amount;
     public boolean isBundle;
 
+
+
     @Inject(method = "onStackClicked", at = @At("HEAD"), cancellable = true)
     public void onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if(isBundle()) {

@@ -7,11 +7,13 @@ import io.github.thatrobin.ccpacks.CCPackDataTypes;
 import io.github.thatrobin.ccpacks.choice.ChoiceLayer;
 import io.github.thatrobin.ccpacks.choice.ChoiceLayers;
 import io.github.thatrobin.ccpacks.client.renderer.item.DDShieldItemRenderer;
+import io.github.thatrobin.ccpacks.compat.TrinketsCompat;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.*;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.thatrobin.ccpacks.util.ItemGroups;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
@@ -111,7 +113,14 @@ public class ItemFactories {
                             if(group != ItemGroups.NONE) {
                                 settings.group(group.group);
                             }
-                            Supplier<Item> EXAMPLE_ITEM = () -> new DDTrinketItem(settings.maxDamage(data.getInt("durability")), data.get("name"), data.get("lore"), data.get("start_colour"), data.get("end_colour"), data.get("item_powers"));
+                            Supplier<Item> EXAMPLE_ITEM;
+                            if(FabricLoader.getInstance().isModLoaded("trinkets")) {
+                                EXAMPLE_ITEM = TrinketsCompat.createTrinketItem(settings, data);
+                            } else {
+                                List<String> loreText = Lists.newArrayList();
+                                loreText.add("Trinkets is not installed, this item is not a trinket");
+                                EXAMPLE_ITEM = () -> new DDItem(settings, data.get("name"), loreText, data.get("item_powers"));
+                            }
 
                             data.<Integer>ifPresent("fuel_tick", (tick) -> FuelRegistry.INSTANCE.add(EXAMPLE_ITEM.get(), tick));
                             return EXAMPLE_ITEM;

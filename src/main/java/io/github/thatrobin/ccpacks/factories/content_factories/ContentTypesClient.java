@@ -9,6 +9,7 @@ import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDGlowParticle;
 import io.github.thatrobin.ccpacks.data_driven_classes.particles.DDParticle;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.thatrobin.ccpacks.util.ParticleHolder;
+import io.github.thatrobin.ccpacks.util.RegistryUtils;
 import io.github.thatrobin.ccpacks.util.RenderLayerTypes;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -26,6 +27,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Pair;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -34,6 +36,9 @@ import java.util.function.Supplier;
 public class ContentTypesClient {
 
     public ContentTypesClient(Identifier id, JsonElement je) {
+        for (Registry<?> registry : Registry.REGISTRIES) {
+            RegistryUtils.unfreeze(registry);
+        }
         readPower(id, je, ContentType::new);
     }
 

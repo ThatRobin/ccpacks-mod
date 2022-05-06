@@ -1,8 +1,11 @@
 package io.github.thatrobin.ccpacks.util;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.item_groups.Icon;
@@ -55,7 +58,7 @@ public class ItemGroupHolder {
                         JsonElement je = stringJsonElementEntry.getValue();
                         if(je.isJsonObject()) {
                             JsonObject jo = je.getAsJsonObject();
-                            TagKey<Item> items = getItemTagFromJson(jo);
+                            Set<Item> items = getItemsFromJson(jo);
                             addTab(Icon.of(Registry.ITEM.get(Identifier.tryParse(jo.get("icon").getAsString()))),field, items);
                         }
                     });
@@ -65,14 +68,11 @@ public class ItemGroupHolder {
         return null;
     }
 
-    public TagKey<Item> getItemTagFromJson(JsonObject jo) {
-        return SerializableDataTypes.ITEM_TAG.read(jo.get("items"));
-    }
-
     public Set<Item> getItemsFromJson(JsonObject jo){
         Set<Item> items = Sets.newHashSet();
 
         JsonArray array = jo.get("items").getAsJsonArray();
+
         array.forEach(stackData -> {
             ItemStack stack = null;
             if(stackData.isJsonObject()) {

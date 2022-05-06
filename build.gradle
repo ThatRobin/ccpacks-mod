@@ -72,23 +72,23 @@ dependencies {
 	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-block:${project.cca_version}"
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-block:${project.cca_version}"
 
-	modImplementation "com.github.ThatRobin:calio:${project.calio_version}"
-	include "com.github.ThatRobin:calio:${project.calio_version}"
+	modImplementation "com.github.apace100:calio:${project.calio_version}"
+	include "com.github.apace100:calio:${project.calio_version}"
 
 	modImplementation "net.kyrptonaught:customportalapi:${project.portals_version}"
 	include "net.kyrptonaught:customportalapi:${project.portals_version}"
 
-	modImplementation ("com.github.ThatRobin:apoli:${project.apoli_version}") {
+	modImplementation ("com.github.apace100:apoli:${project.apoli_version}") {
 		exclude(group: "com.terraformersmc")
 	}
-	include ("com.github.ThatRobin:apoli:${project.apoli_version}") {
+	include ("com.github.apace100:apoli:${project.apoli_version}") {
 		exclude(group: "com.terraformersmc")
 	}
 
 	modImplementation "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
-	include "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 
 	modImplementation "software.bernie.geckolib:geckolib-fabric-1.18.2:${project.geckolib_version}"
+	include "software.bernie.geckolib:geckolib-fabric-1.18.2:${project.geckolib_version}"
 
 }
 

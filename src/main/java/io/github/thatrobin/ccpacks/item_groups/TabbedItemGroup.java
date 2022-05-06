@@ -14,18 +14,22 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.compress.utils.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 public abstract class TabbedItemGroup extends ItemGroup {
 
-    public final List<ItemGroupTab> tabs = Lists.newArrayList();
+    public static final BiConsumer<Item, DefaultedList<ItemStack>> DEFAULT_STACK_GENERATOR = (item, stacks) -> stacks.add(item.getDefaultStack());
+
+    public final List<ItemGroupTab> tabs = new ArrayList<>();
 
     private int selectedTab = 0;
     private boolean initialized = false;
 
     private int stackHeight = 4;
-    private Identifier customTexture = null;
     private boolean displayTabNamesAsTitle = true;
     private boolean displaySingleTab = false;
 
@@ -41,15 +45,20 @@ public abstract class TabbedItemGroup extends ItemGroup {
         this.initialized = true;
     }
 
+    protected void addTab(Icon icon, String name, Set<Item> contentTag, Identifier texture) {
+        this.tabs.add(new ItemGroupTab(icon, name, contentTag, texture));
+    }
 
-    protected void addTab(Icon icon, String name, TagKey<Item> contentTag) {
-        this.tabs.add(new ItemGroupTab(icon, name, contentTag, ItemGroupTab.DEFAULT_TEXTURE));
+    protected void addTab(Icon icon, String name, Set<Item> contentTag) {
+        addTab(icon, name, contentTag, ItemGroupTab.DEFAULT_TEXTURE);
     }
 
     @Override
     public void appendStacks(DefaultedList<ItemStack> stacks) {
         if (!initialized) throw new IllegalStateException("Owo item group not initialized, was 'initialize()' called?");
-        Registry.ITEM.stream().filter(this::includes).forEach(item -> stacks.add(new ItemStack(item)));
+        Registry.ITEM.stream().filter(this::includes).forEach(item -> {
+            stacks.add(new ItemStack(item));
+        });
     }
 
     protected boolean includes(Item item) {

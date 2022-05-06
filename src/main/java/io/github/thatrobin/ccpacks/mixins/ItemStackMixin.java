@@ -4,16 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.emi.trinkets.TrinketSlot;
-import dev.emi.trinkets.api.TrinketsApi;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.thatrobin.ccpacks.CCPacksMain;
+import io.github.thatrobin.ccpacks.compat.TrinketsCompat;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.DDTrinketItem;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
-import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.thatrobin.ccpacks.power.BindPower;
 import io.github.thatrobin.ccpacks.power.ItemUsePower;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
@@ -23,8 +19,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -32,7 +26,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -97,80 +90,53 @@ public abstract class ItemStackMixin {
     @Inject(method = "getTooltip", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasNbt()Z", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     private void addEquipmentPowerTooltips(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list) {
         ItemStack stack = ((ItemStack) (Object) this);
-        if (stack.getItem() instanceof DDTrinketItem trinketItem) {
-            TrinketsApi.getTrinketComponent(player).ifPresent(trinkets -> {
-                trinkets.forEach(((slotReference, itemStack) -> {
-
-                    if (TrinketSlot.canInsert(stack, slotReference, player)) {
-                        List<StackPowerUtil.StackPower> powers = trinketItem.getTrinketPowers(stack)
-                                .stream()
-                                .filter(sp -> !sp.isHidden)
-                                .toList();
-                        if (powers.size() > 0) {
-                            list.add(LiteralText.EMPTY);
-                            list.add((new TranslatableText("item.modifiers." + slotReference.inventory().getSlotType().getName())).formatted(Formatting.GRAY));
-                            powers.forEach(sp -> {
-                                if (PowerTypeRegistry.contains(sp.powerId)) {
-                                    PowerType<?> powerType = PowerTypeRegistry.get(sp.powerId);
-                                    list.add(
-                                            new LiteralText(" ")
-                                                    .append(powerType.getName())
-                                                    .formatted(sp.isNegative ? Formatting.RED : Formatting.BLUE));
-                                    if (context.isAdvanced()) {
-                                        list.add(
-                                                new LiteralText("  ")
-                                                        .append(powerType.getDescription())
-                                                        .formatted(Formatting.GRAY));
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }));
-            });
-            int integer = this.getHideFlags();
-            if (this.hasNbt()) {
-                if (isSectionVisible(integer, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable")) {
-                    list.add((new TranslatableText("item.unbreakable")).formatted(Formatting.BLUE));
-                }
-
-                NbtList nbtCompound;
-                if (isSectionVisible(integer, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt.contains("CanDestroy", 9)) {
-                    nbtCompound = this.nbt.getList("CanDestroy", 8);
-                    if (!nbtCompound.isEmpty()) {
-                        list.add(LiteralText.EMPTY);
-                        list.add((new TranslatableText("item.canBreak")).formatted(Formatting.GRAY));
-
-                        for (int nbtList = 0; nbtList < nbtCompound.size(); ++nbtList) {
-                            list.addAll(parseBlockTag(nbtCompound.getString(nbtList)));
-                        }
-                    }
-                }
-
-                if (isSectionVisible(integer, ItemStack.TooltipSection.CAN_PLACE) && this.nbt.contains("CanPlaceOn", 9)) {
-                    nbtCompound = this.nbt.getList("CanPlaceOn", 8);
-                    if (!nbtCompound.isEmpty()) {
-                        list.add(LiteralText.EMPTY);
-                        list.add((new TranslatableText("item.canPlace")).formatted(Formatting.GRAY));
-
-                        for (int nbtList = 0; nbtList < nbtCompound.size(); ++nbtList) {
-                            list.addAll(parseBlockTag(nbtCompound.getString(nbtList)));
-                        }
-                    }
-                }
-            }
-
-            if (context.isAdvanced()) {
-                if (this.isDamaged()) {
-                    list.add(new TranslatableText("item.durability", new Object[]{this.getMaxDamage() - this.getDamage(), this.getMaxDamage()}));
-                }
-
-                list.add((new LiteralText(Registry.ITEM.getId(this.getItem()).toString())).formatted(Formatting.DARK_GRAY));
+        if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+            if (stack.getItem() instanceof DDTrinketItem trinketItem) {
+                TrinketsCompat.trinketCheck(player, context, list, stack, trinketItem);
+                int integer = this.getHideFlags();
                 if (this.hasNbt()) {
-                    list.add((new TranslatableText("item.nbt_tags", new Object[]{this.nbt.getKeys().size()})).formatted(Formatting.DARK_GRAY));
+                    if (isSectionVisible(integer, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable")) {
+                        list.add((new TranslatableText("item.unbreakable")).formatted(Formatting.BLUE));
+                    }
+
+                    NbtList nbtCompound;
+                    if (isSectionVisible(integer, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt.contains("CanDestroy", 9)) {
+                        nbtCompound = this.nbt.getList("CanDestroy", 8);
+                        if (!nbtCompound.isEmpty()) {
+                            list.add(LiteralText.EMPTY);
+                            list.add((new TranslatableText("item.canBreak")).formatted(Formatting.GRAY));
+
+                            for (int nbtList = 0; nbtList < nbtCompound.size(); ++nbtList) {
+                                list.addAll(parseBlockTag(nbtCompound.getString(nbtList)));
+                            }
+                        }
+                    }
+
+                    if (isSectionVisible(integer, ItemStack.TooltipSection.CAN_PLACE) && this.nbt.contains("CanPlaceOn", 9)) {
+                        nbtCompound = this.nbt.getList("CanPlaceOn", 8);
+                        if (!nbtCompound.isEmpty()) {
+                            list.add(LiteralText.EMPTY);
+                            list.add((new TranslatableText("item.canPlace")).formatted(Formatting.GRAY));
+
+                            for (int nbtList = 0; nbtList < nbtCompound.size(); ++nbtList) {
+                                list.addAll(parseBlockTag(nbtCompound.getString(nbtList)));
+                            }
+                        }
+                    }
                 }
+
+                if (context.isAdvanced()) {
+                    if (this.isDamaged()) {
+                        list.add(new TranslatableText("item.durability", new Object[]{this.getMaxDamage() - this.getDamage(), this.getMaxDamage()}));
+                    }
+
+                    list.add((new LiteralText(Registry.ITEM.getId(this.getItem()).toString())).formatted(Formatting.DARK_GRAY));
+                    if (this.hasNbt()) {
+                        list.add((new TranslatableText("item.nbt_tags", new Object[]{this.nbt.getKeys().size()})).formatted(Formatting.DARK_GRAY));
+                    }
+                }
+                cir.setReturnValue(list);
             }
-            cir.setReturnValue(list);
         }
     }
 

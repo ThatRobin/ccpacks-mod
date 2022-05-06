@@ -11,6 +11,7 @@ public class CCPacksClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+
 		OnLoadResourceManager.addSingleListener(new ClientContentManager());
 		CCPacksModPacketS2C.register();
 	}

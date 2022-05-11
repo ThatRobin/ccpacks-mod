@@ -85,6 +85,9 @@ dependencies {
 		exclude(group: "com.terraformersmc")
 	}
 
+	modImplementation ("com.github.thatrobin:ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
+	include ("com.github.thatrobin:ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
+
 	modImplementation "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 
 	modImplementation "software.bernie.geckolib:geckolib-fabric-1.18.2:${project.geckolib_version}"

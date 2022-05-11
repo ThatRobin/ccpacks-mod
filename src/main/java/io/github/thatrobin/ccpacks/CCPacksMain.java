@@ -4,9 +4,6 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import io.github.apace100.calio.util.OrderedResourceListeners;
-import io.github.thatrobin.ccpacks.choice.Choice;
-import io.github.thatrobin.ccpacks.choice.ChoiceLayers;
-import io.github.thatrobin.ccpacks.choice.ChoiceManager;
 import io.github.thatrobin.ccpacks.commands.*;
 import io.github.thatrobin.ccpacks.component.ItemHolderComponent;
 import io.github.thatrobin.ccpacks.component.ItemHolderComponentImpl;
@@ -15,12 +12,10 @@ import io.github.thatrobin.ccpacks.factories.*;
 import io.github.thatrobin.ccpacks.factories.mechanic_factories.MechanicFactories;
 import io.github.thatrobin.ccpacks.item_groups.TabbedItemGroup;
 import io.github.thatrobin.ccpacks.networking.CCPacksModPacketC2S;
-import io.github.thatrobin.ccpacks.power.PowerIconManager;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistry;
 import io.github.thatrobin.ccpacks.registries.ContentManager;
 import io.github.thatrobin.ccpacks.registries.MechanicManager;
 import io.github.thatrobin.ccpacks.util.OnLoadResourceManager;
-import io.github.thatrobin.ccpacks.util.RegistryUtils;
 import io.github.thatrobin.ccpacks.util.UniversalPowerManager;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import net.fabricmc.api.ModInitializer;
@@ -46,12 +41,9 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 
 	public static CCPacksRegistry ccPacksRegistry = new CCPacksRegistry();
 
-	public static PowerIconManager powerIconManager = new PowerIconManager();
 
 	@Override
 	public void onInitialize() {
-
-
 		FabricLoader.getInstance().getModContainer(MODID).ifPresent(modContainer -> {
 			VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
 			if(VERSION.contains("+")) {
@@ -66,19 +58,13 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 				SEMVER[i] = Integer.parseInt(splitVersion[i]);
 			}
 		});
+
 		GeckoLib.initialize();
-		Choice.init();
 
 		NamespaceAlias.addAlias(MODID, "apoli");
 		NamespaceAlias.addAlias("origins", "apoli");
-		EntityActions.register();
-		EntityConditions.register();
-		ItemConditions.register();
 		BlockActions.register();
 		BlockConditions.register();
-		PowerFactories.register();
-
-
 		MechanicFactories.register();
 
 		// Custom Content
@@ -100,23 +86,18 @@ public class CCPacksMain implements ModInitializer, EntityComponentInitializer {
 			MechanicCommand.register(dispatcher);
 			SetCommand.register(dispatcher);
 			ItemActionCommand.register(dispatcher);
-			ChoiceCommand.register(dispatcher);
 		});
 
 		OnLoadResourceManager.addSingleListener(new ContentManager());
 
 		//ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new CollisionManager());
-		OrderedResourceListeners.register(new UniversalPowerManager()).after(new Identifier("apoli","powers")).complete();
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new MechanicManager());
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceManager());
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new ChoiceLayers());
 
-		ArgumentTypes.register("ccpacks:choice_layer", LayerArgument.class, new ConstantArgumentSerializer<>(LayerArgument::layer));
 		ArgumentTypes.register("ccpacks:mechanic", MechanicArgument.class, new ConstantArgumentSerializer<>(MechanicArgument::mechanic));
 
 		ContentTypes.itemGroups.forEach((identifier, itemGroupHolder) -> {
-			if(itemGroupHolder.getItemGroup() instanceof TabbedItemGroup owoItemGroup) {
-				owoItemGroup.initialize();
+			if(itemGroupHolder.getItemGroup() instanceof TabbedItemGroup tabbedItemGroup) {
+				tabbedItemGroup.initialize();
 			}
 		});
 

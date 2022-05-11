@@ -11,20 +11,15 @@ import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
 import net.minecraft.util.Identifier;
 
-public class ModComponents implements EntityComponentInitializer, BlockComponentInitializer {
+public class ModComponents implements BlockComponentInitializer {
 
-    public static final ComponentKey<ChoiceComponent> CHOICE;
     public static final ComponentKey<BlockMechanicHolder> MECHANIC;
 
     static {
-        CHOICE = ComponentRegistry.getOrCreate(new Identifier(CCPacksMain.MODID, "choice"), ChoiceComponent.class);
         MECHANIC = ComponentRegistry.getOrCreate(new Identifier(CCPacksMain.MODID, "mechanics"), BlockMechanicHolder.class);
     }
 
-    @Override
-    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(CHOICE, PlayerChoiceComponent::new, RespawnCopyStrategy.ALWAYS_COPY);
-    }
+
 
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {

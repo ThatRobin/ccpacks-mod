@@ -36,15 +36,6 @@ import java.util.function.Predicate;
 public class BlockConditions {
 
     public static void register() {
-        register(new ConditionFactory<>(CCPacksMain.identifier("exposed_to_sun"), new SerializableData(),
-                (data, blockPosition) -> {
-                    if (((World)blockPosition.getWorld()).isDay()) {
-                        float f = blockPosition.getWorld().getLightLevel(blockPosition.getBlockPos());
-                        return f > 0.5F && blockPosition.getWorld().isSkyVisible(blockPosition.getBlockPos());
-                    }
-                    return false;
-                }));
-
         register(new ConditionFactory<>(CCPacksMain.identifier("resource"), new SerializableData()
                 .add("resource", CCPackDataTypes.MECHANIC_TYPE)
                 .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
@@ -59,41 +50,6 @@ public class BlockConditions {
                             resourceValue = ((DDResourceMechanic) mechanic).getValue();
                         }
                         return ((Comparison) data.get("comparison")).compare(resourceValue, data.getInt("compare_to"));
-                    }
-                    return false;
-                }));
-
-        register(new ConditionFactory<>(CCPacksMain.identifier("block_pattern"), new SerializableData()
-                .add("pattern", CCPackDataTypes.STRINGS),
-                (data, blockPosition) -> {
-                    JsonObject jsonObject = data.get("ccpacksJsonTextGetter");
-                    List<String> pattern = data.get("pattern");
-                    BlockPatternBuilder builder = BlockPatternBuilder.start().aisle(pattern.toArray(new String[0]));
-                    List<Character> characters = Lists.newArrayList();
-                    for(String layer : pattern) {
-                        for(char character : layer.toCharArray()) {
-                            if(!characters.contains(character)) {
-                                characters.add(character);
-                            }
-                        }
-                    }
-                    for(char character : characters) {
-                        String name = Character.toString(character);
-                        JsonElement element = jsonObject.get(name);
-                        if(element.isJsonObject()) {
-                            Predicate<CachedBlockPosition> block = new SerializableData().add(name, ApoliDataTypes.BLOCK_CONDITION).read(jsonObject).get(name);
-                            builder.where(character, block);
-                        } else {
-                            Identifier blockId = Identifier.tryParse(jsonObject.get(name).getAsString());
-                            Block block = Registry.BLOCK.get(blockId);
-                            builder.where(character, CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(block)));
-                        }
-                    }
-
-                    BlockPattern blockPattern = builder.build();
-                    BlockPattern.Result result = blockPattern.searchAround(blockPosition.getWorld(), blockPosition.getBlockPos());
-                    if (result != null) {
-                        return true;
                     }
                     return false;
                 }));

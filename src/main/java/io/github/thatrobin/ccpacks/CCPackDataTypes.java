@@ -98,28 +98,7 @@ public class CCPackDataTypes {
             },
             (data, inst) -> data.new Instance());
 
-    public static final SerializableDataType<StatBarHudRender> STAT_BAR_HUD_RENDER = SerializableDataType.compound(StatBarHudRender.class, new
-                    SerializableData()
-                    .add("should_render", SerializableDataTypes.BOOLEAN, true)
-                    .add("bar_index", SerializableDataTypes.INT, 0)
-                    .add("side", SerializableDataTypes.STRING, "right")
-                    .add("sprite_location", SerializableDataTypes.IDENTIFIER, new Identifier("ccpacks", "textures/gui/icons.png"))
-                    .add("condition", ApoliDataTypes.ENTITY_CONDITION, null),
-            (dataInst) -> new StatBarHudRender(
-                    dataInst.getBoolean("should_render"),
-                    dataInst.getInt("bar_index"),
-                    dataInst.getId("sprite_location"),
-                    dataInst.get("condition"),
-                    dataInst.getString("side")),
-            (data, inst) -> {
-                SerializableData.Instance dataInst = data.new Instance();
-                dataInst.set("should_render", inst.shouldRender());
-                dataInst.set("bar_index", inst.getBarIndex());
-                dataInst.set("sprite_location", inst.getSpriteLocation());
-                dataInst.set("condition", inst.getCondition());
-                dataInst.set("side", inst.getSide());
-                return dataInst;
-            });
+
 
     public static final SerializableDataType<ColourHolder> COLOUR = SerializableDataType.compound(ColourHolder.class, new
                     SerializableData()

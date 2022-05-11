@@ -1,0 +1,28 @@
+{
+    "schemaVersion": 1,
+    "id": "ccpacks-apoli",
+    "version": "${version}",
+    "name": "CCPacks Apoli",
+    "description": "",
+    "authors": [],
+    "contact": {},
+    "license": "MIT",
+    "icon": "assets/ccpacks-apoli/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "io.github.thatrobin.ccpacksapoli.client.CcpacksApoliClient"
+        ],
+        "main": [
+            "io.github.thatrobin.ccpacksapoli.CcpacksApoli"
+        ]
+    },
+    "mixins": [
+        "ccpacks-apoli.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14.5",
+        "fabric": "*",
+        "minecraft": "1.18.2"
+    }
+}

@@ -9,9 +9,6 @@ import io.github.thatrobin.ccpacks.data_driven_classes.blocks.DDBlockEntity;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.DDDyeableItem;
 import io.github.thatrobin.ccpacks.registries.CCPacksRegistries;
 import io.github.thatrobin.ccpacks.util.*;
-import io.wispforest.owo.itemgroup.OwoItemGroup;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
@@ -133,9 +130,6 @@ public class ContentTypes {
                         }
                         case ITEM_GROUP -> {
                             ItemGroupHolder holder = new ItemGroupHolder(id, jo);
-                            if(holder.getItemGroup() instanceof OwoItemGroup owoItemGroup) {
-                                owoItemGroup.initialize();
-                            }
                             itemGroups.put(id, holder);
                         }
                     }

@@ -4,11 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.thatrobin.ccpacks.compat.TrinketsCompat;
 import io.github.thatrobin.ccpacks.data_driven_classes.items.DDTrinketItem;
-import io.github.thatrobin.ccpacks.power.BindPower;
-import io.github.thatrobin.ccpacks.power.ItemUsePower;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -140,28 +137,4 @@ public abstract class ItemStackMixin {
         }
     }
 
-    @Inject(method = "use", at = @At("HEAD"))
-    private void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        PowerHolderComponent.getPowers(user, ItemUsePower.class).forEach(power -> {
-            if (power.doesApply((ItemStack) (Object) this)) {
-                power.executeActions((ItemStack) (Object) this);
-            }
-        });
-    }
-
-    @Inject(at = @At("HEAD"), method = "use", cancellable = true)
-    public void preventUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> info) {
-        if(user != null) {
-            ItemStack stackInHand = user.getStackInHand(hand);
-            PowerHolderComponent.getPowers(user, BindPower.class).forEach(bindPower -> {
-                if(bindPower.doesApply(stackInHand)) {
-                    if (bindPower.checkSlot((user.getInventory().getSlotWithStack(stackInHand)))) {
-                        if(bindPower.doesPrevent(stackInHand)) {
-                            info.setReturnValue(TypedActionResult.fail(stackInHand));
-                        }
-                    }
-                }
-            });
-        }
-    }
 }

@@ -2,12 +2,9 @@ package io.github.thatrobin.ccpacks.factories;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import io.github.apace100.apoli.power.PowerTypeReference;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.thatrobin.ccpacks.CCPacksMain;
 import io.github.thatrobin.ccpacks.util.AccessFactory;
-import io.github.thatrobin.ccpacks.power.StatBar;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
@@ -31,20 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EntityConditions {
 
     public static void register() {
-        register(new ConditionFactory<>(CCPacksMain.identifier("check_stat"), new SerializableData()
-                .add("stat_bar", ApoliDataTypes.POWER_TYPE)
-                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL)
-                .add("compare_to", SerializableDataTypes.INT, 0),
-                (data, entity) -> {
-                    int resourceValue = 0;
-                    PowerHolderComponent component = PowerHolderComponent.KEY.get(entity);
-                    Power p = component.getPower((PowerType<?>)data.get("stat_bar"));
-                    if(p instanceof StatBar) {
-                        resourceValue = ((StatBar)p).getValue();
-                    }
-                    return ((Comparison)data.get("comparison")).compare(resourceValue, data.getInt("compare_to"));
-                }));
-
         register(new ConditionFactory<>(Apoli.identifier("equipped_trinket"), new SerializableData()
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION),
                 (data, entity) -> {

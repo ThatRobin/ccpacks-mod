@@ -11,11 +11,24 @@
     "environment": "*",
     "entrypoints": {
         "client": [
-            "io.github.thatrobin.ccpacksapoli.client.CcpacksApoliClient"
+            "io.github.thatrobin.ccpacksapoli.client.CCPacksApoliClient"
         ],
         "main": [
-            "io.github.thatrobin.ccpacksapoli.CcpacksApoli"
+            "io.github.thatrobin.ccpacksapoli.CCPacksApoli"
+        ],
+        "cardinal-components-entity": [
+            "io.github.thatrobin.ccpacksapoli.component.ModComponents"
         ]
+    },
+    "custom": {
+        "cardinal-components": [
+            "ccpacks:choice"
+        ],
+        "modmenu": {
+            "badges": [
+                "library"
+            ]
+        }
     },
     "mixins": [
         "ccpacks-apoli.mixins.json"

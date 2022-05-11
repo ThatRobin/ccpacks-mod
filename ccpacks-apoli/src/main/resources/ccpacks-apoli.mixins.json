@@ -1,11 +1,23 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "io.github.thatrobin.ccpacksapoli.mixin",
+    "package": "io.github.thatrobin.ccpacksapoli.mixins",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ProjectileEntityMixin",
+        "ItemMixin",
+        "ItemStackMixin",
+        "ItemFrameEntityMixin",
+        "SlotMixin",
+        "PlayerManagerMixin",
+        "EntityTypeMixin"
     ],
     "client": [
+        "BundleTooltipComponentMixin",
+        "InGameHudMixin",
+        "KeyBindingMixin",
+        "MinecraftClientMixin",
+        "BossBarHudMixin"
     ],
     "injectors": {
         "defaultRequire": 1

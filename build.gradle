@@ -85,8 +85,8 @@ dependencies {
 		exclude(group: "com.terraformersmc")
 	}
 
-	modImplementation ("com.github.thatrobin:ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
-	include ("com.github.thatrobin:ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
+	modImplementation ("com.github.thatrobin.ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
+	include ("com.github.thatrobin.ccpacks-mod:ccpacks-apoli:${project.ccpa_version}")
 
 	modImplementation "com.github.emilyalexandra:trinkets:${project.trinkets_version}"
 
